@@ -1,0 +1,53 @@
+# Dependency directories
+node_modules/
+.pnpm/
+.npm/
+client/node_modules/
+server/node_modules/
+
+# Next.js & Client build output
+.next/
+out/
+.build/
+client/.next/
+client/dist/
+client/build/
+
+# Server build output
+server/dist/
+server/build/
+
+# Environment variables
+.env*
+!.env.example
+client/.env.local
+server/.env.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local IDE and OS files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Test coverage
+coverage/
+
+# Temp files
+.temp/
+*.tmp
+
+# Database
+*.db
+*.sqlite
+
+# Misc
+*.log

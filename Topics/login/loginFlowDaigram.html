@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Auth Lifecycle Sequence Diagram</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true });
+  </script>
+</head>
+<body>
+  <div class="mermaid">
+    sequenceDiagram
+      participant U as User
+      participant A as AuthService
+      participant M as UserModel
+      participant S as SessionService
+      participant DB as Database
+      participant R as SecureRoute
+
+      %% --- Signup flow ---
+      U->>A: Submit signup form (email + password)
+      A->>M: Create new user {email, passwordHash, role="user"}
+      M->>DB: Insert user record
+      DB-->>M: User saved
+      M-->>A: Confirmation
+      A-->>U: Signup successful (role=user)
+
+      %% --- Login flow ---
+      U->>A: Submit login form (email + password)
+      A->>M: Find user by email
+      M-->>A: Return user record
+      A->>A: Compare password hash
+      A-->>U: Invalid? Return error
+      A->>A: Generate access + refresh tokens
+      A->>S: Save refresh token session
+      S->>DB: Insert session {userId, tokenIdHash, expiresAt}
+      DB-->>S: Session saved
+      S-->>A: Confirmation
+      A-->>U: Return accessToken + set refreshToken cookie
+
+      %% --- Secure route access ---
+      U->>R: Request secure resource with accessToken
+      R->>A: Verify JWT signature + role
+      A-->>R: Token valid? role=user/admin
+      R-->>U: Allow/deny based on role
+
+      %% --- Admin promotion flow ---
+      U->>R: Admin requests promoteUser(userId)
+      R->>A: Check admin role in token
+      A->>M: Find user by ID
+      M-->>A: Return user record
+      A->>M: Update role="admin"
+      M->>DB: Save updated user record
+      DB-->>M: User updated
+      M-->>A: Confirmation
+      A-->>R: Promotion successful
+      R-->>U: User promoted to admin
+  </div>
+</body>
+</html>

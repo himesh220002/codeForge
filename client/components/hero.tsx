@@ -3,7 +3,7 @@
 const Hero = () => {
   return (
     <section className="min-h-screen flex flex-col justify-center items-center bg-slate-950 text-white px-6 py-24">
-      <div className="max-w-3xl text-center">
+      <div className="w-full text-center">
         <p className="text-sm uppercase tracking-[0.3em] text-cyan-300 mb-4">
           TestProject
         </p>
@@ -21,10 +21,10 @@ const Hero = () => {
             Learn why
           </a>
           <a
-            href="#features"
+            href="/login"
             className="inline-flex justify-center rounded-full border border-slate-700 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10 transition"
           >
-            See features
+            Open login
           </a>
         </div>
       </div>

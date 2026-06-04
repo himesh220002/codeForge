@@ -7,7 +7,7 @@ export default function Home() {
   return (
     <div className=" mx-auto bg-zinc-50 font-sans dark:bg-black">
       <Navbar />
-      <main className="flex w-full mx-auto space-y-6 flex-col items-center justify-between bg-white dark:bg-black mb-6">
+      <main className="flex w-full mx-auto max-w-7xl space-y-6 flex-col items-center justify-between bg-white dark:bg-black mb-6">
         
         <Hero />
         <div className="flex flex-col items-center gap-2">

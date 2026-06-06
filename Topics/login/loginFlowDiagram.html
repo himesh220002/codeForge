@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Production-Ready Authentication System Flow & Code Explorer</title>
-  
+
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -36,14 +37,16 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Outfit:wght@100..900&display=swap"
+    rel="stylesheet">
 
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <!-- PrismJS syntax highlighting -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
-  
+
   <!-- Mermaid.js -->
   <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
   <script>
@@ -73,42 +76,51 @@
     body {
       background: radial-gradient(circle at top right, #081122 0%, #030712 60%);
     }
+
     .custom-scrollbar::-webkit-scrollbar {
       width: 6px;
       height: 6px;
     }
+
     .custom-scrollbar::-webkit-scrollbar-track {
       background: #090d16;
     }
+
     .custom-scrollbar::-webkit-scrollbar-thumb {
       background: #1e293b;
       border-radius: 4px;
     }
+
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
       background: #38bdf8;
     }
+
     .glass-card {
       background: rgba(15, 23, 42, 0.45);
       backdrop-filter: blur(12px);
       border: 1px solid rgba(56, 189, 248, 0.1);
     }
+
     .active-tab {
       background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
       box-shadow: 0 0 15px rgba(14, 165, 233, 0.4);
     }
   </style>
 </head>
+
 <body class="text-slate-200 font-sans min-h-screen pb-16 antialiased">
 
   <!-- Header Banner -->
   <header class="border-b border-sky-500/10 py-6 px-8 mb-8 glass-card">
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
       <div class="flex items-center gap-4">
-        <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-sky-500/20">
+        <div
+          class="w-12 h-12 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-sky-500/20">
           <i class="fa-solid fa-shield-halved text-white text-2xl"></i>
         </div>
         <div>
-          <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-sky-100 to-sky-400 bg-clip-text text-transparent">
+          <h1
+            class="text-2xl md:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-sky-100 to-sky-400 bg-clip-text text-transparent">
             Auth Lifecycle & Code Explorer
           </h1>
           <p class="text-xs md:text-sm text-sky-400/80 font-mono mt-0.5">
@@ -117,22 +129,24 @@
         </div>
       </div>
       <div class="flex items-center gap-3">
-        <span class="px-3 py-1 text-xs rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center gap-1.5 font-mono">
+        <span
+          class="px-3 py-1 text-xs rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center gap-1.5 font-mono">
           <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
           Verified Codebase
         </span>
-        <a href="/documentation" class="px-4 py-2 text-sm rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all border border-slate-700/50 flex items-center gap-2">
+        <a href="/documentation"
+          class="px-4 py-2 text-sm rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all border border-slate-700/50 flex items-center gap-2">
           <i class="fa-solid fa-arrow-left"></i> Back to Docs
         </a>
       </div>
     </div>
   </header>
 
-  <main class="max-w-7xl mx-auto px-4 md:px-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
-    
+  <main class="max-w-full flex flex-col mx-auto px-4 md:px-8 gap-8">
+
     <!-- LEFT SIDE: Diagram and Interaction Details (7 cols) -->
-    <section class="lg:col-span-7 space-y-6">
-      
+    <section class="space-y-6">
+
       <!-- Interactive Sequence Steps -->
       <div class="glass-card rounded-2xl p-6 shadow-xl relative overflow-hidden">
         <div class="absolute -right-16 -top-16 w-32 h-32 bg-sky-500/5 rounded-full blur-3xl"></div>
@@ -142,81 +156,86 @@
           </h2>
           <span class="text-xs text-slate-400">Click a phase to explore details & related files</span>
         </div>
-        
+
         <!-- Lifecycle Phase Tabs -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-6">
-          <button onclick="switchPhase('signup')" id="btn-signup" class="phase-btn px-3 py-2 text-xs font-semibold rounded-xl text-center border border-slate-700/50 bg-slate-900/50 hover:bg-slate-800 transition-all duration-200">
+          <button onclick="switchPhase('signup')" id="btn-signup"
+            class="phase-btn px-3 py-2 text-xs font-semibold rounded-xl text-center border border-slate-700/50 bg-slate-900/50 hover:bg-slate-800 transition-all duration-200">
             1. User Signup
           </button>
-          <button onclick="switchPhase('login')" id="btn-login" class="phase-btn px-3 py-2 text-xs font-semibold rounded-xl text-center border border-slate-700/50 bg-slate-900/50 hover:bg-slate-800 transition-all duration-200 active-tab">
+          <button onclick="switchPhase('login')" id="btn-login"
+            class="phase-btn px-3 py-2 text-xs font-semibold rounded-xl text-center border border-slate-700/50 bg-slate-900/50 hover:bg-slate-800 transition-all duration-200 active-tab">
             2. User Login
           </button>
-          <button onclick="switchPhase('secure')" id="btn-secure" class="phase-btn px-3 py-2 text-xs font-semibold rounded-xl text-center border border-slate-700/50 bg-slate-900/50 hover:bg-slate-800 transition-all duration-200">
+          <button onclick="switchPhase('secure')" id="btn-secure"
+            class="phase-btn px-3 py-2 text-xs font-semibold rounded-xl text-center border border-slate-700/50 bg-slate-900/50 hover:bg-slate-800 transition-all duration-200">
             3. Secure Request
           </button>
-          <button onclick="switchPhase('promote')" id="btn-promote" class="phase-btn px-3 py-2 text-xs font-semibold rounded-xl text-center border border-slate-700/50 bg-slate-900/50 hover:bg-slate-800 transition-all duration-200">
+          <button onclick="switchPhase('promote')" id="btn-promote"
+            class="phase-btn px-3 py-2 text-xs font-semibold rounded-xl text-center border border-slate-700/50 bg-slate-900/50 hover:bg-slate-800 transition-all duration-200">
             4. User Promotion
           </button>
         </div>
 
         <!-- Mermaid Container -->
-        <div class="bg-[#090d16] border border-slate-800 rounded-xl p-4 overflow-x-auto custom-scrollbar flex justify-center min-h-[420px]">
+        <div
+          class="bg-[#090d16] border border-slate-800 rounded-xl p-4 overflow-x-auto custom-scrollbar flex justify-center min-h-[420px]">
           <div class="mermaid w-full">
             sequenceDiagram
-              autonumber
-              actor User as User Agent
-              participant C_API as Next.js API Proxy
-              participant S_Routes as Express Routes
-              participant S_Auth as AuthService
-              participant S_Session as Session Service
-              participant DB as MongoDB Database
-              participant Middleware as Admin Middleware
+            autonumber
+            actor User as User Agent
+            participant C_API as Next.js API Proxy
+            participant S_Routes as Express Routes
+            participant S_Auth as AuthService
+            participant S_Session as Session Service
+            participant DB as MongoDB Database
+            participant Middleware as Admin Middleware
 
-              %% Signup Phase
-              Note over User, DB: [Phase 1: User Signup Flow]
-              User->>C_API: POST /api/auth/signup (Name, Email, Password)
-              C_API->>S_Routes: Forward to Express POST /api/auth/signup
-              S_Routes->>DB: Check existing user email
-              S_Routes->>S_Routes: Hash password using bcrypt
-              S_Routes->>DB: Save User { email, passwordHash, role: "user" }
-              S_Routes->>S_Auth: Issue JWT tokens
-              S_Auth-->>S_Routes: Return { accessToken, refreshToken }
-              S_Routes->>S_Session: Save Session in DB
-              S_Session->>DB: Save Session { userId, tokenIdHash, expiresAt }
-              S_Routes-->>C_API: Return JSON + set-cookie (refreshToken)
-              C_API-->>User: Return accessToken (saved in localStorage) + cookie
+            %% Signup Phase
+            Note over User, DB: [Phase 1: User Signup Flow]
+            User->>C_API: POST /api/auth/signup (Name, Email, Password)
+            C_API->>S_Routes: Forward to Express POST /api/auth/signup
+            S_Routes->>DB: Check existing user email
+            S_Routes->>S_Routes: Hash password using bcrypt
+            S_Routes->>DB: Save User { email, passwordHash, role: "user" }
+            S_Routes->>S_Auth: Issue JWT tokens
+            S_Auth-->>S_Routes: Return { accessToken, refreshToken }
+            S_Routes->>S_Session: Save Session in DB
+            S_Session->>DB: Save Session { userId, tokenIdHash, expiresAt }
+            S_Routes-->>C_API: Return JSON + set-cookie (refreshToken)
+            C_API-->>User: Return accessToken (saved in localStorage) + cookie
 
-              %% Login Phase
-              Note over User, DB: [Phase 2: User Login Flow]
-              User->>C_API: POST /api/auth/login (Email, Password)
-              C_API->>S_Routes: Forward to Express POST /api/auth/login
-              S_Routes->>S_Auth: Verify credentials (verifyUserCredentials)
-              S_Auth->>DB: Find user by email
-              S_Auth->>S_Auth: Compare bcrypt hashes
-              S_Routes->>S_Auth: Issue JWT tokens (issueTokens)
-              S_Auth->>S_Session: Save session
-              S_Session->>DB: Save Session { userId, tokenIdHash, expiresAt }
-              S_Routes-->>C_API: Return { accessToken, role, name } + Cookie
-              C_API-->>User: Return accessToken + Cookie
+            %% Login Phase
+            Note over User, DB: [Phase 2: User Login Flow]
+            User->>C_API: POST /api/auth/login (Email, Password)
+            C_API->>S_Routes: Forward to Express POST /api/auth/login
+            S_Routes->>S_Auth: Verify credentials (verifyUserCredentials)
+            S_Auth->>DB: Find user by email
+            S_Auth->>S_Auth: Compare bcrypt hashes
+            S_Routes->>S_Auth: Issue JWT tokens (issueTokens)
+            S_Auth->>S_Session: Save session
+            S_Session->>DB: Save Session { userId, tokenIdHash, expiresAt }
+            S_Routes-->>C_API: Return { accessToken, role, name } + Cookie
+            C_API-->>User: Return accessToken + Cookie
 
-              %% Secure Requests
-              Note over User, DB: [Phase 3: Secure Page / API Request]
-              User->>C_API: Request Admin resource /api/admin/users (Bearer Token)
-              C_API->>S_Routes: Forward with Authorization Header
-              S_Routes->>Middleware: Intercept with adminMiddleware
-              Middleware->>Middleware: Verify JWT & role === 'admin'
-              Middleware->>S_Routes: Proceed if authorized
-              S_Routes->>DB: Fetch users list
-              S_Routes-->>User: 200 OK with User List / 403 Forbidden
+            %% Secure Requests
+            Note over User, DB: [Phase 3: Secure Page / API Request]
+            User->>C_API: Request Admin resource /api/admin/users (Bearer Token)
+            C_API->>S_Routes: Forward with Authorization Header
+            S_Routes->>Middleware: Intercept with adminMiddleware
+            Middleware->>Middleware: Verify JWT & role === 'admin'
+            Middleware->>S_Routes: Proceed if authorized
+            S_Routes->>DB: Fetch users list
+            S_Routes-->>User: 200 OK with User List / 403 Forbidden
 
-              %% User Promotion
-              Note over User, DB: [Phase 4: Admin Promoting User to Admin]
-              User->>C_API: PATCH /api/admin/users/:id { role: "admin" } (Bearer Token)
-              C_API->>S_Routes: Forward PATCH to Express Server
-              S_Routes->>Middleware: Intercept & verify admin role
-              Middleware->>S_Routes: Proceed
-              S_Routes->>DB: findByIdAndUpdate(userId, { role: "admin" })
-              S_Routes-->>User: 200 OK (Role Updated successfully)
+            %% User Promotion
+            Note over User, DB: [Phase 4: Admin Promoting User to Admin]
+            User->>C_API: PATCH /api/admin/users/:id { role: "admin" } (Bearer Token)
+            C_API->>S_Routes: Forward PATCH to Express Server
+            S_Routes->>Middleware: Intercept & verify admin role
+            Middleware->>S_Routes: Proceed
+            S_Routes->>DB: findByIdAndUpdate(userId, { role: "admin" })
+            S_Routes-->>User: 200 OK (Role Updated successfully)
           </div>
         </div>
       </div>
@@ -232,17 +251,23 @@
             <div>
               <strong class="text-amber-200">Typo Fixed: bycrypt vs bcrypt</strong>
               <p class="text-xs mt-1 text-slate-300">
-                In <code class="font-mono bg-slate-900/80 px-1 py-0.5 rounded text-amber-200">server/src/services/authService.ts</code>, we resolved a typo where <code class="font-mono text-amber-200">bycrypt</code> was imported and used instead of the standard spelling. Typescript compiled cleanly but standard naming has been enforced.
+                In <code
+                  class="font-mono bg-slate-900/80 px-1 py-0.5 rounded text-amber-200">server/src/services/authService.ts</code>,
+                we resolved a typo where <code class="font-mono text-amber-200">bycrypt</code> was imported and used
+                instead of the standard spelling. Typescript compiled cleanly but standard naming has been enforced.
               </p>
             </div>
           </div>
-          
+
           <div class="p-3 bg-sky-500/10 border border-sky-500/20 rounded-lg flex gap-3">
             <i class="fa-solid fa-database text-sky-400 text-lg mt-0.5"></i>
             <div>
               <strong class="text-sky-200">Access Token Storage Implementation</strong>
               <p class="text-xs mt-1 text-slate-300">
-                While conceptual designs propose storing access tokens strictly in-memory, the client-side code in <code class="font-mono bg-slate-900/80 px-1 py-0.5 rounded text-sky-200">client/app/login/page.tsx</code> persists the token to <code class="font-mono text-sky-200">localStorage</code>. This ensures persistent sessions upon page reloads.
+                While conceptual designs propose storing access tokens strictly in-memory, the client-side code in <code
+                  class="font-mono bg-slate-900/80 px-1 py-0.5 rounded text-sky-200">client/app/login/page.tsx</code>
+                persists the token to <code class="font-mono text-sky-200">localStorage</code>. This ensures persistent
+                sessions upon page reloads.
               </p>
             </div>
           </div>
@@ -252,17 +277,20 @@
             <div>
               <strong class="text-blue-200">Next.js Route Protection Middleware</strong>
               <p class="text-xs mt-1 text-slate-300">
-                The Next.js route middleware is located in <code class="font-mono bg-slate-900/80 px-1 py-0.5 rounded text-blue-200">server/src/middleware/authMiddleware.ts</code>. In this codebase setup, route protection on Next.js client-side is template code, and backend routes are actively protected via Express's <code class="font-mono text-blue-200">adminMiddleware.ts</code>.
+                The Next.js route middleware is located in <code
+                  class="font-mono bg-slate-900/80 px-1 py-0.5 rounded text-blue-200">server/src/middleware/authMiddleware.ts</code>.
+                In this codebase setup, route protection on Next.js client-side is template code, and backend routes are
+                actively protected via Express's <code class="font-mono text-blue-200">adminMiddleware.ts</code>.
               </p>
             </div>
           </div>
         </div>
       </div>
-      
+
     </section>
 
     <!-- RIGHT SIDE: Code Explorer Accordions (5 cols) -->
-    <section class="lg:col-span-5 space-y-4">
+    <section class="space-y-4">
       <div class="glass-card rounded-2xl p-6 shadow-xl min-h-[calc(100vh-140px)] flex flex-col">
         <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-4">
           <h2 class="text-lg font-bold flex items-center gap-2 text-sky-300">
@@ -273,28 +301,36 @@
 
         <!-- Tier Filters -->
         <div class="flex gap-1.5 mb-4 bg-slate-900/60 p-1 rounded-lg border border-slate-800/80">
-          <button onclick="filterTiers('all')" id="filter-all" class="flex-1 text-xs py-1.5 rounded-md text-center bg-slate-800 font-medium transition-all">All</button>
-          <button onclick="filterTiers('client')" id="filter-client" class="flex-1 text-xs py-1.5 rounded-md text-center text-slate-400 hover:text-white font-medium transition-all">Client</button>
-          <button onclick="filterTiers('server')" id="filter-server" class="flex-1 text-xs py-1.5 rounded-md text-center text-slate-400 hover:text-white font-medium transition-all">Server</button>
+          <button onclick="filterTiers('all')" id="filter-all"
+            class="flex-1 text-xs py-1.5 rounded-md text-center bg-slate-800 font-medium transition-all">All</button>
+          <button onclick="filterTiers('client')" id="filter-client"
+            class="flex-1 text-xs py-1.5 rounded-md text-center text-slate-400 hover:text-white font-medium transition-all">Client</button>
+          <button onclick="filterTiers('server')" id="filter-server"
+            class="flex-1 text-xs py-1.5 rounded-md text-center text-slate-400 hover:text-white font-medium transition-all">Server</button>
         </div>
 
         <!-- Search Bar -->
         <div class="relative mb-6">
           <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-          <input type="text" id="search-input" oninput="handleSearch()" placeholder="Search files (e.g. authService)..." class="w-full pl-10 pr-4 py-2 text-sm bg-slate-900 border border-slate-800 rounded-xl focus:border-sky-500 focus:outline-none transition-all placeholder:text-slate-500">
+          <input type="text" id="search-input" oninput="handleSearch()" placeholder="Search files (e.g. authService)..."
+            class="w-full pl-10 pr-4 py-2 text-sm bg-slate-900 border border-slate-800 rounded-xl focus:border-sky-500 focus:outline-none transition-all placeholder:text-slate-500">
         </div>
 
         <!-- Files List Accordion -->
         <div class="flex-1 overflow-y-auto custom-scrollbar space-y-3 pr-1 max-h-[600px]" id="files-container">
-          
+
           <!-- Category: Client Components & Pages -->
           <div class="category-group" data-tier="client">
-            <h4 class="text-xs font-bold uppercase tracking-wider text-sky-400/80 mb-2 mt-2 px-1">Client Pages & Layouts</h4>
+            <h4 class="text-xs font-bold uppercase tracking-wider text-sky-400/80 mb-2 mt-2 px-1">Client Pages & Layouts
+            </h4>
             <div class="space-y-2">
-              
+
               <!-- LoginForm Component -->
-              <div class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200" data-filename="client/app/login/page.tsx">
-                <button onclick="toggleFile('client-login-page')" class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
+              <div
+                class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200"
+                data-filename="client/app/login/page.tsx">
+                <button onclick="toggleFile('client-login-page')"
+                  class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
                   <div class="flex items-center gap-3">
                     <i class="fa-brands fa-react text-sky-400 text-lg"></i>
                     <div>
@@ -302,12 +338,14 @@
                       <div class="text-[10px] text-slate-500 font-mono">client/app/login/page.tsx</div>
                     </div>
                   </div>
-                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200" id="icon-client-login-page"></i>
+                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"
+                    id="icon-client-login-page"></i>
                 </button>
                 <div class="hidden border-t border-slate-800 bg-[#090d16]" id="code-client-login-page">
                   <div class="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-800">
                     <span class="text-[10px] text-slate-400 font-mono">TypeScript React (TSX)</span>
-                    <button onclick="copyCode('raw-client-login-page', this)" class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
+                    <button onclick="copyCode('raw-client-login-page', this)"
+                      class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
                       <i class="fa-regular fa-copy"></i> Copy
                     </button>
                   </div>
@@ -428,8 +466,11 @@ export default function LoginPage() {
               </div>
 
               <!-- Navbar Component -->
-              <div class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200" data-filename="client/components/navbar.tsx">
-                <button onclick="toggleFile('client-navbar')" class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
+              <div
+                class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200"
+                data-filename="client/components/navbar.tsx">
+                <button onclick="toggleFile('client-navbar')"
+                  class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
                   <div class="flex items-center gap-3">
                     <i class="fa-brands fa-react text-sky-400 text-lg"></i>
                     <div>
@@ -437,12 +478,14 @@ export default function LoginPage() {
                       <div class="text-[10px] text-slate-500 font-mono">client/components/navbar.tsx</div>
                     </div>
                   </div>
-                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200" id="icon-client-navbar"></i>
+                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"
+                    id="icon-client-navbar"></i>
                 </button>
                 <div class="hidden border-t border-slate-800 bg-[#090d16]" id="code-client-navbar">
                   <div class="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-800">
                     <span class="text-[10px] text-slate-400 font-mono">TypeScript React (TSX)</span>
-                    <button onclick="copyCode('raw-client-navbar', this)" class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
+                    <button onclick="copyCode('raw-client-navbar', this)"
+                      class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
                       <i class="fa-regular fa-copy"></i> Copy
                     </button>
                   </div>
@@ -496,8 +539,11 @@ export default function Navbar() {
               </div>
 
               <!-- Admin Page -->
-              <div class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200" data-filename="client/app/admin/page.tsx">
-                <button onclick="toggleFile('client-admin-page')" class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
+              <div
+                class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200"
+                data-filename="client/app/admin/page.tsx">
+                <button onclick="toggleFile('client-admin-page')"
+                  class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
                   <div class="flex items-center gap-3">
                     <i class="fa-brands fa-react text-sky-400 text-lg"></i>
                     <div>
@@ -505,12 +551,14 @@ export default function Navbar() {
                       <div class="text-[10px] text-slate-500 font-mono">client/app/admin/page.tsx</div>
                     </div>
                   </div>
-                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200" id="icon-client-admin-page"></i>
+                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"
+                    id="icon-client-admin-page"></i>
                 </button>
                 <div class="hidden border-t border-slate-800 bg-[#090d16]" id="code-client-admin-page">
                   <div class="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-800">
                     <span class="text-[10px] text-slate-400 font-mono">TypeScript React (TSX)</span>
-                    <button onclick="copyCode('raw-client-admin-page', this)" class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
+                    <button onclick="copyCode('raw-client-admin-page', this)"
+                      class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
                       <i class="fa-regular fa-copy"></i> Copy
                     </button>
                   </div>
@@ -650,12 +698,16 @@ export default function AdminRolesPage() {
 
           <!-- Category: Client API Proxy Routes -->
           <div class="category-group" data-tier="client">
-            <h4 class="text-xs font-bold uppercase tracking-wider text-sky-400/80 mb-2 mt-4 px-1">Client API Proxy Routes</h4>
+            <h4 class="text-xs font-bold uppercase tracking-wider text-sky-400/80 mb-2 mt-4 px-1">Client API Proxy
+              Routes</h4>
             <div class="space-y-2">
-              
+
               <!-- API Login -->
-              <div class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200" data-filename="client/app/api/auth/login/route.ts">
-                <button onclick="toggleFile('client-api-login')" class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
+              <div
+                class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200"
+                data-filename="client/app/api/auth/login/route.ts">
+                <button onclick="toggleFile('client-api-login')"
+                  class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
                   <div class="flex items-center gap-3">
                     <i class="fa-solid fa-network-wired text-sky-400 text-lg"></i>
                     <div>
@@ -663,12 +715,14 @@ export default function AdminRolesPage() {
                       <div class="text-[10px] text-slate-500 font-mono">client/app/api/auth/login/route.ts</div>
                     </div>
                   </div>
-                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200" id="icon-client-api-login"></i>
+                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"
+                    id="icon-client-api-login"></i>
                 </button>
                 <div class="hidden border-t border-slate-800 bg-[#090d16]" id="code-client-api-login">
                   <div class="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-800">
                     <span class="text-[10px] text-slate-400 font-mono">Next.js API Handler</span>
-                    <button onclick="copyCode('raw-client-api-login', this)" class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
+                    <button onclick="copyCode('raw-client-api-login', this)"
+                      class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
                       <i class="fa-regular fa-copy"></i> Copy
                     </button>
                   </div>
@@ -701,8 +755,11 @@ export async function POST(request: Request) {
               </div>
 
               <!-- API Signup -->
-              <div class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200" data-filename="client/app/api/auth/signup/route.ts">
-                <button onclick="toggleFile('client-api-signup')" class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
+              <div
+                class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200"
+                data-filename="client/app/api/auth/signup/route.ts">
+                <button onclick="toggleFile('client-api-signup')"
+                  class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
                   <div class="flex items-center gap-3">
                     <i class="fa-solid fa-network-wired text-sky-400 text-lg"></i>
                     <div>
@@ -710,12 +767,14 @@ export async function POST(request: Request) {
                       <div class="text-[10px] text-slate-500 font-mono">client/app/api/auth/signup/route.ts</div>
                     </div>
                   </div>
-                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200" id="icon-client-api-signup"></i>
+                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"
+                    id="icon-client-api-signup"></i>
                 </button>
                 <div class="hidden border-t border-slate-800 bg-[#090d16]" id="code-client-api-signup">
                   <div class="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-800">
                     <span class="text-[10px] text-slate-400 font-mono">Next.js API Handler</span>
-                    <button onclick="copyCode('raw-client-api-signup', this)" class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
+                    <button onclick="copyCode('raw-client-api-signup', this)"
+                      class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
                       <i class="fa-regular fa-copy"></i> Copy
                     </button>
                   </div>
@@ -748,8 +807,11 @@ export async function POST(request: Request) {
               </div>
 
               <!-- API Admin users list -->
-              <div class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200" data-filename="client/app/api/admin/users/route.ts">
-                <button onclick="toggleFile('client-api-admin-users')" class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
+              <div
+                class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200"
+                data-filename="client/app/api/admin/users/route.ts">
+                <button onclick="toggleFile('client-api-admin-users')"
+                  class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
                   <div class="flex items-center gap-3">
                     <i class="fa-solid fa-network-wired text-sky-400 text-lg"></i>
                     <div>
@@ -757,12 +819,14 @@ export async function POST(request: Request) {
                       <div class="text-[10px] text-slate-500 font-mono">client/app/api/admin/users/route.ts</div>
                     </div>
                   </div>
-                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200" id="icon-client-api-admin-users"></i>
+                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"
+                    id="icon-client-api-admin-users"></i>
                 </button>
                 <div class="hidden border-t border-slate-800 bg-[#090d16]" id="code-client-api-admin-users">
                   <div class="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-800">
                     <span class="text-[10px] text-slate-400 font-mono">Next.js API Handler</span>
-                    <button onclick="copyCode('raw-client-api-admin-users', this)" class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
+                    <button onclick="copyCode('raw-client-api-admin-users', this)"
+                      class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
                       <i class="fa-regular fa-copy"></i> Copy
                     </button>
                   </div>
@@ -791,8 +855,11 @@ export async function GET(request: Request) {
               </div>
 
               <!-- API Admin users update PATCH -->
-              <div class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200" data-filename="client/app/api/admin/users/[id]/route.ts">
-                <button onclick="toggleFile('client-api-admin-users-patch')" class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
+              <div
+                class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200"
+                data-filename="client/app/api/admin/users/[id]/route.ts">
+                <button onclick="toggleFile('client-api-admin-users-patch')"
+                  class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
                   <div class="flex items-center gap-3">
                     <i class="fa-solid fa-network-wired text-sky-400 text-lg"></i>
                     <div>
@@ -800,12 +867,14 @@ export async function GET(request: Request) {
                       <div class="text-[10px] text-slate-500 font-mono">client/app/api/admin/users/[id]/route.ts</div>
                     </div>
                   </div>
-                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200" id="icon-client-api-admin-users-patch"></i>
+                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"
+                    id="icon-client-api-admin-users-patch"></i>
                 </button>
                 <div class="hidden border-t border-slate-800 bg-[#090d16]" id="code-client-api-admin-users-patch">
                   <div class="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-800">
                     <span class="text-[10px] text-slate-400 font-mono">Next.js API Handler</span>
-                    <button onclick="copyCode('raw-client-api-admin-users-patch', this)" class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
+                    <button onclick="copyCode('raw-client-api-admin-users-patch', this)"
+                      class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
                       <i class="fa-regular fa-copy"></i> Copy
                     </button>
                   </div>
@@ -842,12 +911,16 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
           <!-- Category: Express Backend Server -->
           <div class="category-group" data-tier="server">
-            <h4 class="text-xs font-bold uppercase tracking-wider text-sky-400/80 mb-2 mt-4 px-1">Express Backend Entrypoint & Config</h4>
+            <h4 class="text-xs font-bold uppercase tracking-wider text-sky-400/80 mb-2 mt-4 px-1">Express Backend
+              Entrypoint & Config</h4>
             <div class="space-y-2">
-              
+
               <!-- Express Entrypoint -->
-              <div class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200" data-filename="server/src/index.ts">
-                <button onclick="toggleFile('server-index')" class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
+              <div
+                class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200"
+                data-filename="server/src/index.ts">
+                <button onclick="toggleFile('server-index')"
+                  class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
                   <div class="flex items-center gap-3">
                     <i class="fa-solid fa-server text-indigo-400 text-lg"></i>
                     <div>
@@ -855,12 +928,14 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
                       <div class="text-[10px] text-slate-500 font-mono">server/src/index.ts</div>
                     </div>
                   </div>
-                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200" id="icon-server-index"></i>
+                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"
+                    id="icon-server-index"></i>
                 </button>
                 <div class="hidden border-t border-slate-800 bg-[#090d16]" id="code-server-index">
                   <div class="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-800">
                     <span class="text-[10px] text-slate-400 font-mono">TypeScript Node / Express</span>
-                    <button onclick="copyCode('raw-server-index', this)" class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
+                    <button onclick="copyCode('raw-server-index', this)"
+                      class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
                       <i class="fa-regular fa-copy"></i> Copy
                     </button>
                   </div>
@@ -896,8 +971,11 @@ connectDB().then(() => {
               </div>
 
               <!-- Database Connection -->
-              <div class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200" data-filename="server/src/config/db.ts">
-                <button onclick="toggleFile('server-db')" class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
+              <div
+                class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200"
+                data-filename="server/src/config/db.ts">
+                <button onclick="toggleFile('server-db')"
+                  class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
                   <div class="flex items-center gap-3">
                     <i class="fa-solid fa-database text-indigo-400 text-lg"></i>
                     <div>
@@ -905,12 +983,14 @@ connectDB().then(() => {
                       <div class="text-[10px] text-slate-500 font-mono">server/src/config/db.ts</div>
                     </div>
                   </div>
-                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200" id="icon-server-db"></i>
+                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"
+                    id="icon-server-db"></i>
                 </button>
                 <div class="hidden border-t border-slate-800 bg-[#090d16]" id="code-server-db">
                   <div class="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-800">
                     <span class="text-[10px] text-slate-400 font-mono">Mongoose Database Config</span>
-                    <button onclick="copyCode('raw-server-db', this)" class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
+                    <button onclick="copyCode('raw-server-db', this)"
+                      class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
                       <i class="fa-regular fa-copy"></i> Copy
                     </button>
                   </div>
@@ -939,12 +1019,16 @@ export async function connectDB(){
 
           <!-- Category: Models & Services -->
           <div class="category-group" data-tier="server">
-            <h4 class="text-xs font-bold uppercase tracking-wider text-sky-400/80 mb-2 mt-4 px-1">Models & Security Services</h4>
+            <h4 class="text-xs font-bold uppercase tracking-wider text-sky-400/80 mb-2 mt-4 px-1">Models & Security
+              Services</h4>
             <div class="space-y-2">
-              
+
               <!-- User Model -->
-              <div class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200" data-filename="server/src/models/user.ts">
-                <button onclick="toggleFile('server-model-user')" class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
+              <div
+                class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200"
+                data-filename="server/src/models/user.ts">
+                <button onclick="toggleFile('server-model-user')"
+                  class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
                   <div class="flex items-center gap-3">
                     <i class="fa-solid fa-user-shield text-indigo-400 text-lg"></i>
                     <div>
@@ -952,12 +1036,14 @@ export async function connectDB(){
                       <div class="text-[10px] text-slate-500 font-mono">server/src/models/user.ts</div>
                     </div>
                   </div>
-                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200" id="icon-server-model-user"></i>
+                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"
+                    id="icon-server-model-user"></i>
                 </button>
                 <div class="hidden border-t border-slate-800 bg-[#090d16]" id="code-server-model-user">
                   <div class="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-800">
                     <span class="text-[10px] text-slate-400 font-mono">Mongoose Schema</span>
-                    <button onclick="copyCode('raw-server-model-user', this)" class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
+                    <button onclick="copyCode('raw-server-model-user', this)"
+                      class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
                       <i class="fa-regular fa-copy"></i> Copy
                     </button>
                   </div>
@@ -984,8 +1070,11 @@ export const UserModel: Model<IUser> = mongoose.models.User || mongoose.model<IU
               </div>
 
               <!-- Session Model -->
-              <div class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200" data-filename="server/src/models/session.ts">
-                <button onclick="toggleFile('server-model-session')" class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
+              <div
+                class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200"
+                data-filename="server/src/models/session.ts">
+                <button onclick="toggleFile('server-model-session')"
+                  class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
                   <div class="flex items-center gap-3">
                     <i class="fa-solid fa-clock-rotate-left text-indigo-400 text-lg"></i>
                     <div>
@@ -993,16 +1082,19 @@ export const UserModel: Model<IUser> = mongoose.models.User || mongoose.model<IU
                       <div class="text-[10px] text-slate-500 font-mono">server/src/models/session.ts</div>
                     </div>
                   </div>
-                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200" id="icon-server-model-session"></i>
+                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"
+                    id="icon-server-model-session"></i>
                 </button>
                 <div class="hidden border-t border-slate-800 bg-[#090d16]" id="code-server-model-session">
                   <div class="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-800">
                     <span class="text-[10px] text-slate-400 font-mono">Mongoose Schema</span>
-                    <button onclick="copyCode('raw-server-model-session', this)" class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
+                    <button onclick="copyCode('raw-server-model-session', this)"
+                      class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
                       <i class="fa-regular fa-copy"></i> Copy
                     </button>
                   </div>
-                  <pre class="p-4 overflow-x-auto text-xs custom-scrollbar"><code class="language-typescript" id="raw-server-model-session">import mongoose , {Schema, Document, Model} from 'mongoose';
+                  <pre
+                    class="p-4 overflow-x-auto text-xs custom-scrollbar"><code class="language-typescript" id="raw-server-model-session">import mongoose , {Schema, Document, Model} from 'mongoose';
 
 export interface ISession extends Document {
     userId: string;
@@ -1023,8 +1115,11 @@ export const Session: Model<ISession> = mongoose.models.Session || mongoose.mode
               </div>
 
               <!-- Auth Service -->
-              <div class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200" data-filename="server/src/services/authService.ts">
-                <button onclick="toggleFile('server-service-auth')" class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
+              <div
+                class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200"
+                data-filename="server/src/services/authService.ts">
+                <button onclick="toggleFile('server-service-auth')"
+                  class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
                   <div class="flex items-center gap-3">
                     <i class="fa-solid fa-key text-indigo-400 text-lg"></i>
                     <div>
@@ -1032,12 +1127,14 @@ export const Session: Model<ISession> = mongoose.models.Session || mongoose.mode
                       <div class="text-[10px] text-slate-500 font-mono">server/src/services/authService.ts</div>
                     </div>
                   </div>
-                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200" id="icon-server-service-auth"></i>
+                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"
+                    id="icon-server-service-auth"></i>
                 </button>
                 <div class="hidden border-t border-slate-800 bg-[#090d16]" id="code-server-service-auth">
                   <div class="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-800">
                     <span class="text-[10px] text-slate-400 font-mono">Token & Auth Logic (Verified)</span>
-                    <button onclick="copyCode('raw-server-service-auth', this)" class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
+                    <button onclick="copyCode('raw-server-service-auth', this)"
+                      class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
                       <i class="fa-regular fa-copy"></i> Copy
                     </button>
                   </div>
@@ -1101,8 +1198,11 @@ export async function issueTokens(userId: string, role: 'user' | 'admin'): Promi
               </div>
 
               <!-- Session Service -->
-              <div class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200" data-filename="server/src/services/session.ts">
-                <button onclick="toggleFile('server-service-session')" class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
+              <div
+                class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200"
+                data-filename="server/src/services/session.ts">
+                <button onclick="toggleFile('server-service-session')"
+                  class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
                   <div class="flex items-center gap-3">
                     <i class="fa-solid fa-clock-rotate-left text-indigo-400 text-lg"></i>
                     <div>
@@ -1110,12 +1210,14 @@ export async function issueTokens(userId: string, role: 'user' | 'admin'): Promi
                       <div class="text-[10px] text-slate-500 font-mono">server/src/services/session.ts</div>
                     </div>
                   </div>
-                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200" id="icon-server-service-session"></i>
+                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"
+                    id="icon-server-service-session"></i>
                 </button>
                 <div class="hidden border-t border-slate-800 bg-[#090d16]" id="code-server-service-session">
                   <div class="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-800">
                     <span class="text-[10px] text-slate-400 font-mono">Session & Refresh rotation</span>
-                    <button onclick="copyCode('raw-server-service-session', this)" class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
+                    <button onclick="copyCode('raw-server-service-session', this)"
+                      class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
                       <i class="fa-regular fa-copy"></i> Copy
                     </button>
                   </div>
@@ -1164,12 +1266,16 @@ export async function destroySession(userId: string) {
 
           <!-- Category: Express Routes & Middlewares -->
           <div class="category-group" data-tier="server">
-            <h4 class="text-xs font-bold uppercase tracking-wider text-sky-400/80 mb-2 mt-4 px-1">Express Routes & Middleware</h4>
+            <h4 class="text-xs font-bold uppercase tracking-wider text-sky-400/80 mb-2 mt-4 px-1">Express Routes &
+              Middleware</h4>
             <div class="space-y-2">
-              
+
               <!-- Express Auth Routes -->
-              <div class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200" data-filename="server/src/routes/authRoutes.ts">
-                <button onclick="toggleFile('server-routes-auth')" class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
+              <div
+                class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200"
+                data-filename="server/src/routes/authRoutes.ts">
+                <button onclick="toggleFile('server-routes-auth')"
+                  class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
                   <div class="flex items-center gap-3">
                     <i class="fa-solid fa-route text-indigo-400 text-lg"></i>
                     <div>
@@ -1177,12 +1283,14 @@ export async function destroySession(userId: string) {
                       <div class="text-[10px] text-slate-500 font-mono">server/src/routes/authRoutes.ts</div>
                     </div>
                   </div>
-                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200" id="icon-server-routes-auth"></i>
+                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"
+                    id="icon-server-routes-auth"></i>
                 </button>
                 <div class="hidden border-t border-slate-800 bg-[#090d16]" id="code-server-routes-auth">
                   <div class="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-800">
                     <span class="text-[10px] text-slate-400 font-mono">Express Router</span>
-                    <button onclick="copyCode('raw-server-routes-auth', this)" class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
+                    <button onclick="copyCode('raw-server-routes-auth', this)"
+                      class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
                       <i class="fa-regular fa-copy"></i> Copy
                     </button>
                   </div>
@@ -1266,8 +1374,11 @@ export default router;</code></pre>
               </div>
 
               <!-- Express Admin Routes -->
-              <div class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200" data-filename="server/src/routes/adminRoutes.ts">
-                <button onclick="toggleFile('server-routes-admin')" class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
+              <div
+                class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200"
+                data-filename="server/src/routes/adminRoutes.ts">
+                <button onclick="toggleFile('server-routes-admin')"
+                  class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
                   <div class="flex items-center gap-3">
                     <i class="fa-solid fa-route text-indigo-400 text-lg"></i>
                     <div>
@@ -1275,12 +1386,14 @@ export default router;</code></pre>
                       <div class="text-[10px] text-slate-500 font-mono">server/src/routes/adminRoutes.ts</div>
                     </div>
                   </div>
-                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200" id="icon-server-routes-admin"></i>
+                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"
+                    id="icon-server-routes-admin"></i>
                 </button>
                 <div class="hidden border-t border-slate-800 bg-[#090d16]" id="code-server-routes-admin">
                   <div class="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-800">
                     <span class="text-[10px] text-slate-400 font-mono">Express Router</span>
-                    <button onclick="copyCode('raw-server-routes-admin', this)" class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
+                    <button onclick="copyCode('raw-server-routes-admin', this)"
+                      class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
                       <i class="fa-regular fa-copy"></i> Copy
                     </button>
                   </div>
@@ -1318,8 +1431,11 @@ export default router;</code></pre>
               </div>
 
               <!-- Express Admin Middleware -->
-              <div class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200" data-filename="server/src/middleware/adminMiddleware.ts">
-                <button onclick="toggleFile('server-middleware-admin')" class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
+              <div
+                class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200"
+                data-filename="server/src/middleware/adminMiddleware.ts">
+                <button onclick="toggleFile('server-middleware-admin')"
+                  class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
                   <div class="flex items-center gap-3">
                     <i class="fa-solid fa-user-lock text-indigo-400 text-lg"></i>
                     <div>
@@ -1327,12 +1443,14 @@ export default router;</code></pre>
                       <div class="text-[10px] text-slate-500 font-mono">server/src/middleware/adminMiddleware.ts</div>
                     </div>
                   </div>
-                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200" id="icon-server-middleware-admin"></i>
+                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"
+                    id="icon-server-middleware-admin"></i>
                 </button>
                 <div class="hidden border-t border-slate-800 bg-[#090d16]" id="code-server-middleware-admin">
                   <div class="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-800">
                     <span class="text-[10px] text-slate-400 font-mono">Express Middleware</span>
-                    <button onclick="copyCode('raw-server-middleware-admin', this)" class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
+                    <button onclick="copyCode('raw-server-middleware-admin', this)"
+                      class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
                       <i class="fa-regular fa-copy"></i> Copy
                     </button>
                   </div>
@@ -1371,8 +1489,11 @@ export function adminMiddleware(req: Request, res: Response, next: NextFunction)
               </div>
 
               <!-- Next.js Middleware Reference -->
-              <div class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200" data-filename="server/src/middleware/authMiddleware.ts">
-                <button onclick="toggleFile('server-middleware-auth')" class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
+              <div
+                class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200"
+                data-filename="server/src/middleware/authMiddleware.ts">
+                <button onclick="toggleFile('server-middleware-auth')"
+                  class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
                   <div class="flex items-center gap-3">
                     <i class="fa-solid fa-code text-indigo-400 text-lg"></i>
                     <div>
@@ -1380,12 +1501,14 @@ export function adminMiddleware(req: Request, res: Response, next: NextFunction)
                       <div class="text-[10px] text-slate-500 font-mono">server/src/middleware/authMiddleware.ts</div>
                     </div>
                   </div>
-                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200" id="icon-server-middleware-auth"></i>
+                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"
+                    id="icon-server-middleware-auth"></i>
                 </button>
                 <div class="hidden border-t border-slate-800 bg-[#090d16]" id="code-server-middleware-auth">
                   <div class="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-800">
                     <span class="text-[10px] text-slate-400 font-mono">Next.js Edge Middleware</span>
-                    <button onclick="copyCode('raw-server-middleware-auth', this)" class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
+                    <button onclick="copyCode('raw-server-middleware-auth', this)"
+                      class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
                       <i class="fa-regular fa-copy"></i> Copy
                     </button>
                   </div>
@@ -1480,7 +1603,7 @@ export { config };</code></pre>
 
     function switchPhase(phase) {
       activePhase = phase;
-      
+
       // Update Tab Styles
       document.querySelectorAll('.phase-btn').forEach(btn => {
         btn.classList.remove('active-tab');
@@ -1496,7 +1619,7 @@ export { config };</code></pre>
       document.querySelectorAll('.file-card').forEach(card => {
         const filename = card.getAttribute('data-filename');
         const isRelated = related.includes(filename);
-        
+
         // Apply matching border and glow
         if (isRelated) {
           card.classList.remove('border-slate-800');
@@ -1525,7 +1648,7 @@ export { config };</code></pre>
           group.classList.add('hidden');
         }
       });
-      
+
       handleSearch(); // apply search query over filter
     }
 
@@ -1555,7 +1678,7 @@ export { config };</code></pre>
     function toggleFile(id) {
       const codeBlock = document.getElementById(`code-${id}`);
       const icon = document.getElementById(`icon-${id}`);
-      
+
       if (codeBlock.classList.contains('hidden')) {
         codeBlock.classList.remove('hidden');
         icon.classList.add('rotate-180');
@@ -1589,4 +1712,5 @@ export { config };</code></pre>
     });
   </script>
 </body>
+
 </html>

@@ -15,6 +15,7 @@ export default function Navbar() {
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("userName");
+    localStorage.removeItem("adminUnlocked");
     window.location.href = "/login"; // redirect to login
   };
 

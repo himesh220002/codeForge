@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
+import Navbar from "@/components/navbar";
 
 interface User {
   _id: string;
@@ -15,9 +16,17 @@ export default function AdminRolesPage() {
   const [loading, setLoading] = useState(true);
   const [password, setPassword] = useState("");
   const [isUnlocked, setIsUnlocked] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      setIsLoggedIn(false);
+      setLoading(false);
+      return;
+    }
+
     const unlocked = localStorage.getItem("adminUnlocked") === "true";
     setIsUnlocked(unlocked);
 
@@ -34,6 +43,13 @@ export default function AdminRolesPage() {
             Authorization: `Bearer ${token || ""}`,
           },
         });
+
+        if (res.status === 401 || res.status === 403) {
+          localStorage.removeItem("adminUnlocked");
+          setIsUnlocked(false);
+          setError("Your session has expired or you do not have permission. Please sign in as an admin.");
+          return;
+        }
 
         if (!res.ok) {
           throw new Error("Access denied or token invalid");
@@ -101,79 +117,87 @@ export default function AdminRolesPage() {
   };
 
   return (
-    <div className="mx-auto max-w-7xl">
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">User Role Management</h2>
-      <p className="mb-4 text-sm ">This page is protected with an extra admin password gate and an admin-role token check.</p>
+    <div className="mx-auto bg-zinc-50 font-sans dark:bg-black min-h-screen text-black dark:text-zinc-50">
+      <Navbar />
+      <div className="mx-auto max-w-7xl p-6">
+        <h2 className="text-2xl font-bold mb-4">User Role Management</h2>
+        <p className="mb-4 text-sm">This page is protected with an extra admin password gate and an admin-role token check.</p>
 
-      {!isUnlocked ? (
-        <div className="max-w-md rounded border border-gray-200 bg-gray-500 p-4 shadow-sm">
-          <label className="mb-2 block text-sm font-semibold">Enter admin password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            className="w-full rounded border p-2"
-            placeholder="Admin password"
-          />
-          {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
-          <button
-            onClick={handleUnlock}
-            className="mt-3 rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-          >
-            Unlock admin panel
-          </button>
-        </div>
-      ) : (
-        <>
-          <input
-            type="text"
-            placeholder="Search by name, email, or ID"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="border p-2 mb-4 w-full"
-          />
+        {!isLoggedIn ? (
+          <div className="max-w-md rounded border border-red-200 bg-red-50 p-4 shadow-sm text-red-800">
+            <p className="mb-3 font-semibold">You must be logged in to view this page.</p>
+            <a href="/login" className="inline-block rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+              Go to Login
+            </a>
+          </div>
+        ) : !isUnlocked ? (
+          <div className="max-w-md rounded border border-gray-200 bg-gray-500 p-4 shadow-sm text-white">
+            <label className="mb-2 block text-sm font-semibold">Enter admin password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              className="w-full rounded border p-2 text-black"
+              placeholder="Admin password"
+            />
+            {error && <p className="mt-2 text-sm text-red-200">{error}</p>}
+            <button
+              onClick={handleUnlock}
+              className="mt-3 rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+            >
+              Unlock admin panel
+            </button>
+          </div>
+        ) : (
+          <>
+            <input
+              type="text"
+              placeholder="Search by name, email, or ID"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="border p-2 mb-4 w-full text-black rounded"
+            />
 
-          {error && <p className="mb-3 text-sm text-red-500">{error}</p>}
+            {error && <p className="mb-3 text-sm text-red-500">{error}</p>}
 
-          {loading ? (
-            <p>Loading users...</p>
-          ) : (
-            <table className="w-full bg-gray-50 border-collapse border">
-          <thead>
-            <tr className="bg-gray-200">
-              <th className="border text-black text-center border-gray-300 p-1">Name</th>
-              <th className="border text-black text-center border-gray-300 p-1">UserId</th>
-              <th className="border text-black text-center border-gray-300 p-1">Email</th>
-              <th className="border text-black text-center border-gray-300 p-1">Role</th>
-              <th className="border text-black text-center border-gray-300 p-1">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map(user => (
-              <tr key={user._id}>
-                <td className="border text-black text-center border-gray-300 p-1">{user.name}</td>
-                <td className="border text-black text-center border-gray-300 p-1">{user._id}</td>
-                <td className="border text-black text-center border-gray-300 p-1">{user.email}</td>
-                <td className="border text-black text-center border-gray-300 p-1">{user.role}</td>
-                <td className="border text-black text-center border-gray-300 p-1">
-                  <select
-                    value={user.role}
-                    onChange={e => handleRoleChange(user._id, e.target.value)}
-                    className="border p-1 rounded"
-                  >
-                    <option value="user">User</option>
-                    <option value="admin">Admin</option>
-                  </select>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-            </table>
-          )}
-        </>
-      )}
-    </div>
+            {loading ? (
+              <p>Loading users...</p>
+            ) : (
+              <table className="w-full bg-gray-50 border-collapse border">
+                <thead>
+                  <tr className="bg-gray-200 text-black">
+                    <th className="border text-center border-gray-300 p-1">Name</th>
+                    <th className="border text-center border-gray-300 p-1">UserId</th>
+                    <th className="border text-center border-gray-300 p-1">Email</th>
+                    <th className="border text-center border-gray-300 p-1">Role</th>
+                    <th className="border text-center border-gray-300 p-1">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="text-black">
+                  {filtered.map(user => (
+                    <tr key={user._id}>
+                      <td className="border text-center border-gray-300 p-1">{user.name}</td>
+                      <td className="border text-center border-gray-300 p-1">{user._id}</td>
+                      <td className="border text-center border-gray-300 p-1">{user.email}</td>
+                      <td className="border text-center border-gray-300 p-1">{user.role}</td>
+                      <td className="border text-center border-gray-300 p-1">
+                        <select
+                          value={user.role}
+                          onChange={e => handleRoleChange(user._id, e.target.value)}
+                          className="border p-1 rounded"
+                        >
+                          <option value="user">User</option>
+                          <option value="admin">Admin</option>
+                        </select>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }

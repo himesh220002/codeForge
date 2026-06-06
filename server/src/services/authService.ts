@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import {randomBytes} from 'crypto';
 import {saveSession} from './session.js';
-import bycrypt from 'bcrypt';
+import bcrypt from 'bcrypt';
 import {UserModel} from '../models/user.js';
 
 const ACCESS_TOKEN_EXPIRY = '15m';
@@ -25,7 +25,7 @@ export async function verifyUserCredentials(email: string, password: string) {
   const user = await UserModel.findOne({ email});
   if(!user) return null;
 
-  const isMatch = await bycrypt.compare(password, user.passwordHash);
+  const isMatch = await bcrypt.compare(password, user.passwordHash);
   if(!isMatch) return null;
 
   return user;

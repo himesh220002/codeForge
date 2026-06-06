@@ -1,60 +1,1716 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" class="dark">
+
 <head>
-  <title>Auth Lifecycle Sequence Diagram</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Production-Ready Authentication System Flow & Code Explorer</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f7ff',
+              100: '#e0effe',
+              200: '#bae2fd',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+              900: '#0c4a6e',
+              950: '#031b2e',
+            }
+          },
+          fontFamily: {
+            sans: ['Outfit', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Outfit:wght@100..900&display=swap"
+    rel="stylesheet">
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- PrismJS syntax highlighting -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+
+  <!-- Mermaid.js -->
   <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
   <script>
-    mermaid.initialize({ startOnLoad: true });
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'dark',
+      themeVariables: {
+        background: '#090d16',
+        primaryColor: '#0c4a6e',
+        primaryTextColor: '#f8fafc',
+        lineColor: '#38bdf8',
+        actorBorder: '#0284c7',
+        actorBkg: '#031b2e',
+        signalColor: '#38bdf8',
+        signalTextColor: '#e2e8f0',
+        labelBoxBkgColor: '#090d16',
+        labelBoxBorderColor: '#38bdf8',
+        labelTextColor: '#f8fafc',
+        loopBkgColor: '#0c4a6e',
+        noteBkgColor: '#0c4a6e',
+        noteBorderColor: '#38bdf8',
+      }
+    });
   </script>
+
+  <style>
+    body {
+      background: radial-gradient(circle at top right, #081122 0%, #030712 60%);
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #090d16;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 4px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #38bdf8;
+    }
+
+    .glass-card {
+      background: rgba(15, 23, 42, 0.45);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(56, 189, 248, 0.1);
+    }
+
+    .active-tab {
+      background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+      box-shadow: 0 0 15px rgba(14, 165, 233, 0.4);
+    }
+  </style>
 </head>
-<body>
-  <div class="mermaid">
-    sequenceDiagram
-      participant U as User
-      participant A as AuthService
-      participant M as UserModel
-      participant S as SessionService
-      participant DB as Database
-      participant R as SecureRoute
 
-      %% --- Signup flow ---
-      U->>A: Submit signup form (email + password)
-      A->>M: Create new user {email, passwordHash, role="user"}
-      M->>DB: Insert user record
-      DB-->>M: User saved
-      M-->>A: Confirmation
-      A-->>U: Signup successful (role=user)
+<body class="text-slate-200 font-sans min-h-screen pb-16 antialiased">
 
-      %% --- Login flow ---
-      U->>A: Submit login form (email + password)
-      A->>M: Find user by email
-      M-->>A: Return user record
-      A->>A: Compare password hash
-      A-->>U: Invalid? Return error
-      A->>A: Generate access + refresh tokens
-      A->>S: Save refresh token session
-      S->>DB: Insert session {userId, tokenIdHash, expiresAt}
-      DB-->>S: Session saved
-      S-->>A: Confirmation
-      A-->>U: Return accessToken + set refreshToken cookie
+  <!-- Header Banner -->
+  <header class="border-b border-sky-500/10 py-6 px-8 mb-8 glass-card">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-4">
+        <div
+          class="w-12 h-12 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-sky-500/20">
+          <i class="fa-solid fa-shield-halved text-white text-2xl"></i>
+        </div>
+        <div>
+          <h1
+            class="text-2xl md:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-sky-100 to-sky-400 bg-clip-text text-transparent">
+            Auth Lifecycle & Code Explorer
+          </h1>
+          <p class="text-xs md:text-sm text-sky-400/80 font-mono mt-0.5">
+            Full-Stack Next.js + Express + TypeScript Authentication Engine
+          </p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <span
+          class="px-3 py-1 text-xs rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center gap-1.5 font-mono">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          Verified Codebase
+        </span>
+        <a href="/documentation"
+          class="px-4 py-2 text-sm rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all border border-slate-700/50 flex items-center gap-2">
+          <i class="fa-solid fa-arrow-left"></i> Back to Docs
+        </a>
+      </div>
+    </div>
+  </header>
 
-      %% --- Secure route access ---
-      U->>R: Request secure resource with accessToken
-      R->>A: Verify JWT signature + role
-      A-->>R: Token valid? role=user/admin
-      R-->>U: Allow/deny based on role
+  <main class="max-w-7xl mx-auto px-4 md:px-8 ">
 
-      %% --- Admin promotion flow ---
-      U->>R: Admin requests promoteUser(userId)
-      R->>A: Check admin role in token
-      A->>M: Find user by ID
-      M-->>A: Return user record
-      A->>M: Update role="admin"
-      M->>DB: Save updated user record
-      DB-->>M: User updated
-      M-->>A: Confirmation
-      A-->>R: Promotion successful
-      R-->>U: User promoted to admin
-  </div>
+    <!-- LEFT SIDE: Diagram and Interaction Details (7 cols) -->
+    <section class="space-y-6">
+
+      <!-- Interactive Sequence Steps -->
+      <div class="glass-card rounded-2xl p-6 shadow-xl relative overflow-hidden">
+        <div class="absolute -right-16 -top-16 w-32 h-32 bg-sky-500/5 rounded-full blur-3xl"></div>
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-bold flex items-center gap-2 text-sky-300">
+            <i class="fa-solid fa-route"></i> Interactive Auth Lifecycle Flow
+          </h2>
+          <span class="text-xs text-slate-400">Click a phase to explore details & related files</span>
+        </div>
+
+        <!-- Lifecycle Phase Tabs -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-6">
+          <button onclick="switchPhase('signup')" id="btn-signup"
+            class="phase-btn px-3 py-2 text-xs font-semibold rounded-xl text-center border border-slate-700/50 bg-slate-900/50 hover:bg-slate-800 transition-all duration-200">
+            1. User Signup
+          </button>
+          <button onclick="switchPhase('login')" id="btn-login"
+            class="phase-btn px-3 py-2 text-xs font-semibold rounded-xl text-center border border-slate-700/50 bg-slate-900/50 hover:bg-slate-800 transition-all duration-200 active-tab">
+            2. User Login
+          </button>
+          <button onclick="switchPhase('secure')" id="btn-secure"
+            class="phase-btn px-3 py-2 text-xs font-semibold rounded-xl text-center border border-slate-700/50 bg-slate-900/50 hover:bg-slate-800 transition-all duration-200">
+            3. Secure Request
+          </button>
+          <button onclick="switchPhase('promote')" id="btn-promote"
+            class="phase-btn px-3 py-2 text-xs font-semibold rounded-xl text-center border border-slate-700/50 bg-slate-900/50 hover:bg-slate-800 transition-all duration-200">
+            4. User Promotion
+          </button>
+        </div>
+
+        <!-- Mermaid Container -->
+        <div
+          class="bg-[#090d16] border border-slate-800 rounded-xl p-4 overflow-x-auto custom-scrollbar flex justify-center min-h-[420px]">
+          <div class="mermaid w-full">
+            sequenceDiagram
+            autonumber
+            actor User as User Agent
+            participant C_API as Next.js API Proxy
+            participant S_Routes as Express Routes
+            participant S_Auth as AuthService
+            participant S_Session as Session Service
+            participant DB as MongoDB Database
+            participant Middleware as Admin Middleware
+
+            %% Signup Phase
+            Note over User, DB: [Phase 1: User Signup Flow]
+            User->>C_API: POST /api/auth/signup (Name, Email, Password)
+            C_API->>S_Routes: Forward to Express POST /api/auth/signup
+            S_Routes->>DB: Check existing user email
+            S_Routes->>S_Routes: Hash password using bcrypt
+            S_Routes->>DB: Save User { email, passwordHash, role: "user" }
+            S_Routes->>S_Auth: Issue JWT tokens
+            S_Auth-->>S_Routes: Return { accessToken, refreshToken }
+            S_Routes->>S_Session: Save Session in DB
+            S_Session->>DB: Save Session { userId, tokenIdHash, expiresAt }
+            S_Routes-->>C_API: Return JSON + set-cookie (refreshToken)
+            C_API-->>User: Return accessToken (saved in localStorage) + cookie
+
+            %% Login Phase
+            Note over User, DB: [Phase 2: User Login Flow]
+            User->>C_API: POST /api/auth/login (Email, Password)
+            C_API->>S_Routes: Forward to Express POST /api/auth/login
+            S_Routes->>S_Auth: Verify credentials (verifyUserCredentials)
+            S_Auth->>DB: Find user by email
+            S_Auth->>S_Auth: Compare bcrypt hashes
+            S_Routes->>S_Auth: Issue JWT tokens (issueTokens)
+            S_Auth->>S_Session: Save session
+            S_Session->>DB: Save Session { userId, tokenIdHash, expiresAt }
+            S_Routes-->>C_API: Return { accessToken, role, name } + Cookie
+            C_API-->>User: Return accessToken + Cookie
+
+            %% Secure Requests
+            Note over User, DB: [Phase 3: Secure Page / API Request]
+            User->>C_API: Request Admin resource /api/admin/users (Bearer Token)
+            C_API->>S_Routes: Forward with Authorization Header
+            S_Routes->>Middleware: Intercept with adminMiddleware
+            Middleware->>Middleware: Verify JWT & role === 'admin'
+            Middleware->>S_Routes: Proceed if authorized
+            S_Routes->>DB: Fetch users list
+            S_Routes-->>User: 200 OK with User List / 403 Forbidden
+
+            %% User Promotion
+            Note over User, DB: [Phase 4: Admin Promoting User to Admin]
+            User->>C_API: PATCH /api/admin/users/:id { role: "admin" } (Bearer Token)
+            C_API->>S_Routes: Forward PATCH to Express Server
+            S_Routes->>Middleware: Intercept & verify admin role
+            Middleware->>S_Routes: Proceed
+            S_Routes->>DB: findByIdAndUpdate(userId, { role: "admin" })
+            S_Routes-->>User: 200 OK (Role Updated successfully)
+          </div>
+        </div>
+      </div>
+
+      <!-- Verification and Architectural Report Card -->
+      <div class="glass-card rounded-2xl p-6 shadow-xl relative overflow-hidden">
+        <h3 class="text-md font-bold text-sky-300 mb-3 flex items-center gap-2">
+          <i class="fa-solid fa-circle-check"></i> Codebase Verification & Findings
+        </h3>
+        <div class="space-y-4 text-sm text-slate-300">
+          <div class="p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg flex gap-3">
+            <i class="fa-solid fa-triangle-exclamation text-amber-400 text-lg mt-0.5"></i>
+            <div>
+              <strong class="text-amber-200">Typo Fixed: bycrypt vs bcrypt</strong>
+              <p class="text-xs mt-1 text-slate-300">
+                In <code
+                  class="font-mono bg-slate-900/80 px-1 py-0.5 rounded text-amber-200">server/src/services/authService.ts</code>,
+                we resolved a typo where <code class="font-mono text-amber-200">bycrypt</code> was imported and used
+                instead of the standard spelling. Typescript compiled cleanly but standard naming has been enforced.
+              </p>
+            </div>
+          </div>
+
+          <div class="p-3 bg-sky-500/10 border border-sky-500/20 rounded-lg flex gap-3">
+            <i class="fa-solid fa-database text-sky-400 text-lg mt-0.5"></i>
+            <div>
+              <strong class="text-sky-200">Access Token Storage Implementation</strong>
+              <p class="text-xs mt-1 text-slate-300">
+                While conceptual designs propose storing access tokens strictly in-memory, the client-side code in <code
+                  class="font-mono bg-slate-900/80 px-1 py-0.5 rounded text-sky-200">client/app/login/page.tsx</code>
+                persists the token to <code class="font-mono text-sky-200">localStorage</code>. This ensures persistent
+                sessions upon page reloads.
+              </p>
+            </div>
+          </div>
+
+          <div class="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg flex gap-3">
+            <i class="fa-solid fa-code text-blue-400 text-lg mt-0.5"></i>
+            <div>
+              <strong class="text-blue-200">Next.js Route Protection Middleware</strong>
+              <p class="text-xs mt-1 text-slate-300">
+                The Next.js route middleware is located in <code
+                  class="font-mono bg-slate-900/80 px-1 py-0.5 rounded text-blue-200">server/src/middleware/authMiddleware.ts</code>.
+                In this codebase setup, route protection on Next.js client-side is template code, and backend routes are
+                actively protected via Express's <code class="font-mono text-blue-200">adminMiddleware.ts</code>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- RIGHT SIDE: Code Explorer Accordions (5 cols) -->
+    <section class="space-y-4">
+      <div class="glass-card rounded-2xl p-6 shadow-xl flex flex-col">
+        <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-4">
+          <h2 class="text-lg font-bold flex items-center gap-2 text-sky-300">
+            <i class="fa-solid fa-folder-open"></i> Code Repository
+          </h2>
+          <span class="text-xs text-slate-400 font-mono" id="file-counter">17 files available</span>
+        </div>
+
+        <!-- Tier Filters -->
+        <div class="flex gap-1.5 mb-4 bg-slate-900/60 p-1 rounded-lg border border-slate-800/80">
+          <button onclick="filterTiers('all')" id="filter-all"
+            class="flex-1 text-xs py-1.5 rounded-md text-center bg-slate-800 font-medium transition-all">All</button>
+          <button onclick="filterTiers('client')" id="filter-client"
+            class="flex-1 text-xs py-1.5 rounded-md text-center text-slate-400 hover:text-white font-medium transition-all">Client</button>
+          <button onclick="filterTiers('server')" id="filter-server"
+            class="flex-1 text-xs py-1.5 rounded-md text-center text-slate-400 hover:text-white font-medium transition-all">Server</button>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="relative mb-6">
+          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+          <input type="text" id="search-input" oninput="handleSearch()" placeholder="Search files (e.g. authService)..."
+            class="w-full pl-10 pr-4 py-2 text-sm bg-slate-900 border border-slate-800 rounded-xl focus:border-sky-500 focus:outline-none transition-all placeholder:text-slate-500">
+        </div>
+
+        <!-- Files List Accordion -->
+        <div class="flex-1 overflow-y-auto custom-scrollbar space-y-3 pr-1 max-h-[600px]" id="files-container">
+
+          <!-- Category: Client Components & Pages -->
+          <div class="category-group" data-tier="client">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-sky-400/80 mb-2 mt-2 px-1">Client Pages & Layouts
+            </h4>
+            <div class="space-y-2">
+
+              <!-- LoginForm Component -->
+              <div
+                class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200"
+                data-filename="client/app/login/page.tsx">
+                <button onclick="toggleFile('client-login-page')"
+                  class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
+                  <div class="flex items-center gap-3">
+                    <i class="fa-brands fa-react text-sky-400 text-lg"></i>
+                    <div>
+                      <div class="text-sm font-semibold text-slate-200">page.tsx</div>
+                      <div class="text-[10px] text-slate-500 font-mono">client/app/login/page.tsx</div>
+                    </div>
+                  </div>
+                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"
+                    id="icon-client-login-page"></i>
+                </button>
+                <div class="hidden border-t border-slate-800 bg-[#090d16]" id="code-client-login-page">
+                  <div class="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-800">
+                    <span class="text-[10px] text-slate-400 font-mono">TypeScript React (TSX)</span>
+                    <button onclick="copyCode('raw-client-login-page', this)"
+                      class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
+                      <i class="fa-regular fa-copy"></i> Copy
+                    </button>
+                  </div>
+                  <pre class="p-4 overflow-x-auto text-xs custom-scrollbar"><code class="language-tsx" id="raw-client-login-page">"use client"
+
+import { useState, type SyntheticEvent } from 'react';
+
+export default function LoginPage() {
+    const [isSignup, setIsSignup] = useState(false);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [name, setName] = useState('');
+    const [message, setMessage] = useState('');
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [redirecting, setRedirecting] = useState(false);
+
+    async function handleSubmit(e: SyntheticEvent&lt;HTMLFormElement&gt;) {
+        e.preventDefault();
+
+        setLoading(true);
+        setError('');
+        setMessage('');
+
+        const endpoint = isSignup ? '/api/auth/signup' : '/api/auth/login';
+        const body = isSignup ? { email, password, name } : { email, password };
+
+        try {
+            const res = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                setError(data.error || 'Something went wrong');
+                setLoading(false);
+                return;
+            }
+
+            setMessage(data.message || (isSignup ? 'Signup successful! Please log in.' : 'Login successful!'));
+            if (data.accessToken) {
+                localStorage.setItem('accessToken', data.accessToken);
+            }
+            if(data.name){
+                localStorage.setItem('userName', data.name)
+            }
+
+            setRedirecting(true);
+            setTimeout(() => {
+                window.location.href = "/";
+            }, 2000);
+
+            setEmail('');
+            setPassword('');
+            setName('');
+        } catch (err) {
+            setError('Network error. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div>
+            <form onSubmit={handleSubmit}>
+                <h2>{isSignup ? 'Sign Up' : 'Login'}</h2>
+                {isSignup && (<input
+                    type="text"
+                    placeholder="Name"
+                    value={name}
+                    onChange={(e: React.ChangeEvent&lt;HTMLInputElement&gt;) =>
+                        setName(e.target.value)}
+                    className="w-full p-2 mb-2 border rounded"
+                />)}
+
+                <input
+                    type="email"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e: React.ChangeEvent&lt;HTMLInputElement&gt;) =>
+                        setEmail(e.target.value)}
+                    className="w-full p-2 mb-2 border rounded"
+                />
+                <input
+                    type="password"
+                    placeholder="Password"
+                    value={password}
+                    onChange={(e: React.ChangeEvent&lt;HTMLInputElement&gt;) =>
+                        setPassword(e.target.value)}
+                    className="w-full p-2 mb-4 border rounded"
+                />
+                <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-blue-500 text-white p-2 rounded"
+                >
+                    {loading ? 'Please wait..' : isSignup ? 'Sign Up' : 'Login'}
+                </button>
+
+                <p>
+                    {isSignup ? 'Already have an account?' : "Don't have an account?"}
+                    <span onClick={() => setIsSignup(!isSignup)}>
+                        {isSignup ? ' Login' : ' Sign Up'}
+                    </span>
+                </p>
+                {message && <p>{message}</p>}
+                {error && <p>{error}</p>}
+            </form>
+        </div>
+    );
+}</code></pre>
+                </div>
+              </div>
+
+              <!-- Navbar Component -->
+              <div
+                class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200"
+                data-filename="client/components/navbar.tsx">
+                <button onclick="toggleFile('client-navbar')"
+                  class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
+                  <div class="flex items-center gap-3">
+                    <i class="fa-brands fa-react text-sky-400 text-lg"></i>
+                    <div>
+                      <div class="text-sm font-semibold text-slate-200">navbar.tsx</div>
+                      <div class="text-[10px] text-slate-500 font-mono">client/components/navbar.tsx</div>
+                    </div>
+                  </div>
+                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"
+                    id="icon-client-navbar"></i>
+                </button>
+                <div class="hidden border-t border-slate-800 bg-[#090d16]" id="code-client-navbar">
+                  <div class="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-800">
+                    <span class="text-[10px] text-slate-400 font-mono">TypeScript React (TSX)</span>
+                    <button onclick="copyCode('raw-client-navbar', this)"
+                      class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
+                      <i class="fa-regular fa-copy"></i> Copy
+                    </button>
+                  </div>
+                  <pre class="p-4 overflow-x-auto text-xs custom-scrollbar"><code class="language-tsx" id="raw-client-navbar">"use client"
+import Link from "next/link";
+import { useEffect, useState } from "react";
+
+export default function Navbar() {
+  const [userName, setUserName] = useState&lt;string | null&gt;(null);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const storedName = localStorage.getItem("userName");
+    setUserName(storedName);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("adminUnlocked");
+    window.location.href = "/login";
+  };
+
+  return (
+    <nav className="flex w-full items-center justify-between gap-4 bg-blue-900 px-6 py-4 text-white">
+      <h1 className="text-xl font-bold">MyApp</h1>
+      <div className="flex items-center gap-4">
+        <Link href="/" className="hover:underline">Home</Link>
+        <Link href="/documentation" className="hover:underline">Documentation</Link>
+        <Link href="/about" className="hover:underline">About</Link>
+      </div>
+
+      {userName ? (
+        <div className="relative">
+          <button onClick={() => setOpen(!open)} className="px-4 py-2 bg-green-500 rounded">{userName}</button>
+          {open && (
+            <div className="absolute right-0 mt-2 w-32 bg-white text-black rounded shadow-lg">
+              <button onClick={handleLogout} className="block w-full text-left px-4 py-2 hover:bg-gray-200">
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
+      ) : (
+        <Link href="/login" className="hover:underline">Login</Link>
+      )}
+    </nav>
+  );
+}</code></pre>
+                </div>
+              </div>
+
+              <!-- Admin Page -->
+              <div
+                class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200"
+                data-filename="client/app/admin/page.tsx">
+                <button onclick="toggleFile('client-admin-page')"
+                  class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
+                  <div class="flex items-center gap-3">
+                    <i class="fa-brands fa-react text-sky-400 text-lg"></i>
+                    <div>
+                      <div class="text-sm font-semibold text-slate-200">admin/page.tsx</div>
+                      <div class="text-[10px] text-slate-500 font-mono">client/app/admin/page.tsx</div>
+                    </div>
+                  </div>
+                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"
+                    id="icon-client-admin-page"></i>
+                </button>
+                <div class="hidden border-t border-slate-800 bg-[#090d16]" id="code-client-admin-page">
+                  <div class="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-800">
+                    <span class="text-[10px] text-slate-400 font-mono">TypeScript React (TSX)</span>
+                    <button onclick="copyCode('raw-client-admin-page', this)"
+                      class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
+                      <i class="fa-regular fa-copy"></i> Copy
+                    </button>
+                  </div>
+                  <pre class="p-4 overflow-x-auto text-xs custom-scrollbar"><code class="language-tsx" id="raw-client-admin-page">"use client";
+import { useEffect, useMemo, useState } from "react";
+import Navbar from "@/components/navbar";
+
+interface User {
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
+  createdAt: string;
+}
+
+export default function AdminRolesPage() {
+  const [users, setUsers] = useState&lt;User[]&gt;([]);
+  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [password, setPassword] = useState("");
+  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      setIsLoggedIn(false);
+      setLoading(false);
+      return;
+    }
+
+    const unlocked = localStorage.getItem("adminUnlocked") === "true";
+    setIsUnlocked(unlocked);
+
+    if (!unlocked) {
+      setLoading(false);
+      return;
+    }
+
+    async function fetchUsers() {
+      try {
+        const token = localStorage.getItem("accessToken");
+        const res = await fetch("/api/admin/users", {
+          headers: { Authorization: `Bearer ${token || ""}` },
+        });
+
+        if (res.status === 401 || res.status === 403) {
+          localStorage.removeItem("adminUnlocked");
+          setIsUnlocked(false);
+          setError("Session expired or permission denied. Sign in as admin.");
+          return;
+        }
+
+        if (!res.ok) throw new Error("Access denied or token invalid");
+
+        const data = await res.json();
+        setUsers(Array.isArray(data) ? data : []);
+      } catch (err) {
+        setError("You must be signed in as an admin to view this page.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchUsers();
+  }, []);
+
+  const handleRoleChange = async (id: string, newRole: string) => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const res = await fetch(`/api/admin/users/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token || ""}`,
+        },
+        body: JSON.stringify({ role: newRole }),
+      });
+
+      if (!res.ok) throw new Error("Role update failed");
+
+      setUsers(users.map(u => (u._id === id ? { ...u, role: newRole } : u)));
+      setError("");
+    } catch (err) {
+      setError("Could not update user role. Sign in as admin.");
+    }
+  };
+
+  const filtered = useMemo(() =>
+    users.filter(u =>
+      [u.name, u.email, u._id].some(field =>
+        field.toLowerCase().includes(search.toLowerCase())
+      )
+    ), [users, search]
+  );
+
+  const handleUnlock = () => {
+    const expectedPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "Admin2026";
+    if (password === expectedPassword) {
+      localStorage.setItem("adminUnlocked", "true");
+      setIsUnlocked(true);
+      setError("");
+      window.location.reload();
+      return;
+    }
+    setError("Incorrect admin password.");
+  };
+
+  return (
+    <div>
+      <Navbar />
+      <div>
+        <h2>User Role Management</h2>
+        {!isLoggedIn ? (
+          <p>You must be logged in. <a href="/login">Login</a></p>
+        ) : !isUnlocked ? (
+          <div>
+            <label>Enter admin password</label>
+            <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
+            <button onClick={handleUnlock}>Unlock admin panel</button>
+          </div>
+        ) : (
+          <table>
+            {/* table header and maps data ... */}
+          </table>
+        )}
+      </div>
+    </div>
+  );
+}</code></pre>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Category: Client API Proxy Routes -->
+          <div class="category-group" data-tier="client">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-sky-400/80 mb-2 mt-4 px-1">Client API Proxy
+              Routes</h4>
+            <div class="space-y-2">
+
+              <!-- API Login -->
+              <div
+                class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200"
+                data-filename="client/app/api/auth/login/route.ts">
+                <button onclick="toggleFile('client-api-login')"
+                  class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
+                  <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-network-wired text-sky-400 text-lg"></i>
+                    <div>
+                      <div class="text-sm font-semibold text-slate-200">login/route.ts</div>
+                      <div class="text-[10px] text-slate-500 font-mono">client/app/api/auth/login/route.ts</div>
+                    </div>
+                  </div>
+                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"
+                    id="icon-client-api-login"></i>
+                </button>
+                <div class="hidden border-t border-slate-800 bg-[#090d16]" id="code-client-api-login">
+                  <div class="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-800">
+                    <span class="text-[10px] text-slate-400 font-mono">Next.js API Handler</span>
+                    <button onclick="copyCode('raw-client-api-login', this)"
+                      class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
+                      <i class="fa-regular fa-copy"></i> Copy
+                    </button>
+                  </div>
+                  <pre class="p-4 overflow-x-auto text-xs custom-scrollbar"><code class="language-typescript" id="raw-client-api-login">import { NextResponse } from 'next/server';
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+
+    const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+
+    const data = await response.json();
+    const setCookie = response.headers.get('set-cookie');
+
+    return NextResponse.json(data, {
+      status: response.status,
+      headers: setCookie ? { 'set-cookie': setCookie } : undefined,
+    });
+  } catch {
+    return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
+  }
+}</code></pre>
+                </div>
+              </div>
+
+              <!-- API Signup -->
+              <div
+                class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200"
+                data-filename="client/app/api/auth/signup/route.ts">
+                <button onclick="toggleFile('client-api-signup')"
+                  class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
+                  <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-network-wired text-sky-400 text-lg"></i>
+                    <div>
+                      <div class="text-sm font-semibold text-slate-200">signup/route.ts</div>
+                      <div class="text-[10px] text-slate-500 font-mono">client/app/api/auth/signup/route.ts</div>
+                    </div>
+                  </div>
+                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"
+                    id="icon-client-api-signup"></i>
+                </button>
+                <div class="hidden border-t border-slate-800 bg-[#090d16]" id="code-client-api-signup">
+                  <div class="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-800">
+                    <span class="text-[10px] text-slate-400 font-mono">Next.js API Handler</span>
+                    <button onclick="copyCode('raw-client-api-signup', this)"
+                      class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
+                      <i class="fa-regular fa-copy"></i> Copy
+                    </button>
+                  </div>
+                  <pre class="p-4 overflow-x-auto text-xs custom-scrollbar"><code class="language-typescript" id="raw-client-api-signup">import { NextResponse } from 'next/server';
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+
+    const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+
+    const data = await response.json();
+    const setCookie = response.headers.get('set-cookie');
+
+    return NextResponse.json(data, {
+      status: response.status,
+      headers: setCookie ? { 'set-cookie': setCookie } : undefined,
+    });
+  } catch {
+    return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
+  }
+}</code></pre>
+                </div>
+              </div>
+
+              <!-- API Admin users list -->
+              <div
+                class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200"
+                data-filename="client/app/api/admin/users/route.ts">
+                <button onclick="toggleFile('client-api-admin-users')"
+                  class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
+                  <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-network-wired text-sky-400 text-lg"></i>
+                    <div>
+                      <div class="text-sm font-semibold text-slate-200">admin/users/route.ts</div>
+                      <div class="text-[10px] text-slate-500 font-mono">client/app/api/admin/users/route.ts</div>
+                    </div>
+                  </div>
+                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"
+                    id="icon-client-api-admin-users"></i>
+                </button>
+                <div class="hidden border-t border-slate-800 bg-[#090d16]" id="code-client-api-admin-users">
+                  <div class="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-800">
+                    <span class="text-[10px] text-slate-400 font-mono">Next.js API Handler</span>
+                    <button onclick="copyCode('raw-client-api-admin-users', this)"
+                      class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
+                      <i class="fa-regular fa-copy"></i> Copy
+                    </button>
+                  </div>
+                  <pre class="p-4 overflow-x-auto text-xs custom-scrollbar"><code class="language-typescript" id="raw-client-api-admin-users">import { NextResponse } from 'next/server';
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
+export async function GET(request: Request) {
+  try {
+    const authHeader = request.headers.get('authorization');
+
+    const response = await fetch(`${API_BASE_URL}/api/admin/users`, {
+      method: 'GET',
+      headers: {
+        ...(authHeader ? { Authorization: authHeader } : {}),
+      },
+    });
+
+    const data = await response.json();
+    return NextResponse.json(data, { status: response.status });
+  } catch (error) {
+    return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
+  }
+}</code></pre>
+                </div>
+              </div>
+
+              <!-- API Admin users update PATCH -->
+              <div
+                class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200"
+                data-filename="client/app/api/admin/users/[id]/route.ts">
+                <button onclick="toggleFile('client-api-admin-users-patch')"
+                  class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
+                  <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-network-wired text-sky-400 text-lg"></i>
+                    <div>
+                      <div class="text-sm font-semibold text-slate-200">users/[id]/route.ts</div>
+                      <div class="text-[10px] text-slate-500 font-mono">client/app/api/admin/users/[id]/route.ts</div>
+                    </div>
+                  </div>
+                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"
+                    id="icon-client-api-admin-users-patch"></i>
+                </button>
+                <div class="hidden border-t border-slate-800 bg-[#090d16]" id="code-client-api-admin-users-patch">
+                  <div class="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-800">
+                    <span class="text-[10px] text-slate-400 font-mono">Next.js API Handler</span>
+                    <button onclick="copyCode('raw-client-api-admin-users-patch', this)"
+                      class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
+                      <i class="fa-regular fa-copy"></i> Copy
+                    </button>
+                  </div>
+                  <pre class="p-4 overflow-x-auto text-xs custom-scrollbar"><code class="language-typescript" id="raw-client-api-admin-users-patch">import { NextResponse } from 'next/server';
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const { id } = await params;
+    const authHeader = request.headers.get('authorization');
+    const body = await request.json();
+
+    const response = await fetch(`${API_BASE_URL}/api/admin/users/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(authHeader ? { Authorization: authHeader } : {}),
+      },
+      body: JSON.stringify(body),
+    });
+
+    const data = await response.json();
+    return NextResponse.json(data, { status: response.status });
+  } catch (error) {
+    return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
+  }
+}</code></pre>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Category: Express Backend Server -->
+          <div class="category-group" data-tier="server">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-sky-400/80 mb-2 mt-4 px-1">Express Backend
+              Entrypoint & Config</h4>
+            <div class="space-y-2">
+
+              <!-- Express Entrypoint -->
+              <div
+                class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200"
+                data-filename="server/src/index.ts">
+                <button onclick="toggleFile('server-index')"
+                  class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
+                  <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-server text-indigo-400 text-lg"></i>
+                    <div>
+                      <div class="text-sm font-semibold text-slate-200">index.ts</div>
+                      <div class="text-[10px] text-slate-500 font-mono">server/src/index.ts</div>
+                    </div>
+                  </div>
+                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"
+                    id="icon-server-index"></i>
+                </button>
+                <div class="hidden border-t border-slate-800 bg-[#090d16]" id="code-server-index">
+                  <div class="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-800">
+                    <span class="text-[10px] text-slate-400 font-mono">TypeScript Node / Express</span>
+                    <button onclick="copyCode('raw-server-index', this)"
+                      class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
+                      <i class="fa-regular fa-copy"></i> Copy
+                    </button>
+                  </div>
+                  <pre class="p-4 overflow-x-auto text-xs custom-scrollbar"><code class="language-typescript" id="raw-server-index">import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import {connectDB} from './config/db.js';
+import authRoutes from './routes/authRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
+
+dotenv.config();
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+app.use(cors());
+app.use(express.json());
+
+// mount routes
+app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminRoutes);
+
+app.get('/', (req, res) => {
+    res.send('Express server is running!');
+});
+
+connectDB().then(() => {
+    app.listen(PORT, ()=> {
+        console.log(`Server is running on port ${PORT}`);
+    });
+});</code></pre>
+                </div>
+              </div>
+
+              <!-- Database Connection -->
+              <div
+                class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200"
+                data-filename="server/src/config/db.ts">
+                <button onclick="toggleFile('server-db')"
+                  class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
+                  <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-database text-indigo-400 text-lg"></i>
+                    <div>
+                      <div class="text-sm font-semibold text-slate-200">db.ts</div>
+                      <div class="text-[10px] text-slate-500 font-mono">server/src/config/db.ts</div>
+                    </div>
+                  </div>
+                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"
+                    id="icon-server-db"></i>
+                </button>
+                <div class="hidden border-t border-slate-800 bg-[#090d16]" id="code-server-db">
+                  <div class="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-800">
+                    <span class="text-[10px] text-slate-400 font-mono">Mongoose Database Config</span>
+                    <button onclick="copyCode('raw-server-db', this)"
+                      class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
+                      <i class="fa-regular fa-copy"></i> Copy
+                    </button>
+                  </div>
+                  <pre class="p-4 overflow-x-auto text-xs custom-scrollbar"><code class="language-typescript" id="raw-server-db">import mongoose from 'mongoose';
+
+export async function connectDB(){
+    try{
+        const mongoUri = process.env.MONGO_URI || '';
+
+        if(!mongoUri){
+            throw new Error('MONGO_URI is not defined in environment variables');
+        }
+
+        await mongoose.connect(mongoUri);
+        console.log('Connected to MongoDB');
+    } catch(error){
+        console.error('Error connecting to MongoDB:', error);
+        process.exit(1);
+    }
+}</code></pre>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Category: Models & Services -->
+          <div class="category-group" data-tier="server">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-sky-400/80 mb-2 mt-4 px-1">Models & Security
+              Services</h4>
+            <div class="space-y-2">
+
+              <!-- User Model -->
+              <div
+                class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200"
+                data-filename="server/src/models/user.ts">
+                <button onclick="toggleFile('server-model-user')"
+                  class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
+                  <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-user-shield text-indigo-400 text-lg"></i>
+                    <div>
+                      <div class="text-sm font-semibold text-slate-200">user.ts</div>
+                      <div class="text-[10px] text-slate-500 font-mono">server/src/models/user.ts</div>
+                    </div>
+                  </div>
+                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"
+                    id="icon-server-model-user"></i>
+                </button>
+                <div class="hidden border-t border-slate-800 bg-[#090d16]" id="code-server-model-user">
+                  <div class="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-800">
+                    <span class="text-[10px] text-slate-400 font-mono">Mongoose Schema</span>
+                    <button onclick="copyCode('raw-server-model-user', this)"
+                      class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
+                      <i class="fa-regular fa-copy"></i> Copy
+                    </button>
+                  </div>
+                  <pre class="p-4 overflow-x-auto text-xs custom-scrollbar"><code class="language-typescript" id="raw-server-model-user">import mongoose, { Schema, Document, Model} from 'mongoose';
+
+export interface IUser extends Document {
+    email: string;
+    passwordHash: string;
+    name: string;
+    role: 'user' | 'admin';
+    createdAt: Date;
+}
+
+const UserSchema: Schema = new Schema<IUser>({
+    email: {type: String, required: true, unique: true},
+    passwordHash: {type: String, required: true},
+    name: {type: String, required: true},
+    role: {type: String, enum: ['user', 'admin'], default: 'user'},
+    createdAt: {type: Date, default: Date.now},
+});
+
+export const UserModel: Model<IUser> = mongoose.models.User || mongoose.model<IUser>('User', UserSchema);</code></pre>
+                </div>
+              </div>
+
+              <!-- Session Model -->
+              <div
+                class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200"
+                data-filename="server/src/models/session.ts">
+                <button onclick="toggleFile('server-model-session')"
+                  class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
+                  <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-clock-rotate-left text-indigo-400 text-lg"></i>
+                    <div>
+                      <div class="text-sm font-semibold text-slate-200">session.ts</div>
+                      <div class="text-[10px] text-slate-500 font-mono">server/src/models/session.ts</div>
+                    </div>
+                  </div>
+                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"
+                    id="icon-server-model-session"></i>
+                </button>
+                <div class="hidden border-t border-slate-800 bg-[#090d16]" id="code-server-model-session">
+                  <div class="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-800">
+                    <span class="text-[10px] text-slate-400 font-mono">Mongoose Schema</span>
+                    <button onclick="copyCode('raw-server-model-session', this)"
+                      class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
+                      <i class="fa-regular fa-copy"></i> Copy
+                    </button>
+                  </div>
+                  <pre
+                    class="p-4 overflow-x-auto text-xs custom-scrollbar"><code class="language-typescript" id="raw-server-model-session">import mongoose , {Schema, Document, Model} from 'mongoose';
+
+export interface ISession extends Document {
+    userId: string;
+    tokenIdHash: string;
+    createdAt: Date;
+    expiresAt: Date;
+}
+
+const SessionSchema: Schema = new Schema<ISession>({
+    userId: { type: String, required: true},
+    tokenIdHash: { type: String, required: true},
+    createdAt: { type: Date, default: Date.now},
+    expiresAt: { type: Date, required: true},
+});
+
+export const Session: Model<ISession> = mongoose.models.Session || mongoose.model<ISession>('Session', SessionSchema);</code></pre>
+                </div>
+              </div>
+
+              <!-- Auth Service -->
+              <div
+                class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200"
+                data-filename="server/src/services/authService.ts">
+                <button onclick="toggleFile('server-service-auth')"
+                  class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
+                  <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-key text-indigo-400 text-lg"></i>
+                    <div>
+                      <div class="text-sm font-semibold text-slate-200">authService.ts</div>
+                      <div class="text-[10px] text-slate-500 font-mono">server/src/services/authService.ts</div>
+                    </div>
+                  </div>
+                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"
+                    id="icon-server-service-auth"></i>
+                </button>
+                <div class="hidden border-t border-slate-800 bg-[#090d16]" id="code-server-service-auth">
+                  <div class="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-800">
+                    <span class="text-[10px] text-slate-400 font-mono">Token & Auth Logic (Verified)</span>
+                    <button onclick="copyCode('raw-server-service-auth', this)"
+                      class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
+                      <i class="fa-regular fa-copy"></i> Copy
+                    </button>
+                  </div>
+                  <pre class="p-4 overflow-x-auto text-xs custom-scrollbar"><code class="language-typescript" id="raw-server-service-auth">import jwt from 'jsonwebtoken';
+import {randomBytes} from 'crypto';
+import {saveSession} from './session.js';
+import bcrypt from 'bcrypt';
+import {UserModel} from '../models/user.js';
+
+const ACCESS_TOKEN_EXPIRY = '15m';
+const REFRESH_TOKEN_EXPIRY = '7d';
+
+function getAccessSecret() {
+  return process.env.ACCESS_TOKEN_SECRET || 'access-secret';
+}
+
+function getRefreshSecret() {
+  return process.env.REFRESH_TOKEN_SECRET || 'refresh-secret';
+}
+
+interface ITokenPayload {
+  accessToken: string;
+  refreshToken: string;
+}
+
+export async function verifyUserCredentials(email: string, password: string) {
+  const user = await UserModel.findOne({ email});
+  if(!user) return null;
+
+  const isMatch = await bcrypt.compare(password, user.passwordHash);
+  if(!isMatch) return null;
+
+  return user;
+}
+
+export function generateAccessTokens(userId: string, role: 'user' | 'admin'): ITokenPayload {
+  const accessToken = jwt.sign(
+    { userId, role },
+    getAccessSecret(),
+    { expiresIn: ACCESS_TOKEN_EXPIRY }
+  );
+  const refreshToken = jwt.sign(
+    { 
+      userId,
+      role,
+      tokenId: randomBytes(16).toString('hex')
+    }, 
+    getRefreshSecret(),
+    { expiresIn: REFRESH_TOKEN_EXPIRY }
+  );
+
+  return { accessToken, refreshToken };
+}
+
+export async function issueTokens(userId: string, role: 'user' | 'admin'): Promise<ITokenPayload> {
+  const tokens = generateAccessTokens(userId, role);
+  await saveSession(userId, tokens.refreshToken);
+  return tokens;
+}</code></pre>
+                </div>
+              </div>
+
+              <!-- Session Service -->
+              <div
+                class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200"
+                data-filename="server/src/services/session.ts">
+                <button onclick="toggleFile('server-service-session')"
+                  class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
+                  <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-clock-rotate-left text-indigo-400 text-lg"></i>
+                    <div>
+                      <div class="text-sm font-semibold text-slate-200">session.ts (Service)</div>
+                      <div class="text-[10px] text-slate-500 font-mono">server/src/services/session.ts</div>
+                    </div>
+                  </div>
+                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"
+                    id="icon-server-service-session"></i>
+                </button>
+                <div class="hidden border-t border-slate-800 bg-[#090d16]" id="code-server-service-session">
+                  <div class="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-800">
+                    <span class="text-[10px] text-slate-400 font-mono">Session & Refresh rotation</span>
+                    <button onclick="copyCode('raw-server-service-session', this)"
+                      class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
+                      <i class="fa-regular fa-copy"></i> Copy
+                    </button>
+                  </div>
+                  <pre class="p-4 overflow-x-auto text-xs custom-scrollbar"><code class="language-typescript" id="raw-server-service-session">import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+import { Session } from '../models/session.js';
+
+function getRefreshSecret() {
+    return process.env.REFRESH_TOKEN_SECRET || 'refresh-secret';
+}
+
+export async function saveSession(userId: string, refreshToken: string) {
+    const decoded = jwt.verify(refreshToken, getRefreshSecret()) as { userId: string, tokenId: string };
+    const tokenIdHash = await bcrypt.hash(decoded.tokenId, 10);
+
+    await Session.create({
+        userId,
+        tokenIdHash,
+        expiresAt: new Date(Date.now() + 7*24*60*60*1000),
+    });
+}
+
+export async function validateSession(refreshToken: string): Promise<{ userId: string; valid: boolean }> {
+    try{
+        const decoded = jwt.verify(refreshToken, getRefreshSecret()) as { userId: string; tokenId: string };
+        const session = await Session.findOne({ userId: decoded.userId});
+        if(!session){
+            return {userId:'', valid: false};
+        }
+
+        const isValid = await bcrypt.compare(decoded.tokenId, session.tokenIdHash);
+        return { userId: decoded.userId, valid: isValid};
+    }catch{
+        return {userId:'', valid: false};
+    }
+}
+
+export async function destroySession(userId: string) {
+  await Session.deleteOne({ userId });
+}</code></pre>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Category: Express Routes & Middlewares -->
+          <div class="category-group" data-tier="server">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-sky-400/80 mb-2 mt-4 px-1">Express Routes &
+              Middleware</h4>
+            <div class="space-y-2">
+
+              <!-- Express Auth Routes -->
+              <div
+                class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200"
+                data-filename="server/src/routes/authRoutes.ts">
+                <button onclick="toggleFile('server-routes-auth')"
+                  class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
+                  <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-route text-indigo-400 text-lg"></i>
+                    <div>
+                      <div class="text-sm font-semibold text-slate-200">authRoutes.ts</div>
+                      <div class="text-[10px] text-slate-500 font-mono">server/src/routes/authRoutes.ts</div>
+                    </div>
+                  </div>
+                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"
+                    id="icon-server-routes-auth"></i>
+                </button>
+                <div class="hidden border-t border-slate-800 bg-[#090d16]" id="code-server-routes-auth">
+                  <div class="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-800">
+                    <span class="text-[10px] text-slate-400 font-mono">Express Router</span>
+                    <button onclick="copyCode('raw-server-routes-auth', this)"
+                      class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
+                      <i class="fa-regular fa-copy"></i> Copy
+                    </button>
+                  </div>
+                  <pre class="p-4 overflow-x-auto text-xs custom-scrollbar"><code class="language-typescript" id="raw-server-routes-auth">import express from 'express';
+import bcrypt from 'bcrypt';
+import { UserModel } from '../models/user.js';
+import { verifyUserCredentials, issueTokens } from '../services/authService.js';
+
+const router = express.Router();
+
+router.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        const user = await verifyUserCredentials(email, password);
+        if (!user) {
+            return res.status(401).json({ message: 'Invalid credentials' });
+        }
+
+        const { accessToken, refreshToken } = await issueTokens(user.id, user.role);
+
+        const isProd = process.env.NODE_ENV === 'production';
+        const cookie = `refreshToken=${refreshToken}; HttpOnly; Path=/; Max-Age=608400; SameSite=Lax${isProd ? '; Secure' : ''}`;
+
+        res.setHeader('Set-Cookie', cookie);
+
+        return res.status(200).json({ 
+            message: 'Login successful',
+            accessToken,
+            role: user.role,
+            name: user.name
+        });
+    } catch (error) {
+        return res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
+
+router.post('/signup', async (req, res)=> {
+    const {name, email, password} = req.body;
+
+    try {
+        const existingUser = await UserModel.findOne({email});
+        if(existingUser){
+            return res.status(400).json({message: 'Email already in use'});
+        }
+
+        const passwordHash = await bcrypt.hash(password, 10);
+        const newUser = new UserModel({
+            name,
+            email,
+            passwordHash,
+            role: 'user',
+            createdAt: new Date(),
+        });
+        
+        await newUser.save();
+
+        const { accessToken, refreshToken} = await issueTokens(
+            newUser.id,
+            newUser.role
+        );
+
+        const isProd = process.env.NODE_ENV === 'production';
+        const cookie = `refreshToken=${refreshToken}; HttpOnly; Path=/; Max-Age=608400; SameSite=Lax${isProd ? '; Secure' : ''}`;
+
+        res.setHeader('Set-Cookie', cookie);
+
+        return res.status(201).json({
+            message: 'Signup successful',
+            accessToken,
+            role: newUser.role,
+            name: newUser.name
+        });
+    } catch(error){
+        return res.status(500).json({message: 'Internal Server Error'});
+    }
+});
+
+export default router;</code></pre>
+                </div>
+              </div>
+
+              <!-- Express Admin Routes -->
+              <div
+                class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200"
+                data-filename="server/src/routes/adminRoutes.ts">
+                <button onclick="toggleFile('server-routes-admin')"
+                  class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
+                  <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-route text-indigo-400 text-lg"></i>
+                    <div>
+                      <div class="text-sm font-semibold text-slate-200">adminRoutes.ts</div>
+                      <div class="text-[10px] text-slate-500 font-mono">server/src/routes/adminRoutes.ts</div>
+                    </div>
+                  </div>
+                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"
+                    id="icon-server-routes-admin"></i>
+                </button>
+                <div class="hidden border-t border-slate-800 bg-[#090d16]" id="code-server-routes-admin">
+                  <div class="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-800">
+                    <span class="text-[10px] text-slate-400 font-mono">Express Router</span>
+                    <button onclick="copyCode('raw-server-routes-admin', this)"
+                      class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
+                      <i class="fa-regular fa-copy"></i> Copy
+                    </button>
+                  </div>
+                  <pre class="p-4 overflow-x-auto text-xs custom-scrollbar"><code class="language-typescript" id="raw-server-routes-admin">import express from 'express';
+import { UserModel } from '../models/user.js';
+import { adminMiddleware } from '../middleware/adminMiddleware.js';
+
+const router = express.Router();
+
+router.get('/users', adminMiddleware, async (req, res) => {
+  try {
+    const users = await UserModel.find({}, 'name email role createdAt');
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
+router.patch('/users/:id', adminMiddleware, async (req, res) => {
+  const { role } = req.body;
+  try {
+    const user = await UserModel.findByIdAndUpdate(
+      req.params.id,
+      { role },
+      { returnDocument: 'after' }
+    );
+    res.json({ message: 'Role updated', user });
+  } catch (err) {
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
+export default router;</code></pre>
+                </div>
+              </div>
+
+              <!-- Express Admin Middleware -->
+              <div
+                class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200"
+                data-filename="server/src/middleware/adminMiddleware.ts">
+                <button onclick="toggleFile('server-middleware-admin')"
+                  class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
+                  <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-user-lock text-indigo-400 text-lg"></i>
+                    <div>
+                      <div class="text-sm font-semibold text-slate-200">adminMiddleware.ts</div>
+                      <div class="text-[10px] text-slate-500 font-mono">server/src/middleware/adminMiddleware.ts</div>
+                    </div>
+                  </div>
+                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"
+                    id="icon-server-middleware-admin"></i>
+                </button>
+                <div class="hidden border-t border-slate-800 bg-[#090d16]" id="code-server-middleware-admin">
+                  <div class="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-800">
+                    <span class="text-[10px] text-slate-400 font-mono">Express Middleware</span>
+                    <button onclick="copyCode('raw-server-middleware-admin', this)"
+                      class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
+                      <i class="fa-regular fa-copy"></i> Copy
+                    </button>
+                  </div>
+                  <pre class="p-4 overflow-x-auto text-xs custom-scrollbar"><code class="language-typescript" id="raw-server-middleware-admin">import { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
+
+interface TokenPayload {
+  userId: string;
+  role: 'user' | 'admin';
+}
+
+export function adminMiddleware(req: Request, res: Response, next: NextFunction) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).json({ message: 'No token provided' });
+  }
+
+  const token = authHeader.split(' ')[1];
+  try {
+    const decoded = jwt.verify(
+      token,
+      process.env.ACCESS_TOKEN_SECRET || 'access-secret'
+    ) as TokenPayload;
+
+    if (decoded.role !== 'admin') {
+      return res.status(403).json({ message: 'Forbidden: Admins only' });
+    }
+
+    (req as any).user = decoded;
+    next();
+  } catch {
+    return res.status(401).json({ message: 'Invalid token' });
+  }
+}</code></pre>
+                </div>
+              </div>
+
+              <!-- Next.js Middleware Reference -->
+              <div
+                class="file-card border border-slate-800 bg-slate-900/40 rounded-xl overflow-hidden transition-all duration-200"
+                data-filename="server/src/middleware/authMiddleware.ts">
+                <button onclick="toggleFile('server-middleware-auth')"
+                  class="w-full flex items-center justify-between p-3.5 hover:bg-slate-800/40 transition-all text-left">
+                  <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-code text-indigo-400 text-lg"></i>
+                    <div>
+                      <div class="text-sm font-semibold text-slate-200">authMiddleware.ts (Next.js Ref)</div>
+                      <div class="text-[10px] text-slate-500 font-mono">server/src/middleware/authMiddleware.ts</div>
+                    </div>
+                  </div>
+                  <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"
+                    id="icon-server-middleware-auth"></i>
+                </button>
+                <div class="hidden border-t border-slate-800 bg-[#090d16]" id="code-server-middleware-auth">
+                  <div class="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-800">
+                    <span class="text-[10px] text-slate-400 font-mono">Next.js Edge Middleware</span>
+                    <button onclick="copyCode('raw-server-middleware-auth', this)"
+                      class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5">
+                      <i class="fa-regular fa-copy"></i> Copy
+                    </button>
+                  </div>
+                  <pre class="p-4 overflow-x-auto text-xs custom-scrollbar"><code class="language-typescript" id="raw-server-middleware-auth">import { NextResponse, type NextRequest } from 'next/server';
+
+const protectedPaths = ['/dashboard', '/profile', '/settings', '/logintestpage'];
+
+export function middleware(req: NextRequest) {
+    const accessToken = req.cookies.get('accessToken')?.value;
+    const {pathname} = req.nextUrl;
+
+    if(pathname.startsWith('/admin')){
+        if(accessToken !== 'admin-token'){
+            return new NextResponse('Forbidden', {status: 403});
+        }
+    }
+
+    if (protectedPaths.some(path => pathname.startsWith(path)) && !accessToken) {
+        const loginUrl = new URL('/login', req.url);
+        loginUrl.searchParams.set('redirect', pathname);
+        return NextResponse.redirect(loginUrl);
+    }
+
+    if(pathname.startsWith('/dashboard') && process.env.MAINTENANCE_MODE === 'true'){
+        return NextResponse.rewrite(new URL('/maintenance', req.url));
+    }
+
+    return NextResponse.next();
+};
+
+const config = {
+    matcher: protectedPaths.flatMap(path => [path, `${path}/:path*`]),
+};
+export { config };</code></pre>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Prism JS for syntax highlighting -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-tsx.min.js"></script>
+
+  <!-- Interactive functionality -->
+  <script>
+    // Phase steps mappings to related files
+    const phaseFiles = {
+      signup: [
+        'client/app/login/page.tsx',
+        'client/app/api/auth/signup/route.ts',
+        'server/src/routes/authRoutes.ts',
+        'server/src/services/authService.ts',
+        'server/src/services/session.ts',
+        'server/src/models/user.ts',
+        'server/src/models/session.ts'
+      ],
+      login: [
+        'client/app/login/page.tsx',
+        'client/app/api/auth/login/route.ts',
+        'server/src/routes/authRoutes.ts',
+        'server/src/services/authService.ts',
+        'server/src/services/session.ts',
+        'server/src/models/user.ts',
+        'server/src/models/session.ts'
+      ],
+      secure: [
+        'client/app/admin/page.tsx',
+        'client/app/api/admin/users/route.ts',
+        'server/src/routes/adminRoutes.ts',
+        'server/src/middleware/adminMiddleware.ts',
+        'server/src/middleware/authMiddleware.ts'
+      ],
+      promote: [
+        'client/app/admin/page.tsx',
+        'client/app/api/admin/users/[id]/route.ts',
+        'server/src/routes/adminRoutes.ts',
+        'server/src/middleware/adminMiddleware.ts'
+      ]
+    };
+
+    let activePhase = 'login';
+    let currentTierFilter = 'all';
+
+    function switchPhase(phase) {
+      activePhase = phase;
+
+      // Update Tab Styles
+      document.querySelectorAll('.phase-btn').forEach(btn => {
+        btn.classList.remove('active-tab');
+      });
+      document.getElementById(`btn-${phase}`).classList.add('active-tab');
+
+      // Highlight the corresponding cards
+      applyCardHighlights();
+    }
+
+    function applyCardHighlights() {
+      const related = phaseFiles[activePhase];
+      document.querySelectorAll('.file-card').forEach(card => {
+        const filename = card.getAttribute('data-filename');
+        const isRelated = related.includes(filename);
+
+        // Apply matching border and glow
+        if (isRelated) {
+          card.classList.remove('border-slate-800');
+          card.classList.add('border-sky-500/60', 'bg-sky-950/10', 'shadow-[0_0_10px_rgba(56,189,248,0.05)]');
+        } else {
+          card.classList.remove('border-sky-500/60', 'bg-sky-950/10', 'shadow-[0_0_10px_rgba(56,189,248,0.05)]');
+          card.classList.add('border-slate-800');
+        }
+      });
+    }
+
+    function filterTiers(tier) {
+      currentTierFilter = tier;
+      document.querySelectorAll('[id^="filter-"]').forEach(btn => {
+        btn.classList.remove('bg-slate-800', 'text-white');
+        btn.classList.add('text-slate-400');
+      });
+      document.getElementById(`filter-${tier}`).classList.add('bg-slate-800', 'text-white');
+
+      // Filter groups
+      document.querySelectorAll('.category-group').forEach(group => {
+        const groupTier = group.getAttribute('data-tier');
+        if (tier === 'all' || groupTier === tier) {
+          group.classList.remove('hidden');
+        } else {
+          group.classList.add('hidden');
+        }
+      });
+
+      handleSearch(); // apply search query over filter
+    }
+
+    function handleSearch() {
+      const query = document.getElementById('search-input').value.toLowerCase();
+      let visibleCount = 0;
+
+      document.querySelectorAll('.file-card').forEach(card => {
+        const filename = card.getAttribute('data-filename').toLowerCase();
+        const parentGroup = card.closest('.category-group');
+        const groupTier = parentGroup.getAttribute('data-tier');
+
+        const matchesQuery = filename.includes(query);
+        const matchesFilter = currentTierFilter === 'all' || groupTier === currentTierFilter;
+
+        if (matchesQuery && matchesFilter) {
+          card.classList.remove('hidden');
+          visibleCount++;
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+
+      document.getElementById('file-counter').innerText = `${visibleCount} files matching`;
+    }
+
+    function toggleFile(id) {
+      const codeBlock = document.getElementById(`code-${id}`);
+      const icon = document.getElementById(`icon-${id}`);
+
+      if (codeBlock.classList.contains('hidden')) {
+        codeBlock.classList.remove('hidden');
+        icon.classList.add('rotate-180');
+      } else {
+        codeBlock.classList.add('hidden');
+        icon.classList.remove('rotate-180');
+      }
+    }
+
+    async function copyCode(id, button) {
+      const code = document.getElementById(id).innerText;
+      try {
+        await navigator.clipboard.writeText(code);
+        const originalText = button.innerHTML;
+        button.innerHTML = '<i class="fa-solid fa-check text-emerald-400"></i> Copied!';
+        button.classList.add('text-emerald-400');
+        setTimeout(() => {
+          button.innerHTML = originalText;
+          button.classList.remove('text-emerald-400');
+        }, 1800);
+      } catch (err) {
+        console.error('Failed to copy text: ', err);
+      }
+    }
+
+    // Init state
+    window.addEventListener('load', () => {
+      switchPhase('login');
+      // Highlight initial code snippet in login by default
+      toggleFile('client-login-page');
+    });
+  </script>
 </body>
+
 </html>

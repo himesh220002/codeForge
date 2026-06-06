@@ -1,15 +1,15 @@
 import Link from "next/link";
 
 const documentationTopics = [
-  {
-    title: "Login flow diagram (Standard)",
-    description: "Open the login/auth sequence flow for the project (standard spelling).",
-    href: "/Topics/login/loginFlowDiagram.html",
-  },
+  // {
+  //   title: "Login flow diagram (Standard)",
+  //   description: "Open the login/auth sequence flow for the project (standard spelling).",
+  //   href: "/Topics/login/loginFlowDiagram.html",
+  // },
   {
     title: "Login flow diagram (Legacy)",
     description: "Open the login/auth sequence flow for the project (legacy spelling).",
-    href: "/Topics/login/loginFlowDaigram.html",
+    href: "/loginFlow",
   },
 ];
 
@@ -41,6 +41,7 @@ export default function DocumentationPage() {
             </article>
           ))}
         </section>
+        
       </div>
     </main>
   );

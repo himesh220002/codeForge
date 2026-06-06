@@ -5,11 +5,18 @@ import { useEffect, useState } from "react";
 export default function Navbar() {
 
   const [userName, setUserName] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const storedName = localStorage.getItem("userName");
     setUserName(storedName);
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("userName");
+    window.location.href = "/login"; // redirect to login
+  };
 
 
   return (
@@ -23,7 +30,21 @@ export default function Navbar() {
       </div>
 
       {userName ? (
-      <button className="px-4 py-2 bg-green-500 rounded">{userName}</button>
+        <div className="relative">
+      <button 
+      onClick={() => setOpen(!open)}
+      className="px-4 py-2 bg-green-500 rounded">{userName}</button>
+      {open && (
+            <div className="absolute right-0 mt-2 w-32 bg-white text-black rounded shadow-lg">
+              <button
+                onClick={handleLogout}
+                className="block w-full text-left px-4 py-2 hover:bg-gray-200"
+              >
+                Logout
+              </button>
+            </div>
+          )}
+          </div>
     ) : (
       <Link href="/login" className="hover:underline">Login</Link>
     ) }

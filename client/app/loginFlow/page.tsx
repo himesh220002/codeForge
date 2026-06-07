@@ -3,8 +3,8 @@ import { useEffect, useState, useRef } from "react";
 import mermaid from "mermaid";
 
 export default function AdminPage() {
-    const ref = useRef<HTMLDivElement>(null);
-    const [ready,setReady]= useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const [ready, setReady] = useState(false);
   useEffect(() => {
     mermaid.initialize({
       startOnLoad: false,
@@ -34,7 +34,7 @@ export default function AdminPage() {
       mermaid.run({ nodes: [ref.current] });
     }
   }, [ready]);
- 
+
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-900 text-white">
@@ -42,9 +42,9 @@ export default function AdminPage() {
       <section className="p-6 border-b">
         <h2 className="text-2xl text-center font-bold mb-4">Interactive Auth Lifecycle Flow</h2>
         <div className="bg-white border border-slate-800 rounded-xl p-4 overflow-x-auto custom-scrollbar flex justify-center min-h-[420px]">
-          {ready &&(
-          <div ref={ref} className="mermaid w-full">
-{`sequenceDiagram
+          {ready && (
+            <div ref={ref} className="mermaid w-full">
+              {`sequenceDiagram
     autonumber
     actor User as User Agent
     participant NextAPI as Next.js API Proxy
@@ -58,9 +58,9 @@ export default function AdminPage() {
     User->>NextAPI: POST /api/auth/signup (client/app/api/auth/signup/route.ts)
     NextAPI->>Express: Forward to Express (server/src/routes/authRoutes.ts)
     Express->>DB: Save User (server/src/models/user.ts)
-    Express->>AuthSvc: Issue JWT (server/src/services/authService.ts)
+    Express->>AuthSvc: Issue JWT (server/src/services/services.ts)
     AuthSvc-->>Express: Tokens
-    Express->>SessionSvc: Save Session (server/src/services/session.ts)
+    Express->>SessionSvc: Save Session (server/src/services/services.ts)
     SessionSvc->>DB: Save Session (server/src/models/session.ts)
     Express-->>NextAPI: Return JSON + Cookie
     NextAPI-->>User: accessToken stored (client/app/login/page.tsx)
@@ -68,7 +68,7 @@ export default function AdminPage() {
     %% Login
     User->>NextAPI: POST /api/auth/login (client/app/api/auth/login/route.ts)
     NextAPI->>Express: Forward to Express (server/src/routes/authRoutes.ts)
-    Express->>AuthSvc: Verify credentials (server/src/services/authService.ts)
+    Express->>AuthSvc: Verify credentials (server/src/services/services.ts)
     AuthSvc->>DB: Find user (server/src/models/user.ts)
     AuthSvc-->>Express: Valid user
     Express->>AuthSvc: Issue JWT
@@ -92,7 +92,7 @@ export default function AdminPage() {
     AdminMW-->>Express: Authorized
     Express->>DB: findByIdAndUpdate (server/src/models/user.ts)
     Express-->>User: 200 OK (Role updated)`}
-          </div>
+            </div>
           )}
         </div>
       </section>
@@ -133,8 +133,8 @@ export default function AdminPage() {
           <ul className="space-y-1 pl-4">
             <li>user.ts — server/src/models/user.ts</li>
             <li>session.ts — server/src/models/session.ts</li>
-            <li>authService.ts — server/src/services/authService.ts</li>
-            <li>session.ts (Service) — server/src/services/session.ts</li>
+            <li>authService.ts — server/src/services/services.ts</li>
+            <li>session.ts (Service) — server/src/services/services.ts</li>
           </ul>
         </div>
 

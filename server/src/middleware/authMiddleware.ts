@@ -1,3 +1,4 @@
+//src/middleware/authMiddleware.ts
 import { NextResponse, type NextRequest } from 'next/server';
 
 const protectedPaths = ['/dashboard', '/profile', '/settings', '/logintestpage'];

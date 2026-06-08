@@ -1,7 +1,8 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import Navbar from "@/components/navbar";
+import { Eye, EyeOff } from "lucide-react";
 
 interface User {
   _id: string;
@@ -21,6 +22,7 @@ export default function AdminRolesPage() {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [error, setError] = useState("");
@@ -244,22 +246,39 @@ export default function AdminRolesPage() {
             </a>
           </div>
         ) : !isUnlocked ? (
-          <div className="max-w-md rounded border border-gray-200 bg-gray-500 p-4 shadow-sm text-white">
-            <label className="mb-2 block text-sm font-semibold">Enter admin password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              className="w-full rounded border p-2 text-black"
-              placeholder="Admin password"
-            />
-            {error && <p className="mt-2 text-sm text-red-200">{error}</p>}
-            <button
-              onClick={handleUnlock}
-              className="mt-3 rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-            >
-              Unlock admin panel
-            </button>
+
+          /* Admin password modal */
+          <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50">
+            <div className="bg-gray-800 text-white rounded-xl shadow-2xl max-w-sm w-full mx-4 p-8 space-y-4">
+              <h2 className="text-xl font-semibold text-center mb-2">Admin Access Required</h2>
+              <p className="text-sm text-gray-300 text-center mb-4">Enter the admin password to unlock the panel.</p>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  className="w-full px-4 py-2 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  placeholder="Admin password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-2 flex items-center text-gray-400 hover:text-gray-200"
+                  aria-label="Toggle password visibility"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+              {error && (
+                <p className="mt-2 text-sm text-red-400 text-center animate-pulse" role="alert">{error}</p>
+              )}
+              <button
+                onClick={handleUnlock}
+                className="w-full mt-4 py-2 bg-indigo-600 hover:bg-indigo-500 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              >
+                Unlock Panel
+              </button>
+            </div>
           </div>
         ) : (
           <>

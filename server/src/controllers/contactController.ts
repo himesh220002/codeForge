@@ -17,8 +17,7 @@ export async function createContactController(req: Request, res: Response) {
         
         await newContact.save();
 
-        const data = res.json({data: newContact});
-        console.log("contact form submition log:",data);
+        console.log("contact form submition log:",newContact);
 
         return res.status(201).json({
             success: true,

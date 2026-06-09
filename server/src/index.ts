@@ -5,6 +5,7 @@ import {connectDB} from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import ownershipRoutes from "./routes/ownershipRoutes.js";
+import contactRoutes from "./routes/contactRoutes.js";
 
 dotenv.config();
 
@@ -35,6 +36,8 @@ app.use((req, res, next) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use("/api/ownership", ownershipRoutes);
+
+app.use("/api/contact", contactRoutes);
 
 
 app.get('/', (req, res) => {

@@ -1,0 +1,67 @@
+et’s build your plain Next.js contact form → MongoDB pipeline step by step. Since you want a full‑fledged contact page, here’s the file creation order and arrangement you should follow. This way you won’t get lost in the folder jungle.
+
+📂 File Creation Order
+1. Backend (server)
+These files ensure MongoDB connectivity and define the model + controller logic.
+
+server/src/models/contact.ts  
+Define the schema for contact submissions (name, email, message, createdAt).
+
+server/src/controllers/contactController.ts  
+Logic to save form data into MongoDB.
+
+server/src/routes/contactRoutes.ts  
+Express route to handle POST requests from the frontend.
+
+Update server/src/index.ts  
+Mount the new route:
+
+ts
+import contactRoutes from "./routes/contactRoutes.js";
+app.use("/api/contact", contactRoutes);
+2. Frontend (client)
+These files handle the UI and API call.
+
+client/components/contactForm.tsx  
+Plain React form with useState, handleChange, handleSubmit. Posts to /api/contact.
+
+client/app/contact/page.tsx  
+A Next.js page that renders the ContactForm component.
+
+client/app/api/contact/route.ts  
+Next.js API proxy route (optional if you want frontend → backend separation). This forwards requests to your Express backend.
+
+3. Environment
+server/.env → Add MONGO_URI and secrets.
+
+client/.env → Add NEXT_PUBLIC_API_URL=http://localhost:5000 if you want to call backend directly.
+
+🛠 Suggested Order to Create
+Model → server/src/models/contact.ts
+
+Controller → server/src/controllers/contactController.ts
+
+Route → server/src/routes/contactRoutes.ts
+
+Mount route → server/src/index.ts
+
+Frontend form → client/components/contactForm.tsx
+
+Page wrapper → client/app/contact/page.tsx
+
+Optional proxy route → client/app/api/contact/route.ts
+
+🎯 Next Step
+Start with server/src/models/contact.ts. That’s the foundation. Example:
+
+ts
+import mongoose from "mongoose";
+
+const contactSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true },
+  message: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now }
+});
+
+export const ContactModel = mongoose.model("Contact", 

@@ -1,15 +1,15 @@
 import Link from "next/link";
 
 const documentationTopics = [
-  // {
-  //   title: "Login flow diagram (Standard)",
-  //   description: "Open the login/auth sequence flow for the project (standard spelling).",
-  //   href: "/Topics/login/loginFlowDiagram.html",
-  // },
   {
-    title: "Login flow diagram (Legacy)",
-    description: "Open the login/auth sequence flow for the project (legacy spelling).",
-    href: "/loginFlow",
+    title: "Login Flow Diagram",
+    description: "Visualize the login/auth sequence flow for the project.",
+    href: "/flowDiagrams/loginFlow", // points to client/app/flowDiagrams/loginFlow/page.tsx
+  },
+  {
+    title: "Contact Flow Diagram",
+    description: "Visualize the contact form lifecycle and architecture.",
+    href: "/flowDiagrams/contactFlow", // points to client/app/flowDiagrams/contactFlow/page.tsx
   },
 ];
 
@@ -27,13 +27,14 @@ export default function DocumentationPage() {
 
         <section className="grid gap-6 md:grid-cols-2">
           {documentationTopics.map((topic) => (
-            <article key={topic.title} className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
+            <article
+              key={topic.title}
+              className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm"
+            >
               <h2 className="text-xl font-semibold">{topic.title}</h2>
               <p className="mt-2 text-zinc-600">{topic.description}</p>
               <Link
                 href={topic.href}
-                target="_blank"
-                rel="noreferrer"
                 className="mt-4 inline-flex items-center rounded-md bg-blue-900 px-4 py-2 text-sm font-medium text-white hover:bg-blue-800"
               >
                 Open topic
@@ -41,7 +42,6 @@ export default function DocumentationPage() {
             </article>
           ))}
         </section>
-        
       </div>
     </main>
   );

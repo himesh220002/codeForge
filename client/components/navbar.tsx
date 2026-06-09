@@ -85,9 +85,9 @@ export default function Navbar() {
             <BookOpen size={14} className="text-emerald-400" />
             <span>Documentation</span>
           </Link>
-          <Link href="/admin" className="flex items-center gap-1.5 hover:text-white transition-colors py-1">
+          <Link href="/contact" className="flex items-center gap-1.5 hover:text-white transition-colors py-1">
             <Shield size={14} className="text-purple-400" />
-            <span>Admin Control</span>
+            <span>Contact</span>
           </Link>
         </nav>
 

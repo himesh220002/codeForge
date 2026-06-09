@@ -103,7 +103,7 @@ export default function Home() {
                     </div>
                   </Link>
 
-                  <Link href="/loginFlow" className="p-4 bg-gray-950/40 hover:bg-gray-950/80 border border-slate-850 hover:border-slate-800 rounded-xl transition-all group flex flex-col justify-between min-h-[110px]">
+                  <Link href="/flowDiagrams/loginFlow" className="p-4 bg-gray-950/40 hover:bg-gray-950/80 border border-slate-850 hover:border-slate-800 rounded-xl transition-all group flex flex-col justify-between min-h-[110px]">
                     <div className="h-8 w-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400 mb-2">
                       <GitBranch size={16} />
                     </div>

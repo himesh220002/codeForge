@@ -56,6 +56,10 @@ export async function refreshController(req: Request, res: Response) {
 
   // Issue new tokens
   const tokens = await issueTokens(userId, user.role); // role can be looked up if needed
+  
+  // Clean up the old session that was just refreshed
+  await destroySession(userId, refreshToken);
+
   res.json({ message: "Token refreshed", ...tokens });
 }
 
@@ -65,7 +69,7 @@ export async function logoutController(req: Request, res: Response) {
   if (!refreshToken) return res.status(400).json({ message: "No refresh token" });
 
   const { userId, valid } = await validateSession(refreshToken);
-  if (valid) await destroySession(userId);
+  if (valid) await destroySession(userId, refreshToken);
 
   res.clearCookie("refreshToken");
   res.json({ message: "Logged out successfully" });

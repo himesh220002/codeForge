@@ -56,15 +56,39 @@ export async function saveSession(userId: string, refreshToken: string) {
 export async function validateSession(refreshToken: string) {
   try {
     const decoded = jwt.verify(refreshToken, getRefreshSecret()) as { userId: string; tokenId: string };
-    const session = await Session.findOne({ userId: decoded.userId });
-    if (!session) return { userId: "", valid: false };
-    const isValid = await bcrypt.compare(decoded.tokenId, session.tokenIdHash);
-    return { userId: decoded.userId, valid: isValid };
+    const sessions = await Session.find({ userId: decoded.userId });
+    const now = new Date();
+    for (const session of sessions) {
+      if (session.expiresAt && session.expiresAt < now) {
+        await Session.deleteOne({ _id: session._id });
+        continue;
+      }
+      const isValid = await bcrypt.compare(decoded.tokenId, session.tokenIdHash);
+      if (isValid) {
+        return { userId: decoded.userId, valid: true };
+      }
+    }
+    return { userId: "", valid: false };
   } catch {
     return { userId: "", valid: false };
   }
 }
 
-export async function destroySession(userId: string) {
-  await Session.deleteOne({ userId });
+export async function destroySession(userId: string, refreshToken?: string) {
+  if (refreshToken) {
+    try {
+      const decoded = jwt.verify(refreshToken, getRefreshSecret()) as { userId: string; tokenId: string };
+      const sessions = await Session.find({ userId });
+      for (const session of sessions) {
+        const isValid = await bcrypt.compare(decoded.tokenId, session.tokenIdHash);
+        if (isValid) {
+          await Session.deleteOne({ _id: session._id });
+          return;
+        }
+      }
+    } catch {
+      // Ignore token decode errors
+    }
+  }
+  await Session.deleteMany({ userId });
 }

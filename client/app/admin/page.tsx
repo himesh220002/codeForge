@@ -1,51 +1,16 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
-import { jwtDecode } from 'jwt-decode';
-import Navbar from "@/components/navbar";
-import { Eye, EyeOff } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Users, Mail, Shield, Activity, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
-interface User {
-  _id: string;
-  name: string;
-  email: string;
-  role: string;
-  createdAt: string;
-}
-
-interface TokenPayload {
-  userId: string;
-  role: "owner" | "superuser" | "admin" | "user";
-}
-
-export default function AdminRolesPage() {
-  const [users, setUsers] = useState<User[]>([]);
-  const [search, setSearch] = useState("");
+export default function AdminDashboard() {
+  const [userCount, setUserCount] = useState<number | null>(null);
+  const [contactCount, setContactCount] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [isUnlocked, setIsUnlocked] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
-  const [error, setError] = useState("");
-  const [pagination, setPagination] = useState<{ total: number; page: number; limit: number; totalPages: number } | null>(null);
-  const [currentRole, setCurrentRole] = useState<string | null>(null);
-
-  useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (token) {
-      try {
-        const payload = jwtDecode<TokenPayload>(token);
-        setCurrentRole(payload.role);
-      } catch {
-        setCurrentRole(null);
-      }
-    }
-  }, []);
 
   async function refreshAccessToken(): Promise<string | null> {
     try {
-      const res = await fetch("/api/auth/refresh", {
-        method: "POST",
-      });
+      const res = await fetch("/api/auth/refresh", { method: "POST" });
       if (res.ok) {
         const data = await res.json();
         if (data.accessToken) {
@@ -53,331 +18,162 @@ export default function AdminRolesPage() {
           return data.accessToken;
         }
       }
-    } catch (err) {
-      console.error("Failed to refresh token:", err);
-    }
+    } catch {}
     return null;
   }
 
-  async function fetchUsers(page = 1) {
-    try {
-      let token = localStorage.getItem("accessToken");
-      let res = await fetch(`/api/admin/users?page=${page}&limit=20`, {
-        headers: {
-          Authorization: `Bearer ${token || ""}`,
-        },
-      });
-
-      if (res.status === 401) {
-        const newToken = await refreshAccessToken();
-        if (newToken) {
-          res = await fetch(`/api/admin/users?page=${page}&limit=20`, {
-            headers: {
-              Authorization: `Bearer ${newToken}`,
-            },
-          });
-        }
-      }
-
-      if (res.status === 401 || res.status === 403) {
-        localStorage.removeItem("adminUnlocked");
-        setIsUnlocked(false);
-        setError("Your session has expired or you do not have permission. Please sign in as an admin.");
-        return;
-      }
-
-      if (!res.ok) {
-        throw new Error("Access denied or token invalid");
-      }
-
-      const data = await res.json();
-      setUsers(Array.isArray(data.data) ? data.data : []);
-      setPagination(data.pagination);
-    } catch (err) {
-      console.error("Error fetching users:", err);
-      setError("You must be signed in as an admin to view this page.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
   useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (!token) {
-      setIsLoggedIn(false);
-      setLoading(false);
-      return;
+    async function loadStats() {
+      try {
+        let token = localStorage.getItem("accessToken");
+
+        // Fetch user count
+        let usersRes = await fetch("/api/admin/users?page=1&limit=1", {
+          headers: { Authorization: `Bearer ${token || ""}` },
+        });
+        if (usersRes.status === 401) {
+          const newToken = await refreshAccessToken();
+          if (newToken) {
+            token = newToken;
+            usersRes = await fetch("/api/admin/users?page=1&limit=1", {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+          }
+        }
+        if (usersRes.ok) {
+          const usersData = await usersRes.json();
+          setUserCount(usersData.pagination?.total ?? 0);
+        }
+
+        // Fetch contact count
+        let contactsRes = await fetch("/api/admin/contacts", {
+          headers: { Authorization: `Bearer ${token || ""}` },
+        });
+        if (contactsRes.status === 401) {
+          const newToken = await refreshAccessToken();
+          if (newToken) {
+            token = newToken;
+            contactsRes = await fetch("/api/admin/contacts", {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+          }
+        }
+        if (contactsRes.ok) {
+          const contactsData = await contactsRes.json();
+          setContactCount(contactsData.data?.length ?? 0);
+        }
+      } catch (err) {
+        console.error("Failed to load dashboard stats:", err);
+      } finally {
+        setLoading(false);
+      }
     }
 
-    const unlocked = localStorage.getItem("adminUnlocked") === "true";
-    setIsUnlocked(unlocked);
-
-    if (!unlocked) {
-      setLoading(false);
-      return;
-    }
-
-    fetchUsers();
+    loadStats();
   }, []);
 
-  const handleRoleChange = async (id: string, newRole: string) => {
-    try {
-      let token = localStorage.getItem("accessToken");
-      let res = await fetch(`/api/admin/users/${id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token || ""}`,
-        },
-        body: JSON.stringify({ role: newRole }),
-      });
-
-      if (res.status === 401) {
-        const newToken = await refreshAccessToken();
-        if (newToken) {
-          res = await fetch(`/api/admin/users/${id}`, {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${newToken}`,
-            },
-            body: JSON.stringify({ role: newRole }),
-          });
-        }
-      }
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        // ✅ Show backend message instead of generic error
-        setError(data.message || "Role update failed");
-        return;
-      }
-
-      setUsers(users.map(u => (u._id === id ? { ...u, role: newRole } : u)));
-      setError("");
-    } catch (err) {
-      console.error("Error updating role:", err);
-      setError("Could not update user role. Please sign in as an admin.");
-    }
-  };
-
-  const handleDeleteUser = async (id: string, role: string) => {
-    if (role !== "user") {
-      setError("Only users can be deleted directly. Demote admins first.");
-      return;
-    }
-
-    try {
-      let token = localStorage.getItem("accessToken");
-      let res = await fetch(`/api/admin/users/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token || ""}`,
-        },
-      });
-
-      if (res.status === 401) {
-        const newToken = await refreshAccessToken();
-        if (newToken) {
-          res = await fetch(`/api/admin/users/${id}`, {
-            method: "DELETE",
-            headers: {
-              Authorization: `Bearer ${newToken}`,
-            },
-          });
-        }
-      }
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.message || "Failed to delete user");
-        return;
-      }
-
-      // Remove from state
-      setUsers(users.filter(u => u._id !== id));
-      setError("");
-    } catch (err) {
-      console.error("Error deleting user:", err);
-      setError("Could not delete user. Please try again.");
-    }
-  };
-
-
-
-  const filtered = useMemo(
-    () =>
-      users.filter(u =>
-        [u.name, u.email, u._id].some(field =>
-          field.toLowerCase().includes(search.toLowerCase())
-        )
-      ),
-    [users, search]
-  );
-
-  const handleUnlock = () => {
-    const expectedPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "Admin2026";
-
-    if (password === expectedPassword) {
-      localStorage.setItem("adminUnlocked", "true");
-      setIsUnlocked(true);
-      setError("");
-      window.location.reload();
-      return;
-    }
-
-    setError("Incorrect admin password.");
-  };
+  const stats = [
+    {
+      label: "Total Users",
+      value: userCount,
+      icon: Users,
+      color: "from-blue-500 to-cyan-500",
+      bgGlow: "bg-blue-500/10",
+      iconColor: "text-blue-400",
+      href: "/admin/users",
+    },
+    {
+      label: "Contact Messages",
+      value: contactCount,
+      icon: Mail,
+      color: "from-purple-500 to-pink-500",
+      bgGlow: "bg-purple-500/10",
+      iconColor: "text-purple-400",
+      href: "/admin/contacts",
+    },
+  ];
 
   return (
-    <div className="mx-auto bg-zinc-50 font-sans dark:bg-black min-h-screen text-black dark:text-zinc-50">
-      <Navbar />
-      <div className="mx-auto max-w-7xl p-6">
-        <h2 className="text-2xl font-bold mb-4">User Role Management</h2>
-        <p className="mb-4 text-sm">This page is protected with an extra admin password gate and an admin-role token check.</p>
+    <div className="max-w-6xl mx-auto">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-100 to-slate-300 bg-clip-text text-transparent">
+          Admin Dashboard
+        </h1>
+        <p className="text-sm text-slate-400 mt-1">Overview of your platform&apos;s key metrics.</p>
+      </div>
 
-        {!isLoggedIn ? (
-          <div className="max-w-md rounded border border-red-200 bg-red-50 p-4 shadow-sm text-red-800">
-            <p className="mb-3 font-semibold">You must be logged in to view this page.</p>
-            <a href="/login" className="inline-block rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
-              Go to Login
-            </a>
-          </div>
-        ) : !isUnlocked ? (
-
-          /* Admin password modal */
-          <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50">
-            <div className="bg-gray-800 text-white rounded-xl shadow-2xl max-w-sm w-full mx-4 p-8 space-y-4">
-              <h2 className="text-xl font-semibold text-center mb-2">Admin Access Required</h2>
-              <p className="text-sm text-gray-300 text-center mb-4">Enter the admin password to unlock the panel.</p>
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
+        {stats.map((stat) => {
+          const Icon = stat.icon;
+          return (
+            <Link
+              key={stat.label}
+              href={stat.href}
+              className="group relative bg-gray-900/60 border border-slate-800/80 rounded-2xl p-6 hover:border-slate-700 transition-all hover:shadow-lg hover:shadow-black/20"
+            >
+              <div className={`absolute inset-0 rounded-2xl ${stat.bgGlow} opacity-0 group-hover:opacity-100 transition-opacity`} />
               <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  className="w-full px-4 py-2 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  placeholder="Admin password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-2 flex items-center text-gray-400 hover:text-gray-200"
-                  aria-label="Toggle password visibility"
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
+                <div className="flex items-center justify-between mb-4">
+                  <div className={`h-10 w-10 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center shadow-lg`}>
+                    <Icon size={18} className="text-white" />
+                  </div>
+                  <ArrowRight size={16} className="text-slate-600 group-hover:text-slate-400 transition-colors" />
+                </div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">{stat.label}</p>
+                {loading ? (
+                  <div className="h-8 w-16 bg-slate-800 rounded animate-pulse" />
+                ) : (
+                  <p className="text-3xl font-bold text-slate-100">{stat.value ?? "—"}</p>
+                )}
               </div>
-              {error && (
-                <p className="mt-2 text-sm text-red-400 text-center animate-pulse" role="alert">{error}</p>
-              )}
-              <button
-                onClick={handleUnlock}
-                className="w-full mt-4 py-2 bg-indigo-600 hover:bg-indigo-500 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-400"
-              >
-                Unlock Panel
-              </button>
+            </Link>
+          );
+        })}
+
+        {/* System Health Card */}
+        <div className="bg-gray-900/60 border border-slate-800/80 rounded-2xl p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg">
+              <Activity size={18} className="text-white" />
             </div>
           </div>
-        ) : (
-          <>
-            <input
-              type="text"
-              placeholder="Search by name, email, or ID"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="border p-2 mb-4 w-full text-black rounded"
-            />
+          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">System Status</p>
+          <div className="flex items-center gap-2 mt-1">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+            </span>
+            <p className="text-lg font-bold text-emerald-400">Online</p>
+          </div>
+        </div>
+      </div>
 
-            {error && <p className="mb-3 text-sm text-red-500">{error}</p>}
-
-            {loading ? (
-              <p>Loading users...</p>
-            ) : (
-              <table className="w-full bg-gray-50 border-collapse border">
-                <thead>
-                  <tr className="bg-gray-200 text-black">
-                    <th className="border text-center border-gray-300 p-1">Name</th>
-                    <th className="border text-center border-gray-300 p-1">UserId</th>
-                    <th className="border text-center border-gray-300 p-1">Email</th>
-                    <th className="border text-center border-gray-300 p-1">Role</th>
-                    <th className="border text-center border-gray-300 p-1">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="text-black">
-                  {filtered.map(user => (
-                    <tr key={user._id}>
-                      <td className="border text-center border-gray-300 p-1">{user.name}</td>
-                      <td className="border text-center border-gray-300 p-1">{user._id}</td>
-                      <td className="border text-center border-gray-300 p-1">{user.email}</td>
-                      <td className="border text-center border-gray-300 p-1"><span
-                        className={`px-2 py-1 rounded text-xs font-semibold ${user.role === "owner"
-                          ? "bg-yellow-500 text-white"
-                          : user.role === "superuser"
-                            ? "bg-purple-500 text-white"
-                            : user.role === "admin"
-                              ? "bg-blue-500 text-white"
-                              : "bg-gray-300 text-black"
-                          }`}
-                      >
-                        {user.role}
-                      </span>
-                        {/* Delete button */}
-                        <button
-                          onClick={() => handleDeleteUser(user._id, user.role)}
-                          className="ml-2 px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 disabled:bg-red-300"
-                          disabled={user.role !== "user"} // only allow deleting users
-                        >
-                          Delete
-                        </button>
-                      </td>
-                      <td className="border text-center border-gray-300 p-1">
-                        <select
-                          value={user.role}
-                          onChange={e => handleRoleChange(user._id, e.target.value)}
-                          className="border p-1 rounded"
-                          disabled={
-                            (user.role === "owner" && currentRole !== "owner") ||
-                            (user.role === "superuser" && currentRole !== "owner")
-                          }
-
-                        >
-                          <option value="user">User</option>
-                          <option value="admin">Admin</option>
-                          <option value="superuser">SuperUser</option>
-                          <option value="owner">Owner</option>
-                        </select>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-
-            {pagination && (
-              <div className="flex justify-between items-center mt-4">
-                <button
-                  disabled={pagination.page <= 1}
-                  onClick={() => fetchUsers(pagination.page - 1)}
-                  className="px-3 py-1 bg-blue-200/50 backdrop-blur rounded disabled:opacity-50 disabled:hover:bg-blue-200/50 hover:bg-blue-600 disabled:cursor-not-allowed cursor-pointer"
-                >
-                  Prev
-                </button>
-                <span>
-                  Page {pagination.page} of {pagination.totalPages}
-                </span>
-                <button
-                  disabled={pagination.page >= pagination.totalPages}
-                  onClick={() => fetchUsers(pagination.page + 1)}
-                  className="px-3 py-1 bg-blue-200/50 backdrop-blur rounded disabled:opacity-50 disabled:hover:bg-blue-200/50 hover:bg-blue-600 disabled:cursor-not-allowed cursor-pointer"
-                >
-                  Next
-                </button>
-              </div>
-            )}
-          </>
-        )}
+      {/* Quick Actions */}
+      <div className="bg-gray-900/40 border border-slate-800/60 rounded-2xl p-6">
+        <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 mb-4">Quick Actions</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <Link
+            href="/admin/users"
+            className="flex items-center gap-3 px-4 py-3 bg-slate-800/40 border border-slate-800 rounded-xl hover:bg-slate-800/70 hover:border-slate-700 transition-all group"
+          >
+            <Shield size={16} className="text-blue-400" />
+            <div>
+              <p className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors">Manage User Roles</p>
+              <p className="text-xs text-slate-500">Promote, demote, or remove users</p>
+            </div>
+          </Link>
+          <Link
+            href="/admin/contacts"
+            className="flex items-center gap-3 px-4 py-3 bg-slate-800/40 border border-slate-800 rounded-xl hover:bg-slate-800/70 hover:border-slate-700 transition-all group"
+          >
+            <Mail size={16} className="text-purple-400" />
+            <div>
+              <p className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors">View Contact Messages</p>
+              <p className="text-xs text-slate-500">Read incoming contact form submissions</p>
+            </div>
+          </Link>
+        </div>
       </div>
     </div>
   );

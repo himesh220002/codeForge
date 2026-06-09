@@ -77,7 +77,7 @@ export default function Navbar() {
             <Home size={14} className="text-blue-400" />
             <span>Home</span>
           </Link>
-          <Link href="/loginFlow" className="flex items-center gap-1.5 hover:text-white transition-colors py-1">
+          <Link href="/flowDiagrams/loginFlow" className="flex items-center gap-1.5 hover:text-white transition-colors py-1">
             <GitBranch size={14} className="text-indigo-400" />
             <span>Architecture Flow</span>
           </Link>

@@ -10,7 +10,7 @@ export default function AdminDashboard() {
 
   async function refreshAccessToken(): Promise<string | null> {
     try {
-      const res = await fetch("/api/auth/refresh", { method: "POST" });
+      const res = await fetch("/codeforge/api/auth/refresh", { method: "POST" });
       if (res.ok) {
         const data = await res.json();
         if (data.accessToken) {
@@ -28,14 +28,14 @@ export default function AdminDashboard() {
         let token = localStorage.getItem("accessToken");
 
         // Fetch user count
-        let usersRes = await fetch("/api/admin/users?page=1&limit=1", {
+        let usersRes = await fetch("/codeforge/api/admin/users?page=1&limit=1", {
           headers: { Authorization: `Bearer ${token || ""}` },
         });
         if (usersRes.status === 401) {
           const newToken = await refreshAccessToken();
           if (newToken) {
             token = newToken;
-            usersRes = await fetch("/api/admin/users?page=1&limit=1", {
+            usersRes = await fetch("/codeforge/api/admin/users?page=1&limit=1", {
               headers: { Authorization: `Bearer ${token}` },
             });
           }
@@ -46,14 +46,14 @@ export default function AdminDashboard() {
         }
 
         // Fetch contact count
-        let contactsRes = await fetch("/api/admin/contacts", {
+        let contactsRes = await fetch("/codeforge/api/admin/contacts", {
           headers: { Authorization: `Bearer ${token || ""}` },
         });
         if (contactsRes.status === 401) {
           const newToken = await refreshAccessToken();
           if (newToken) {
             token = newToken;
-            contactsRes = await fetch("/api/admin/contacts", {
+            contactsRes = await fetch("/codeforge/api/admin/contacts", {
               headers: { Authorization: `Bearer ${token}` },
             });
           }

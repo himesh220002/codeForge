@@ -33,7 +33,7 @@ export default function LoginPage() {
         setError('');
         setMessage('');
 
-        const endpoint = isSignup ? '/api/auth/signup' : '/api/auth/login';
+        const endpoint = isSignup ? '/codeforge/api/auth/signup' : '/codeforge/api/auth/login';
         const body = isSignup ? { email, password, name } : { email, password };
 
         try {
@@ -64,7 +64,7 @@ export default function LoginPage() {
 
             setRedirecting(true);
             setTimeout(() => {
-                window.location.href = "/";
+                window.location.href = "/codeforge";
             }, 1500);
 
             //reset form

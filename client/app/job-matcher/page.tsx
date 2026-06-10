@@ -1,6 +1,7 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import Navbar from '@/components/navbar';
 import Footer from '@/components/footer';
 import {
@@ -14,10 +15,57 @@ import {
   Loader2,
   UserCheck,
   Compass,
-  Send
+  Send,
+  Upload
 } from 'lucide-react';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
+const loadPdfJs = (): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    if (typeof window === 'undefined') {
+      reject(new Error("Cannot run PDF parsing on server-side"));
+      return;
+    }
+    if ((window as any).pdfjsLib) {
+      resolve((window as any).pdfjsLib);
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js";
+    script.onload = () => {
+      const pdfjsLib = (window as any).pdfjsLib;
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js";
+      resolve(pdfjsLib);
+    };
+    script.onerror = (e) => reject(new Error("Failed to load PDF.js from CDN"));
+    document.body.appendChild(script);
+  });
+};
+
+const extractTextFromPdf = async (file: File): Promise<string> => {
+  const pdfjsLib = await loadPdfJs();
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = async () => {
+      try {
+        const typedArray = new Uint8Array(reader.result as ArrayBuffer);
+        const pdf = await pdfjsLib.getDocument({ data: typedArray }).promise;
+        let extractedText = "";
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const content = await page.getTextContent();
+          extractedText += content.items.map((item: any) => item.str).join(" ") + "\n";
+        }
+        resolve(extractedText);
+      } catch (err) {
+        reject(err);
+      }
+    };
+    reader.onerror = (err) => reject(err);
+    reader.readAsArrayBuffer(file);
+  });
+};
 
 interface JobMatch {
   _id: string;
@@ -114,6 +162,15 @@ export default function JobMatcherPage() {
   const [matches, setMatches] = useState<JobMatch[]>([]);
   const [strategy, setStrategy] = useState('');
   const [loadingStep, setLoadingStep] = useState(0);
+  const [parsingPdf, setParsingPdf] = useState(false);
+
+  // Load existing CV text from local storage if present
+  useEffect(() => {
+    const savedCv = localStorage.getItem("uploaded_pdf_text");
+    if (savedCv) {
+      setCvText(savedCv);
+    }
+  }, []);
 
   const pipelineSteps = [
     "Scraping latest live developer job listings in India...",
@@ -138,6 +195,30 @@ SKILLS:
 - Database: MongoDB, Mongoose, Redis
 - Infrastructure: Docker, Apache Kafka, GitHub Actions
 - Languages: JavaScript, Python, HTML/CSS`);
+  };
+
+  const handlePdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setParsingPdf(true);
+    setError('');
+    setSuccess('');
+    try {
+      const extractedText = await extractTextFromPdf(file);
+      setCvText(extractedText);
+      localStorage.setItem("uploaded_pdf_text", extractedText);
+      setSuccess("📄 Your PDF has been parsed and stored locally on your computer. No one else can see or use it. It will remain until you log out or close your session.");
+      // Auto-clear alert message after 8 seconds
+      setTimeout(() => setSuccess(''), 8000);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to parse PDF resume: " + (err instanceof Error ? err.message : String(err)));
+    } finally {
+      setParsingPdf(false);
+      // Reset input value so same file can be uploaded again
+      e.target.value = '';
+    }
   };
 
   const handleSeedJobs = async () => {
@@ -175,9 +256,15 @@ SKILLS:
     setStrategy('');
 
     try {
+      const apiKey = localStorage.getItem("nvidia_api_key");
+      const headers: any = { 'Content-Type': 'application/json' };
+      if (apiKey) {
+        headers['Authorization'] = `Bearer ${apiKey}`;
+      }
+
       const res = await fetch(`${API_BASE_URL}/api/jobs/match`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ cvText, prompt }),
       });
 
@@ -199,7 +286,7 @@ SKILLS:
 
         buffer += decoder.decode(value, { stream: true });
         const lines = buffer.split('\n');
-        
+
         // Save the last partial line back to the buffer
         buffer = lines.pop() || "";
 
@@ -210,9 +297,31 @@ SKILLS:
             if (payload.type === 'progress') {
               setLoadingStep(payload.step);
             } else if (payload.type === 'result') {
-              setMatches(payload.data.matches || []);
-              setStrategy(payload.data.strategy || '');
+              const matchesList = payload.data.matches || [];
+              const strategyText = payload.data.strategy || '';
+              setMatches(matchesList);
+              setStrategy(strategyText);
               setSuccess('AI similarity search and strategy generation completed successfully!');
+
+              // Save details to profile history list in localStorage
+              if (matchesList.length > 0 || strategyText) {
+                const averageScore = matchesList.length > 0
+                  ? (matchesList.reduce((acc: number, m: any) => acc + (m.score || 0), 0) / matchesList.length) * 100
+                  : 0;
+
+                const newHistoryItem = {
+                  id: Date.now().toString(),
+                  timestamp: new Date().toLocaleString(),
+                  cvText: cvText,
+                  prompt: prompt,
+                  matches: matchesList,
+                  strategy: strategyText,
+                  rating: Math.round(averageScore)
+                };
+
+                const existingHistory = JSON.parse(localStorage.getItem("profile_history") || "[]");
+                localStorage.setItem("profile_history", JSON.stringify([newHistoryItem, ...existingHistory]));
+              }
             } else if (payload.type === 'error') {
               setError(payload.message || 'Error occurred during pipeline step.');
               setLoading(false);
@@ -271,26 +380,60 @@ SKILLS:
           )}
         </div>
 
+        {/* BYOK Settings Section */}
+        <div className="bg-gray-900/30 border border-slate-850 rounded-2xl p-6 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h4 className="text-sm font-bold text-white flex items-center gap-1.5">
+              <span className="text-xl">🔑</span>
+              BYOK Integration
+            </h4>
+            <p className="text-xs text-slate-400 mt-1 max-w-sm leading-relaxed">
+              Bring your own NVIDIA API key to enable job searching locally. Keys are stored safely in your browser.
+            </p>
+          </div>
+          <Link
+            href="/settings"
+            className="w-full sm:w-auto shrink-0 bg-indigo-600/10 hover:bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 hover:text-indigo-300 text-xs font-semibold px-4 py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5"
+          >
+            Configure Settings
+          </Link>
+        </div>
+
         {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-7xl mx-auto relative z-10">
+
+
 
           {/* Left Column: Input Form */}
           <div className="lg:col-span-5 space-y-6">
             <div className="bg-gray-900/60 backdrop-blur-xl border border-slate-800/85 rounded-2xl p-6 shadow-xl relative">
-              <div className="flex justify-between items-center mb-6">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-6 border-b border-slate-800/60 pb-4">
                 <div className="flex items-center gap-2">
                   <div className="h-8 w-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400">
                     <UserCheck size={16} />
                   </div>
                   <h3 className="font-bold text-white text-base">Profile Input</h3>
                 </div>
-                <button
-                  type="button"
-                  onClick={handleLoadSampleCV}
-                  className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 transition-colors bg-indigo-500/5 hover:bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-1 rounded-lg"
-                >
-                  Load Sample CV
-                </button>
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <label className="text-xs font-semibold text-teal-400 hover:text-teal-300 transition-colors bg-teal-500/5 hover:bg-teal-500/10 border border-teal-500/20 px-2.5 py-1.5 rounded-lg cursor-pointer flex items-center gap-1.5 shadow-inner">
+                    <Upload size={12} />
+                    <span>{parsingPdf ? "Parsing..." : "Upload PDF"}</span>
+                    <input
+                      type="file"
+                      accept="application/pdf"
+                      className="hidden"
+                      onChange={handlePdfUpload}
+                      disabled={parsingPdf}
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={handleLoadSampleCV}
+                    className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 transition-colors bg-indigo-500/5 hover:bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-1.5 rounded-lg cursor-pointer"
+                  >
+                    Load Sample CV
+                  </button>
+                </div>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -371,6 +514,26 @@ SKILLS:
                 )}
               </button>
             </div>
+
+            {/* BYOK Settings Section */}
+            <div className="bg-gray-900/30 border border-slate-850 rounded-2xl p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div>
+                <h4 className="text-sm font-bold text-white flex items-center gap-1.5">
+                  <span className="text-xl">🔑</span>
+                  BYOK Integration
+                </h4>
+                <p className="text-xs text-slate-400 mt-1 max-w-sm leading-relaxed">
+                  Bring your own NVIDIA API key to enable job searching locally. Keys are stored safely in your browser.
+                </p>
+              </div>
+              <Link
+                href="/settings"
+                className="w-full sm:w-auto shrink-0 bg-indigo-600/10 hover:bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 hover:text-indigo-300 text-xs font-semibold px-4 py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5"
+              >
+                Configure Settings
+              </Link>
+            </div>
+
           </div>
 
           {/* Right Column: Output / Results */}

@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
 import mermaid from "mermaid";
+import Link from "next/link";
 
 export default function ContactFlowPage() {
     const ref = useRef<HTMLDivElement>(null);
@@ -40,12 +41,12 @@ export default function ContactFlowPage() {
                         Interactive lifecycle flow and file relationship directory map
                     </p>
                 </div>
-                <a
+                <Link
                     href="/"
                     className="px-4 py-2 bg-pink-900 hover:bg-pink-800 border border-pink-700 text-sm font-medium rounded-lg transition-colors"
                 >
                     Go Back Home
-                </a>
+                </Link>
             </header>
             {/* Flow Diagram */}
             <section className="p-6 border-b border-gray-800 bg-gray-900/50">

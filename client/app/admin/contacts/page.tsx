@@ -19,7 +19,7 @@ export default function AdminContactsPage() {
 
   async function refreshAccessToken(): Promise<string | null> {
     try {
-      const res = await fetch("/api/auth/refresh", { method: "POST" });
+      const res = await fetch("/codeforge/api/auth/refresh", { method: "POST" });
       if (res.ok) {
         const data = await res.json();
         if (data.accessToken) {
@@ -34,14 +34,14 @@ export default function AdminContactsPage() {
   async function fetchContacts() {
     try {
       let token = localStorage.getItem("accessToken");
-      let res = await fetch("/api/admin/contacts", {
+      let res = await fetch("/codeforge/api/admin/contacts", {
         headers: { Authorization: `Bearer ${token || ""}` },
       });
 
       if (res.status === 401) {
         const newToken = await refreshAccessToken();
         if (newToken) {
-          res = await fetch("/api/admin/contacts", {
+          res = await fetch("/codeforge/api/admin/contacts", {
             headers: { Authorization: `Bearer ${newToken}` },
           });
         }

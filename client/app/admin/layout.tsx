@@ -66,9 +66,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </div>
             <p className="mb-3 font-semibold text-lg text-red-300">Authentication Required</p>
             <p className="text-sm text-slate-400 mb-6">You must be logged in to access the admin panel.</p>
-            <a href="/login" className="inline-block rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-2.5 text-sm font-semibold text-white hover:from-blue-500 hover:to-indigo-500 transition-all shadow-lg shadow-blue-500/15">
+            <Link href="/login" className="inline-block rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-2.5 text-sm font-semibold text-white hover:from-blue-500 hover:to-indigo-500 transition-all shadow-lg shadow-blue-500/15">
               Go to Login
-            </a>
+            </Link>
           </div>
         </div>
       </div>

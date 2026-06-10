@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
 import mermaid from "mermaid";
+import Link from "next/link";
 
 export default function AIJobSearchFlowPage() {
     const ref = useRef<HTMLDivElement>(null);
@@ -40,12 +41,12 @@ export default function AIJobSearchFlowPage() {
                         Comprehensive processing maps showing vectorization, local search, reranking, and LLM output streams.
                     </p>
                 </div>
-                <a
+                <Link
                     href="/"
                     className="px-4 py-2 bg-indigo-900 hover:bg-indigo-800 border border-indigo-700 text-sm font-medium rounded-lg transition-colors"
                 >
                     Go Back Home
-                </a>
+                </Link>
             </header>
 
             {/* Sequence Flow */}

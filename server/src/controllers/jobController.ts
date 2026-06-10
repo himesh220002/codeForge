@@ -5,6 +5,7 @@ import { getEmbedding, cosineSimilarity, generateJobMatchStrategy, scrapeLatestJ
 // Seed job postings into the database
 export const seedJobsController = async (req: Request, res: Response) => {
   try {
+    const devApiKey = req.headers.authorization?.replace("Bearer ", "") || process.env.NVIDIA_API_KEY || "";
     // Delete existing jobs to avoid duplicates
     await JobModel.deleteMany({});
 
@@ -47,7 +48,7 @@ export const seedJobsController = async (req: Request, res: Response) => {
     for (const job of mockJobs) {
       // Create a combined text profile for embedding
       const profileText = `Title: ${job.title}\nCompany: ${job.company}\nDescription: ${job.description}`;
-      const embedding = await getEmbedding(profileText, 'passage');
+      const embedding = await getEmbedding(profileText, 'passage', devApiKey);
 
       const newJob = new JobModel({
         ...job,
@@ -103,6 +104,23 @@ export const matchJobsController = async (req: Request, res: Response) => {
     const searchPrompt = prompt || "Find jobs matching my profile.";
     console.log("Matching jobs for CV... Preferences:", searchPrompt);
 
+    // Extract user API key for BYOK support
+    const userApiKey = req.headers.authorization?.replace("Bearer ", "") || undefined;
+    
+    // In production (Render), we strictly require userApiKey.
+    // In local development, we can fall back to process.env.NVIDIA_API_KEY.
+    const isProduction = process.env.NODE_ENV === "production";
+    const apiKeyToUse = userApiKey || (!isProduction ? process.env.NVIDIA_API_KEY : undefined);
+
+    if (!apiKeyToUse || apiKeyToUse.trim() === "") {
+      res.status(401);
+      res.write(JSON.stringify({
+        type: 'error',
+        message: "NVIDIA API Key is required. Please add your key in the profile settings page."
+      }) + '\n');
+      return res.end();
+    }
+
     // Step 0: Fetching the latest live postings
     sendProgress(0);
 
@@ -128,7 +146,7 @@ export const matchJobsController = async (req: Request, res: Response) => {
         for (const job of newJobsToEmbed) {
           try {
             const profileText = `Title: ${job.title}\nCompany: ${job.company}\nDescription: ${job.description}`;
-            const embedding = await getEmbedding(profileText, 'passage');
+            const embedding = await getEmbedding(profileText, 'passage', apiKeyToUse);
             embeddedJobs.push({
               title: job.title,
               company: job.company,
@@ -155,7 +173,7 @@ export const matchJobsController = async (req: Request, res: Response) => {
 
     // 2. Generate query embedding combining prompt and CV highlights
     const queryCombined = `Preferences: ${searchPrompt}\nCV Profile: ${cvText}`;
-    const queryVector = await getEmbedding(queryCombined, 'query');
+    const queryVector = await getEmbedding(queryCombined, 'query', apiKeyToUse);
 
     // Step 3: Local semantic retrieval cosine similarity matching
     sendProgress(3);
@@ -206,7 +224,7 @@ export const matchJobsController = async (req: Request, res: Response) => {
 
     // 6. Apply Llama-Nemotron-Rerank to optimize the top matches
     console.log("Applying Llama-Nemotron-Rerank to select top 5 matches for strategy generation...");
-    const rerankedMatches = await rerankJobs(queryCombined, topMatches);
+    const rerankedMatches = await rerankJobs(queryCombined, topMatches, apiKeyToUse);
     const top5Reranked = rerankedMatches.slice(0, 5);
 
     // Step 5: Generating career strategy & outreach pitches via DeepSeek Pro
@@ -214,7 +232,7 @@ export const matchJobsController = async (req: Request, res: Response) => {
 
     // 7. Generate career matches strategy and cover letters using DeepSeek
     console.log("Generating matching strategy with DeepSeek V4...");
-    const aiStrategy = await generateJobMatchStrategy(cvText, searchPrompt, top5Reranked);
+    const aiStrategy = await generateJobMatchStrategy(cvText, searchPrompt, top5Reranked, apiKeyToUse);
 
     // Send final result object
     res.write(JSON.stringify({

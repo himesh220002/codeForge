@@ -2,6 +2,7 @@
 import { useEffect, useState, useRef } from "react";
 import mermaid from "mermaid";
 import { Folder, FolderOpen, FileCode, ChevronDown, ChevronRight, Link2, Info, ArrowRightLeft } from "lucide-react";
+import Link from "next/link";
 
 interface FileDetail {
   id: string;
@@ -271,9 +272,9 @@ export default function AdminPage() {
           </h1>
           <p className="text-gray-400 text-sm mt-1">Interactive system flows and file relationship directory map</p>
         </div>
-        <a href="/" className="px-4 py-2 bg-blue-900 hover:bg-blue-800 border border-blue-700 text-sm font-medium rounded-lg transition-colors">
+        <Link href="/" className="px-4 py-2 bg-blue-900 hover:bg-blue-800 border border-blue-700 text-sm font-medium rounded-lg transition-colors">
           Go Back Home
-        </a>
+        </Link>
       </header>
 
       {/* Flow Diagram */}

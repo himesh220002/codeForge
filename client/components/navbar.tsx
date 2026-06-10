@@ -1,7 +1,7 @@
 "use client"
 import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
-import { User, LogOut, ChevronDown, LayoutDashboard, Shield, GitBranch, BookOpen, Home, Briefcase } from "lucide-react";
+import { User, LogOut, ChevronDown, LayoutDashboard, Shield, GitBranch, BookOpen, Home, Briefcase, Settings } from "lucide-react";
 
 export default function Navbar() {
   const [userName, setUserName] = useState<string | null>(null);
@@ -45,7 +45,7 @@ export default function Navbar() {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("userName");
     localStorage.removeItem("adminUnlocked");
-    window.location.href = "/login"; // redirect to login
+    window.location.href = "/codeforge/login"; // redirect to login
   };
 
   const getInitials = (name: string) => {
@@ -128,9 +128,17 @@ export default function Navbar() {
                   </div>
                   
                   <div className="py-1">
+                    <Link href="/profile" className="flex items-center gap-2 px-4 py-2 text-sm text-slate-350 hover:bg-slate-800 hover:text-white transition-colors">
+                      <User size={14} className="text-teal-400" />
+                      <span>My Profile</span>
+                    </Link>
                     <Link href="/admin" className="flex items-center gap-2 px-4 py-2 text-sm text-slate-350 hover:bg-slate-800 hover:text-white transition-colors">
                       <LayoutDashboard size={14} />
                       <span>Admin Panel</span>
+                    </Link>
+                    <Link href="/settings" className="flex items-center gap-2 px-4 py-2 text-sm text-slate-350 hover:bg-slate-800 hover:text-white transition-colors">
+                      <Settings size={14} />
+                      <span>Settings</span>
                     </Link>
                     <Link href="/loginFlow" className="flex items-center gap-2 px-4 py-2 text-sm text-slate-350 hover:bg-slate-800 hover:text-white transition-colors">
                       <GitBranch size={14} />

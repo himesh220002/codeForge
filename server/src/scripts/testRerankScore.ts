@@ -22,7 +22,7 @@ async function main() {
   // Get query embedding
   const queryText = "Preferences: Web Developer\nCV Profile: John Doe. Experienced in React, Next.js, and Node.js.";
   console.log("Generating query embedding...");
-  const queryVector = await getEmbedding(queryText, 'query');
+  const queryVector = await getEmbedding(queryText, 'query', process.env.NVIDIA_API_KEY || "");
 
   // Fetch jobs
   console.log("Fetching jobs from DB...");
@@ -49,7 +49,7 @@ async function main() {
   console.log(topMatches.map(j => ({ title: j.title, score: j.score })));
 
   console.log("Calling rerankJobs...");
-  const reranked = await rerankJobs(queryText, topMatches);
+  const reranked = await rerankJobs(queryText, topMatches, process.env.NVIDIA_API_KEY || "");
 
   console.log("Reranked matches returned:");
   console.log(reranked.map(j => ({ title: j.title, score: j.score, rerankLogit: j.rerankLogit })));

@@ -1,11 +1,11 @@
 import OpenAI from 'openai';
 
-const getOpenAIClient = () => {
-  if (!process.env.NVIDIA_API_KEY) {
-    throw new Error("NVIDIA_API_KEY environment variable is not defined.");
+const getOpenAIClient = (apiKey: string) => {
+  if (!apiKey) {
+    throw new Error("NVIDIA API Key is required.");
   }
   return new OpenAI({
-    apiKey: process.env.NVIDIA_API_KEY,
+    apiKey: apiKey,
     baseURL: 'https://integrate.api.nvidia.com/v1',
   });
 };
@@ -13,8 +13,8 @@ const getOpenAIClient = () => {
 /**
  * Generate embeddings using the asymmetric nvidia/llama-nemotron-embed-1b-v2 model.
  */
-export async function getEmbedding(text: string, inputType: 'query' | 'passage' = 'passage'): Promise<number[]> {
-  const openai = getOpenAIClient();
+export async function getEmbedding(text: string, inputType: 'query' | 'passage' = 'passage', apiKey: string): Promise<number[]> {
+  const openai = getOpenAIClient(apiKey);
   try {
     const response = await openai.embeddings.create({
       model: "nvidia/llama-nemotron-embed-1b-v2",
@@ -127,16 +127,17 @@ export async function scrapeLatestJobsIndia(): Promise<Array<{ title: string; co
  */
 export async function rerankJobs(
   queryText: string,
-  jobs: any[]
+  jobs: any[],
+  apiKey: string
 ): Promise<any[]> {
   if (!jobs || jobs.length === 0) return [];
-  if (!process.env.NVIDIA_API_KEY) {
-    throw new Error("NVIDIA_API_KEY environment variable is not defined.");
+  if (!apiKey) {
+    throw new Error("NVIDIA API Key is required.");
   }
 
   const invokeUrl = "https://ai.api.nvidia.com/v1/retrieval/nvidia/llama-nemotron-rerank-1b-v2/reranking";
   const headers = {
-    "Authorization": `Bearer ${process.env.NVIDIA_API_KEY}`,
+    "Authorization": `Bearer ${apiKey}`,
     "Accept": "application/json",
     "Content-Type": "application/json"
   };
@@ -198,9 +199,10 @@ export async function rerankJobs(
 export async function generateJobMatchStrategy(
   cvText: string,
   userPrompt: string,
-  matchedJobs: any[]
+  matchedJobs: any[],
+  apiKey: string
 ): Promise<string> {
-  const openai = getOpenAIClient();
+  const openai = getOpenAIClient(apiKey);
   const jobsContext = matchedJobs
     .map((job, idx) => {
       return `Job #${idx + 1}

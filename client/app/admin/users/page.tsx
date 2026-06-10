@@ -37,7 +37,7 @@ export default function AdminUsersPage() {
 
   async function refreshAccessToken(): Promise<string | null> {
     try {
-      const res = await fetch("/api/auth/refresh", { method: "POST" });
+      const res = await fetch("/codeforge/api/auth/refresh", { method: "POST" });
       if (res.ok) {
         const data = await res.json();
         if (data.accessToken) {
@@ -54,14 +54,14 @@ export default function AdminUsersPage() {
   async function fetchUsers(page = 1) {
     try {
       let token = localStorage.getItem("accessToken");
-      let res = await fetch(`/api/admin/users?page=${page}&limit=20`, {
+      let res = await fetch(`/codeforge/api/admin/users?page=${page}&limit=20`, {
         headers: { Authorization: `Bearer ${token || ""}` },
       });
 
       if (res.status === 401) {
         const newToken = await refreshAccessToken();
         if (newToken) {
-          res = await fetch(`/api/admin/users?page=${page}&limit=20`, {
+          res = await fetch(`/codeforge/api/admin/users?page=${page}&limit=20`, {
             headers: { Authorization: `Bearer ${newToken}` },
           });
         }
@@ -93,7 +93,7 @@ export default function AdminUsersPage() {
   const handleRoleChange = async (id: string, newRole: string) => {
     try {
       let token = localStorage.getItem("accessToken");
-      let res = await fetch(`/api/admin/users/${id}`, {
+      let res = await fetch(`/codeforge/api/admin/users/${id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -105,7 +105,7 @@ export default function AdminUsersPage() {
       if (res.status === 401) {
         const newToken = await refreshAccessToken();
         if (newToken) {
-          res = await fetch(`/api/admin/users/${id}`, {
+          res = await fetch(`/codeforge/api/admin/users/${id}`, {
             method: "PATCH",
             headers: {
               "Content-Type": "application/json",
@@ -138,7 +138,7 @@ export default function AdminUsersPage() {
 
     try {
       let token = localStorage.getItem("accessToken");
-      let res = await fetch(`/api/admin/users/${id}`, {
+      let res = await fetch(`/codeforge/api/admin/users/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token || ""}` },
       });
@@ -146,7 +146,7 @@ export default function AdminUsersPage() {
       if (res.status === 401) {
         const newToken = await refreshAccessToken();
         if (newToken) {
-          res = await fetch(`/api/admin/users/${id}`, {
+          res = await fetch(`/codeforge/api/admin/users/${id}`, {
             method: "DELETE",
             headers: { Authorization: `Bearer ${newToken}` },
           });

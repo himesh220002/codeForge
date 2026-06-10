@@ -28,11 +28,11 @@ async function main() {
 
   console.log("Reading LinkedIn CSV...");
   const linkedinContent = fs.readFileSync(linkedinCsvPath, 'utf8');
-  const linkedinRecords = parse(linkedinContent, { columns: true, skip_empty_lines: true }).slice(0, 100);
+  const linkedinRecords = parse(linkedinContent, { columns: true, skip_empty_lines: true }).slice(0, 500);
 
   console.log("Reading Naukri CSV...");
   const naukriContent = fs.readFileSync(naukriCsvPath, 'utf8');
-  const naukriRecords = parse(naukriContent, { columns: true, skip_empty_lines: true }).slice(0, 100);
+  const naukriRecords = parse(naukriContent, { columns: true, skip_empty_lines: true }).slice(0, 500);
 
   const jobsToInsert: any[] = [];
 
@@ -78,18 +78,27 @@ async function main() {
     });
   }
 
-  console.log(`Generating embeddings for ${jobsToInsert.length} CSV jobs in batches (this ensures we don't hit NVIDIA rate limits)...`);
+  // 1. Deduplication: Fetch existing signatures
+  console.log("Fetching existing jobs to prevent duplicate embeddings...");
+  const existingJobs = await JobModel.find({}, { title: 1, company: 1 });
+  const existingSigs = new Set(existingJobs.map(j => `${j.title}|${j.company}`));
+  
+  const newJobsToInsert = jobsToInsert.filter(job => !existingSigs.has(`${job.title}|${job.company}`));
+  
+  console.log(`Found ${jobsToInsert.length} total CSV jobs. Skipping ${jobsToInsert.length - newJobsToInsert.length} already in DB.`);
+  console.log(`Generating embeddings for ${newJobsToInsert.length} NEW CSV jobs in batches (inserting progressively)...`);
+  
   const batchSize = 10;
-  const embeddedJobs = [];
+  let totalInserted = 0;
 
-  for (let i = 0; i < jobsToInsert.length; i += batchSize) {
-    const batch = jobsToInsert.slice(i, i + batchSize);
-    console.log(`Processing embedding batch ${Math.floor(i / batchSize) + 1} of ${Math.ceil(jobsToInsert.length / batchSize)}`);
+  for (let i = 0; i < newJobsToInsert.length; i += batchSize) {
+    const batch = newJobsToInsert.slice(i, i + batchSize);
+    console.log(`Processing embedding batch ${Math.floor(i / batchSize) + 1} of ${Math.ceil(newJobsToInsert.length / batchSize)}`);
     
     const batchPromises = batch.map(async (job) => {
       try {
         const profileText = `Title: ${job.title}\nCompany: ${job.company}\nLocation: ${job.location}\nDescription: ${job.description}`;
-        const embedding = await getEmbedding(profileText, 'passage');
+        const embedding = await getEmbedding(profileText, 'passage', process.env.NVIDIA_API_KEY || "");
         return { ...job, embedding };
       } catch (e) {
         console.error(`Failed to embed job: [${job.title}]`, e);
@@ -98,14 +107,18 @@ async function main() {
     });
 
     const results = await Promise.all(batchPromises);
-    embeddedJobs.push(...results.filter(r => r !== null));
+    const validResults = results.filter(r => r !== null);
+    
+    // 2. Progressive database inserts
+    if (validResults.length > 0) {
+      await JobModel.insertMany(validResults);
+      totalInserted += validResults.length;
+      console.log(` -> Saved ${validResults.length} jobs to DB (Total progress: ${totalInserted}/${newJobsToInsert.length})`);
+    }
     
     // Pause briefly between batches
     await new Promise(r => setTimeout(r, 500));
   }
-
-  console.log(`Inserting ${embeddedJobs.length} embedded CSV jobs into MongoDB cache...`);
-  await JobModel.insertMany(embeddedJobs);
   
   const count = await JobModel.countDocuments();
   console.log(`Done! Total job listings now available in database cache: ${count}`);

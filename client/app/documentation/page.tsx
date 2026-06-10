@@ -11,6 +11,11 @@ const documentationTopics = [
     description: "Visualize the contact form lifecycle and architecture.",
     href: "/flowDiagrams/contactFlow", // points to client/app/flowDiagrams/contactFlow/page.tsx
   },
+  {
+    title: "AI Job Search RAG Flow",
+    description: "Visualize the dual-retrieval RAG pipeline, local cosine similarity, and Llama-Nemotron reranking workflow.",
+    href: "/flowDiagrams/aijobsearch",
+  },
 ];
 
 export default function DocumentationPage() {

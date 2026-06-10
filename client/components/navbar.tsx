@@ -1,7 +1,7 @@
 "use client"
 import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
-import { User, LogOut, ChevronDown, LayoutDashboard, Shield, GitBranch, BookOpen, Home } from "lucide-react";
+import { User, LogOut, ChevronDown, LayoutDashboard, Shield, GitBranch, BookOpen, Home, Briefcase } from "lucide-react";
 
 export default function Navbar() {
   const [userName, setUserName] = useState<string | null>(null);
@@ -80,6 +80,10 @@ export default function Navbar() {
           <Link href="/flowDiagrams/loginFlow" className="flex items-center gap-1.5 hover:text-white transition-colors py-1">
             <GitBranch size={14} className="text-indigo-400" />
             <span>Architecture Flow</span>
+          </Link>
+          <Link href="/job-matcher" className="flex items-center gap-1.5 hover:text-white transition-colors py-1">
+            <Briefcase size={14} className="text-amber-400" />
+            <span>AI Job Matcher</span>
           </Link>
           <Link href="/documentation" className="flex items-center gap-1.5 hover:text-white transition-colors py-1">
             <BookOpen size={14} className="text-emerald-400" />

@@ -6,6 +6,7 @@ import authRoutes from './routes/authRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import ownershipRoutes from "./routes/ownershipRoutes.js";
 import contactRoutes from "./routes/contactRoutes.js";
+import jobRoutes from "./routes/jobRoutes.js";
 
 dotenv.config();
 
@@ -38,6 +39,7 @@ app.use('/api/admin', adminRoutes);
 app.use("/api/ownership", ownershipRoutes);
 
 app.use("/api/contact", contactRoutes);
+app.use("/api/jobs", jobRoutes);
 
 
 app.get('/', (req, res) => {

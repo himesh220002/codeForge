@@ -54,13 +54,18 @@ export async function refreshController(req: Request, res: Response) {
   const user = await UserModel.findById(userId);
   if (!user) return res.status(404).json({ message: "User not found" });
 
-  // Issue new tokens
-  const tokens = await issueTokens(userId, user.role); // role can be looked up if needed
-  
   // Clean up the old session that was just refreshed
   await destroySession(userId, refreshToken);
 
-  res.json({ message: "Token refreshed", ...tokens });
+  // Issue new tokens
+  const { accessToken, refreshToken: newRefreshToken } = await issueTokens(userId, user.role);
+
+  // Set new refresh token in cookie
+  const isProd = process.env.NODE_ENV === "production";
+  const cookie = `refreshToken=${newRefreshToken}; HttpOnly; Path=/; Max-Age=608400; SameSite=Lax${isProd ? "; Secure" : ""}`;
+  res.setHeader("Set-Cookie", cookie);
+
+  res.json({ message: "Token refreshed", accessToken, role: user.role, name: user.name });
 }
 
 // Logout controller

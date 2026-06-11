@@ -1,17 +1,23 @@
 "use client"
 import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
-import { User, LogOut, ChevronDown, LayoutDashboard, Shield, GitBranch, BookOpen, Home, Briefcase, Settings } from "lucide-react";
+import { User, LogOut, ChevronDown, LayoutDashboard, Shield, GitBranch, BookOpen, Home, Briefcase, Settings, BriefcaseConveyorBelt } from "lucide-react";
 
 export default function Navbar() {
   const [userName, setUserName] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
-  const [open, setOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [open1, setOpen1] = useState(false);
+  const dropdownRef1 = useRef<HTMLDivElement>(null);
+
+  const [open2, setOpen2] = useState(false);
+  const dropdownRef2 = useRef<HTMLDivElement>(null);
+
+  const [open3, setOpen3] = useState(false);
+  const dropdownRef3 = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setUserName(localStorage.getItem("userName"));
-    
+
     const token = localStorage.getItem("accessToken");
     if (token) {
       try {
@@ -33,8 +39,28 @@ export default function Navbar() {
   // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setOpen(false);
+      if (dropdownRef1.current && !dropdownRef1.current.contains(event.target as Node)) {
+        setOpen1(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef2.current && !dropdownRef2.current.contains(event.target as Node)) {
+        setOpen2(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef3.current && !dropdownRef3.current.contains(event.target as Node)) {
+        setOpen3(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -60,7 +86,7 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full px-6 py-4 bg-gray-950/80 backdrop-blur-md border-b border-slate-800/80">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        
+
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group">
           <div className="h-9 w-9 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-extrabold text-lg shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform">
@@ -77,14 +103,55 @@ export default function Navbar() {
             <Home size={14} className="text-blue-400" />
             <span>Home</span>
           </Link>
-          <Link href="/flowDiagrams/loginFlow" className="flex items-center gap-1.5 hover:text-white transition-colors py-1">
-            <GitBranch size={14} className="text-indigo-400" />
-            <span>Architecture Flow</span>
-          </Link>
-          <Link href="/job-matcher" className="flex items-center gap-1.5 hover:text-white transition-colors py-1">
-            <Briefcase size={14} className="text-amber-400" />
-            <span>AI Job Matcher</span>
-          </Link>
+          <div className="relative" ref={dropdownRef1}>
+            <button
+              onClick={() => setOpen1(!open1)}
+              className="flex items-center gap-2 px-3 py-1.5 bg-slate-900 hover:bg-slate-850 border border-slate-850 hover:border-slate-700 rounded-full transition-all text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+            >
+              <GitBranch size={14} className="text-indigo-400" />
+              <span>Architecture Flow</span>
+            </button>
+            {open1 && (
+              <div className="absolute right-0 mt-2 w-56 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl py-1.5 text-slate-300 animate-in fade-in slide-in-from-top-2 duration-150">
+                <div className="py-1">
+                  <Link href="/flowDiagrams/loginFlow" className="flex items-center gap-2 px-4 py-2 text-sm text-slate-350 hover:bg-slate-800 hover:text-white transition-colors">
+                    <GitBranch size={14} className="text-indigo-400" />
+                    <span>Auth Lifecycles</span>
+                  </Link>
+                  <Link href="/flowDiagrams/atsPipeline" className="flex items-center gap-2 px-4 py-2 text-sm text-slate-350 hover:bg-slate-800 hover:text-white transition-colors">
+                    <GitBranch size={14} className="text-blue-400" />
+                    <span>ATS Architecture</span>
+                  </Link>
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="relative" ref={dropdownRef2}>
+            <button
+              onClick={() => setOpen2(!open2)}
+              className="flex items-center gap-2 px-3 py-1.5 bg-slate-900 hover:bg-slate-850 border border-slate-850 hover:border-slate-700 rounded-full transition-all text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+            >
+              <Briefcase size={14} className="text-amber-400" />
+              <span>AI Job Matcher</span>
+            </button>
+
+            {open2 && (
+              <div className="absolute right-0 mt-2 w-56 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl py-1.5 text-slate-300 animate-in fade-in slide-in-from-top-2 duration-150">
+                <div className="py-1">
+                  <Link href="/job-matcher" className="flex items-center gap-2 px-4 py-2 text-sm text-slate-350 hover:bg-slate-800 hover:text-white transition-colors">
+                    <Briefcase size={14} className="text-amber-400" />
+                    <span>AI Job Matcher</span>
+                  </Link>
+
+                  <Link href="/atsPipeline" className="flex items-center gap-2 px-4 py-2 text-sm text-slate-350 hover:bg-slate-800 hover:text-white transition-colors">
+                    <BriefcaseConveyorBelt size={14} className="text-blue-400" />
+                    <span>ATS Score Checker</span>
+                  </Link>
+
+                </div>
+              </div>
+            )}
+          </div>
           <Link href="/documentation" className="flex items-center gap-1.5 hover:text-white transition-colors py-1">
             <BookOpen size={14} className="text-emerald-400" />
             <span>Documentation</span>
@@ -98,35 +165,34 @@ export default function Navbar() {
         {/* User Session Action */}
         <div className="flex items-center gap-4">
           {userName ? (
-            <div className="relative" ref={dropdownRef}>
+            <div className="relative" ref={dropdownRef3}>
               <button
-                onClick={() => setOpen(!open)}
+                onClick={() => setOpen3(!open3)}
                 className="flex items-center gap-2 px-3 py-1.5 bg-slate-900 hover:bg-slate-850 border border-slate-850 hover:border-slate-700 rounded-full transition-all text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
               >
                 <div className="h-7 w-7 rounded-full bg-gradient-to-r from-blue-500 to-teal-500 text-white font-bold text-xs flex items-center justify-center shadow-inner">
                   {getInitials(userName)}
                 </div>
                 <span className="text-xs font-semibold max-w-[100px] truncate">{userName}</span>
-                <ChevronDown size={14} className={`text-slate-400 transition-transform ${open ? "rotate-180" : ""}`} />
+                <ChevronDown size={14} className={`text-slate-400 transition-transform ${open3 ? "rotate-180" : ""}`} />
               </button>
 
-              {open && (
+              {open3 && (
                 <div className="absolute right-0 mt-2 w-56 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl py-1.5 text-slate-300 animate-in fade-in slide-in-from-top-2 duration-150">
                   <div className="px-4 py-2.5 border-b border-slate-850">
                     <p className="text-xs text-slate-555 font-semibold uppercase tracking-wider">Signed in as</p>
                     <p className="text-sm font-bold text-slate-200 truncate mt-0.5">{userName}</p>
                     {userRole && (
-                      <span className={`inline-block text-[10px] font-bold px-1.5 py-0.5 rounded mt-1.5 uppercase ${
-                        userRole === "owner" ? "bg-red-500/20 text-red-300 border border-red-500/35" :
+                      <span className={`inline-block text-[10px] font-bold px-1.5 py-0.5 rounded mt-1.5 uppercase ${userRole === "owner" ? "bg-red-500/20 text-red-300 border border-red-500/35" :
                         userRole === "superuser" ? "bg-orange-500/20 text-orange-300 border border-orange-500/35" :
-                        userRole === "admin" ? "bg-purple-500/20 text-purple-300 border border-purple-500/35" :
-                        "bg-blue-500/20 text-blue-300 border border-blue-500/35"
-                      }`}>
+                          userRole === "admin" ? "bg-purple-500/20 text-purple-300 border border-purple-500/35" :
+                            "bg-blue-500/20 text-blue-300 border border-blue-500/35"
+                        }`}>
                         {userRole}
                       </span>
                     )}
                   </div>
-                  
+
                   <div className="py-1">
                     <Link href="/profile" className="flex items-center gap-2 px-4 py-2 text-sm text-slate-350 hover:bg-slate-800 hover:text-white transition-colors">
                       <User size={14} className="text-teal-400" />
@@ -140,9 +206,13 @@ export default function Navbar() {
                       <Settings size={14} />
                       <span>Settings</span>
                     </Link>
-                    <Link href="/loginFlow" className="flex items-center gap-2 px-4 py-2 text-sm text-slate-350 hover:bg-slate-800 hover:text-white transition-colors">
+                    <Link href="/flowDiagrams/loginFlow" className="flex items-center gap-2 px-4 py-2 text-sm text-slate-350 hover:bg-slate-800 hover:text-white transition-colors">
                       <GitBranch size={14} />
                       <span>Auth Lifecycles</span>
+                    </Link>
+                    <Link href="/flowDiagrams/atsPipeline" className="flex items-center gap-2 px-4 py-2 text-sm text-slate-350 hover:bg-slate-800 hover:text-white transition-colors">
+                      <GitBranch size={14} className="text-blue-400" />
+                      <span>ATS Architecture</span>
                     </Link>
                   </div>
 

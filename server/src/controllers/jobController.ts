@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { JobModel } from '../models/job.js';
-import { getEmbedding, cosineSimilarity, generateJobMatchStrategy, scrapeLatestJobsIndia, rerankJobs } from '../services/aiService.js';
+import { getEmbedding, topKMatches, generateJobMatchStrategy, scrapeMultiPlatformJobs, rerankJobs } from '../services/aiService.js';
 
 // Seed job postings into the database
 export const seedJobsController = async (req: Request, res: Response) => {
@@ -124,47 +124,37 @@ export const matchJobsController = async (req: Request, res: Response) => {
     // Step 0: Fetching the latest live postings
     sendProgress(0);
 
-    // 1. Fetch the latest live developer job postings in India from Hasjob
-    const liveJobs = await scrapeLatestJobsIndia();
+    // 1. Fetch live developer job postings using the Multi-Platform Scraper
+    const liveJobs = await scrapeMultiPlatformJobs();
     
-    // Step 1: Caching and generating passage embeddings for new items
+    // Step 1: Generating passage embeddings for new items
     sendProgress(1);
 
+    const liveEmbeddedJobs = [];
     if (liveJobs.length > 0) {
-      console.log(`Processing ${liveJobs.length} live scraped jobs for database caching...`);
-      // Find out which links already exist in our DB
-      const existingJobs = await JobModel.find({ link: { $in: liveJobs.map(j => j.link) } }).select('link');
-      const existingLinkSet = new Set(existingJobs.map(e => e.link));
-
-      // Filter out only the new ones
-      const newJobsToEmbed = liveJobs.filter(j => j.link && !existingLinkSet.has(j.link));
-
-      if (newJobsToEmbed.length > 0) {
-        console.log(`Generating embeddings sequentially for ${newJobsToEmbed.length} new live jobs...`);
-        const embeddedJobs = [];
-
-        for (const job of newJobsToEmbed) {
-          try {
-            const profileText = `Title: ${job.title}\nCompany: ${job.company}\nDescription: ${job.description}`;
-            const embedding = await getEmbedding(profileText, 'passage', apiKeyToUse);
-            embeddedJobs.push({
-              title: job.title,
-              company: job.company,
-              description: job.description,
-              link: job.link,
-              embedding
-            });
-            // Brief pause to prevent hitting NVIDIA free tier rate limits
-            await new Promise(r => setTimeout(r, 200));
-          } catch (e) {
-            console.error(`Failed to embed live job [${job.title}] from Hasjob:`, e);
-          }
+      console.log(`Generating embeddings sequentially for ${liveJobs.length} live scraped jobs...`);
+      for (const job of liveJobs) {
+        try {
+          const profileText = `Title: ${job.title}\nCompany: ${job.company}\nDescription: ${job.description}`;
+          const embedding = await getEmbedding(profileText, 'passage', apiKeyToUse);
+          liveEmbeddedJobs.push({
+            title: job.title,
+            company: job.company,
+            description: job.description,
+            link: job.link,
+            embedding,
+            score: 0.8 // Simulated high baseline score for fresh live matches
+          });
+          // Brief pause to prevent hitting NVIDIA free tier rate limits
+          await new Promise(r => setTimeout(r, 200));
+        } catch (e) {
+          console.error(`Failed to embed live job [${job.title}]:`, e);
         }
-
-        if (embeddedJobs.length > 0) {
-          console.log(`Inserting ${embeddedJobs.length} new jobs with vector embeddings into MongoDB...`);
-          await JobModel.insertMany(embeddedJobs);
-        }
+      }
+      
+      // We also insert them into MongoDB cache so they persist for future searches
+      if (liveEmbeddedJobs.length > 0) {
+        await JobModel.insertMany(liveEmbeddedJobs);
       }
     }
 
@@ -180,44 +170,21 @@ export const matchJobsController = async (req: Request, res: Response) => {
 
     // 3. Retrieve all cached/seeded jobs from MongoDB
     const jobs = await JobModel.find({});
-    if (jobs.length === 0) {
-      res.status(404);
-      res.write(JSON.stringify({
-        success: false,
-        message: "No job postings found in the database. Please run the seed endpoint or ensure Hasjob scraping is working."
-      }) + '\n');
-      return res.end();
-    }
-
-    // 4. Compute cosine similarity scores
-    const scoredJobs = jobs.map((job) => {
-      const score = cosineSimilarity(queryVector, job.embedding);
-      return {
-        _id: job._id,
-        title: job.title,
-        company: job.company,
-        description: job.description,
-        link: job.link,
-        score
-      };
-    });
-
-    // 5. Sort and filter matching jobs based on score thresholds
-    scoredJobs.sort((a, b) => b.score - a.score);
     
-    // Filter for jobs with at least 20% match (0.20)
-    let qualifiedMatches = scoredJobs.filter(job => job.score >= 0.20);
+    // 4. Compute cosine similarity scores and extract the top 30 database jobs
+    // using the optimized topKMatches algorithm with a threshold filter
+    const topDbMatches = topKMatches(queryVector, jobs, 30, 0.20).map(job => ({
+      _id: job._id,
+      title: job.title,
+      company: job.company,
+      description: job.description,
+      link: job.link,
+      score: job.score
+    }));
     
-    let topMatches;
-    if (qualifiedMatches.length >= 20) {
-      topMatches = qualifiedMatches.slice(0, 20); // Cap at 20 if we have plenty of good matches
-    } else if (qualifiedMatches.length >= 10) {
-      topMatches = qualifiedMatches; // Return all 10-19 good matches
-    } else {
-      // If we don't have 10 good matches, still return the top 10 overall (or up to how many we have)
-      // to ensure the user gets a decent amount of listings to look at.
-      topMatches = scoredJobs.slice(0, 10);
-    }
+    // 6. Merge live jobs with local DB jobs (Target: 50 Total)
+    const topMatches = [...liveEmbeddedJobs, ...topDbMatches];
+    console.log(`Merged ${liveEmbeddedJobs.length} live jobs with ${topDbMatches.length} local DB jobs for reranking.`);
 
     // Step 4: Reranking matches using Nemotron Rerank model
     sendProgress(4);
@@ -230,8 +197,8 @@ export const matchJobsController = async (req: Request, res: Response) => {
     // Step 5: Generating career strategy & outreach pitches via DeepSeek Pro
     sendProgress(5);
 
-    // 7. Generate career matches strategy and cover letters using DeepSeek
-    console.log("Generating matching strategy with DeepSeek V4...");
+    // 7. Generate career matches strategy and cover letters using fast Llama model
+    console.log("Generating matching strategy with Fast Llama 3.1 8B Model...");
     const aiStrategy = await generateJobMatchStrategy(cvText, searchPrompt, top5Reranked, apiKeyToUse);
 
     // Send final result object

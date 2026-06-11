@@ -62,41 +62,37 @@ export default function AIJobSearchFlowPage() {
     actor User as User UI (Client)
     participant Express as Express Router (Server)
     participant Ctrl as Job Controller (Controller)
-    participant Scraper as Hasjob Scraper (Service)
-    participant DB as MongoDB Cache (Database)
     participant EmbedAPI as NVIDIA NIM Embed (API)
+    participant Chroma as ChromaDB Cloud (Vector DB)
     participant RerankAPI as NVIDIA NIM Rerank (API)
     participant LLM as NVIDIA NIM Llama 3.3 (LLM)
 
     User->>Express: POST /api/jobs/match (CV + Prompt Criteria)
     Express->>Ctrl: matchJobsController()
     
-    %% Stage 1: Live Scraping & Ingestion
-    Ctrl->>Scraper: scrapeLatestJobsIndia()
-    Scraper-->>Ctrl: Raw HTML/RSS Job Postings
-    Ctrl->>DB: Query existing job links
-    Ctrl->>EmbedAPI: Generate embeddings for new live postings (llama-nemotron-embed)
-    EmbedAPI-->>Ctrl: Vector Arrays
-    Ctrl->>DB: Cache new job postings with embeddings
-
-    %% Stage 2: Embed Query & Retrieval
-    Ctrl->>EmbedAPI: Generate query vector (CV + search prompt)
-    EmbedAPI-->>Ctrl: Query Vector Array
-    Ctrl->>DB: Fetch all job postings (CSV Seeded + Scraped)
-    DB-->>Ctrl: Return job vectors
-    Ctrl->>Ctrl: Local Cosine Similarity Matching (Threshold >= 20%)
-
-    %% Stage 3: Reranking & Reconsideration
-    Ctrl->>RerankAPI: Send query + top 20 semantic matches (llama-nemotron-rerank)
-    RerankAPI-->>Ctrl: Re-ordered relevance rankings & logits
-    Ctrl->>Ctrl: Sort by rerank score & slice top 5 target matches
-
-    %% Stage 4: Strategy Generation
-    Ctrl->>LLM: Generate strategy for top 5 matches (llama-3.3-70b)
-    LLM-->>Ctrl: Outreach pitch, skill improvements & strategy Markdown
+    %% Stage 1: Embed Query Vector
+    Ctrl->>EmbedAPI: Generate query vector (CV + search prompt) via llama-nemotron-embed
+    EmbedAPI-->>Ctrl: 1024-Dimension Float Array
     
-    Ctrl-->>Express: Return reranked jobs + strategy JSON
-    Express-->>User: Render matches UI & Custom Strategy report`}
+    %% Stage 2: Native Vector Search
+    Ctrl->>Chroma: Native HNSW Cosine Distance Query (Top 30 matches)
+    Chroma-->>Ctrl: Return semantic matches & distance scores
+
+    %% Stage 3: AI Reranking & Scoring
+    Ctrl->>RerankAPI: Send query + top 30 semantic matches (llama-nemotron-rerank)
+    RerankAPI-->>Ctrl: Re-ordered relevance rankings & raw logits
+    Ctrl->>Ctrl: Min-Max scale logits to 55%-98% probabilities
+    
+    %% Stream partial results
+    Ctrl-->>Express: Stream JSON partial_result (Instant render matches)
+
+    %% Stage 4: Custom Application Strategy
+    Ctrl->>Ctrl: Slice Top 5 Targets
+    Ctrl->>LLM: Draft outreach pitches & skills gap analysis (meta/llama-3.3-70b-instruct)
+    LLM-->>Ctrl: Strategy Markdown JSON
+    
+    Ctrl-->>Express: Stream JSON result (Final strategy report)
+    Express-->>User: Render strategy report in background`}
                         </div>
                     )}
                 </div>
@@ -118,84 +114,67 @@ export default function AIJobSearchFlowPage() {
     classDef fileNode fill:#334155,stroke:#475569,stroke-width:2px,color:#fff;
     classDef processNode fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#fff;
     classDef modelNode fill:#4c1d95,stroke:#7c3aed,stroke-width:2px,color:#fff;
-    classDef dbNode fill:#7f1d1d,stroke:#dc2626,stroke-width:2px,color:#fff;
+    classDef dbNode fill:#ea580c,stroke:#c2410c,stroke-width:2px,color:#fff;
     classDef uiNode fill:#065f46,stroke:#10b981,stroke-width:2px,color:#fff;
 
-    %% STAGE 1: OFFLINE CSV DATA INGESTION
-    subgraph Offline_Ingestion_Pipeline [Stage 1: CSV Job Ingestion & Caching]
-        csv_linkedin["final_data.csv<br>(LinkedIn dataset)"]:::fileNode
-        csv_naukri["marketing_sample...csv<br>(Naukri dataset)"]:::fileNode
-        
-        script_seed["seedCsv.ts<br>(Parser Script)"]:::processNode
-        
-        chunk_jobs["Concatenated Passages<br>Title + Company + Description + Skills"]:::processNode
-        
-        model_embed_passage["NVIDIA NIM Model:<br>llama-nemotron-embed-1b-v2<br>(inputType: passage)"]:::modelNode
-        
-        response_passage_vectors["1024-Dimension Float Vectors<br>(embedding: number[])"]:::processNode
-        
-        db_mongo["MongoDB Database<br>(JobModel Cache)"]:::dbNode
+    %% INGESTION DOMAIN
+    subgraph Ingestion_Group [Data Ingestion & Vectorization Domain]
+        direction TB
+        csv_linkedin["final_data.csv (LinkedIn)"]:::fileNode
+        csv_naukri["marketing_sample...csv (Naukri)"]:::fileNode
+        script_seed["seedCsv.ts (Dynamic Link Generator)"]:::processNode
+        model_embed_passage["NVIDIA NIM: llama-nemotron-embed"]:::modelNode
+        response_passage_vectors["1024-Dimension Embedded Float Vectors"]:::processNode
+        db_chroma["ChromaDB Cloud Cluster (RAG Vector Store)"]:::dbNode
+    end
+
+    %% RETRIEVAL DOMAIN
+    subgraph Retrieval_Group [Semantic Retrieval Domain]
+        direction TB
+        user_input["User CV Text + Job Preferences"]:::uiNode
+        model_embed_query["NVIDIA NIM: llama-nemotron-embed (Query Mode)"]:::modelNode
+        query_vector["User Query Vector Array"]:::processNode
+        calculate_similarity["ChromaDB Native HNSW Vector Query (Cosine Distance)"]:::processNode
+    end
+
+    %% AUGMENTATION DOMAIN
+    subgraph Augmentation_Group [AI Augmentation & Reranking Domain]
+        direction TB
+        model_rerank["NVIDIA NIM: nvidia/llama-nemotron-rerank-1b-v2"]:::modelNode
+        reranked_results["Min-Max Probability Scaled Job Matches (55%-98%)"]:::processNode
+    end
+
+    %% GENERATION DOMAIN
+    subgraph Generation_Group [Strategy Generation & Output Domain]
+        direction TB
+        model_deepseek["NVIDIA NIM: meta/llama-3.3-70b-instruct"]:::modelNode
+        response_strategy["Custom Strategy Output:<br>1. Outreach pitch<br>2. Skill gaps"]:::processNode
+        route_matcher["Job Matcher React UI (Instant Partial Streaming)"]:::uiNode
     end
 
     csv_linkedin --> script_seed
     csv_naukri --> script_seed
-    script_seed --> chunk_jobs
-    chunk_jobs --"Generate Embeddings"--> model_embed_passage
-    model_embed_passage --"Returns JSON: [0.12, -0.04, ...]"--> response_passage_vectors
-    response_passage_vectors --"Save Document"--> db_mongo
+    script_seed --"Extract Text Features"--> model_embed_passage
+    model_embed_passage --"Return Vectors"--> response_passage_vectors
+    response_passage_vectors --"Batch Upsert"--> db_chroma
 
-    %% STAGE 2: REAL-TIME MATCHING PIPELINE
-    subgraph Real_Time_RAG_Pipeline [Stage 2: CV Matching, Reranking & LLM Generation]
-        user_input["User CV Text<br>+ Target Criteria / Preferences"]:::uiNode
-        
-        route_matcher["client/app/job-matcher/page.tsx<br>(Find Matches Click)"]:::uiNode
-        
-        controller_match["jobController.ts<br>(matchJobsController)"]:::processNode
-        
-        model_embed_query["NVIDIA NIM Model:<br>llama-nemotron-embed-1b-v2<br>(inputType: query)"]:::modelNode
-        
-        query_vector["1024-Dimension Query Vector"]:::processNode
-        
-        calculate_similarity["Local Cosine Similarity Search<br>(vecA • vecB) / (||vecA|| ||vecB||)"]:::processNode
-        
-        filter_threshold["Threshold Filter & Slice<br>Score >= 0.20 (20% Match)<br>Max 10-20 Semantic Matches"]:::processNode
-        
-        model_rerank["NVIDIA NIM Model:<br>nvidia/llama-nemotron-rerank-1b-v2<br>(inputType: query + passages)"]:::modelNode
-        
-        reranked_results["Reranked Jobs List<br>(Sorted by Logit Scores)"]:::processNode
-        
-        slice_top_5["Slice Top 5 Best Targets<br>(Context Compression)"]:::processNode
-        
-        model_deepseek["NVIDIA NIM Model:<br>meta/llama-3.3-70b-instruct<br>(with DeepSeek fallback)"]:::modelNode
-        
-        response_strategy["Custom Strategy Output:<br>1. Outreach pitch for top 5<br>2. Skill improvements & gaps<br>3. Channel advice"]:::processNode
-        
-        render_ui["Job Matcher UI Cards<br>10-20 Job Listings + Strategy Markdown"]:::uiNode
-    end
+    user_input --> model_embed_query
+    model_embed_query --> query_vector
+    db_chroma --"Top 30 Pre-Indexed Vectors"--> calculate_similarity
+    query_vector --"Search Against DB"--> calculate_similarity
 
-    %% CONNECTIONS BETWEEN INGESTION AND RAG
-    db_mongo --"Fetch Job Vectors"--> calculate_similarity
-    
-    user_input --> route_matcher
-    route_matcher --"POST /api/jobs/match"--> controller_match
-    
-    controller_match --"Combine CV + Preferences"--> model_embed_query
-    model_embed_query --"Returns 1024-Dim Array"--> query_vector
-    query_vector --> calculate_similarity
-    
-    calculate_similarity --> filter_threshold
-    filter_threshold --"Send Query + 20 Passages"--> model_rerank
-    model_rerank --"Returns logit ratings"--> reranked_results
-    
-    reranked_results --> slice_top_5
-    slice_top_5 --"Send Compressed Context"--> model_deepseek
-    model_deepseek --"Returns Markdown text"--> response_strategy
-    
-    response_strategy --> render_ui
-    reranked_results --> render_ui
+    calculate_similarity --"Retrieve Top 30 Matches"--> model_rerank
+    model_rerank --"Return Contextual Logits"--> reranked_results
 
-    style Offline_Ingestion_Pipeline fill:#0f172a,stroke:#475569,stroke-width:1px
-    style Real_Time_RAG_Pipeline fill:#0f172a,stroke:#475569,stroke-width:1px`}
+    reranked_results --"Stream Match Grid instantly"--> route_matcher
+    reranked_results --"Slice Top 5 for LLM Context"--> model_deepseek
+    model_deepseek --"Generate Markdown Report"--> response_strategy
+    response_strategy --"Stream Final UI Report"--> route_matcher
+
+    style Ingestion_Group fill:#0f172a,stroke:#475569,stroke-width:1px
+    style Retrieval_Group fill:#0f172a,stroke:#475569,stroke-width:1px
+    style Augmentation_Group fill:#0f172a,stroke:#475569,stroke-width:1px
+    style Generation_Group fill:#0f172a,stroke:#475569,stroke-width:1px`}
                         </div>
                     )}
                 </div>

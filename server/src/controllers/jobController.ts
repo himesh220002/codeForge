@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { JobModel } from '../models/job.js';
 import { getEmbedding, topKMatches, generateJobMatchStrategy, scrapeMultiPlatformJobs, rerankJobs } from '../services/aiService.js';
+import { addJobsToChroma, queryChroma } from '../services/chromaService.js';
 
 // Seed job postings into the database
 export const seedJobsController = async (req: Request, res: Response) => {
@@ -59,8 +60,18 @@ export const seedJobsController = async (req: Request, res: Response) => {
       seededJobs.push({
         title: job.title,
         company: job.company,
+        description: job.description,
+        link: job.link,
+        embedding: embedding,
         id: newJob._id
       });
+    }
+
+    // Push seeded jobs to ChromaDB
+    try {
+      await addJobsToChroma(seededJobs);
+    } catch (e) {
+      console.error("Failed to seed ChromaDB, continuing anyway:", e);
     }
 
     return res.status(201).json({
@@ -124,39 +135,21 @@ export const matchJobsController = async (req: Request, res: Response) => {
     // Step 0: Fetching the latest live postings
     sendProgress(0);
 
-    // 1. Fetch live developer job postings using the Multi-Platform Scraper
-    const liveJobs = await scrapeMultiPlatformJobs();
+    // 1. Fetch live developer job postings using the Multi-Platform Scraper (DISABLED FOR CHROMADB TEST)
+    // const liveJobs = await scrapeMultiPlatformJobs();
     
     // Step 1: Generating passage embeddings for new items
     sendProgress(1);
 
-    const liveEmbeddedJobs = [];
+    const liveEmbeddedJobs: any[] = [];
+    /*
     if (liveJobs.length > 0) {
       console.log(`Generating embeddings sequentially for ${liveJobs.length} live scraped jobs...`);
       for (const job of liveJobs) {
-        try {
-          const profileText = `Title: ${job.title}\nCompany: ${job.company}\nDescription: ${job.description}`;
-          const embedding = await getEmbedding(profileText, 'passage', apiKeyToUse);
-          liveEmbeddedJobs.push({
-            title: job.title,
-            company: job.company,
-            description: job.description,
-            link: job.link,
-            embedding,
-            score: 0.8 // Simulated high baseline score for fresh live matches
-          });
-          // Brief pause to prevent hitting NVIDIA free tier rate limits
-          await new Promise(r => setTimeout(r, 200));
-        } catch (e) {
-          console.error(`Failed to embed live job [${job.title}]:`, e);
-        }
-      }
-      
-      // We also insert them into MongoDB cache so they persist for future searches
-      if (liveEmbeddedJobs.length > 0) {
-        await JobModel.insertMany(liveEmbeddedJobs);
+        ...
       }
     }
+    */
 
     // Step 2: Vectorizing user profile text & criteria
     sendProgress(2);
@@ -168,23 +161,23 @@ export const matchJobsController = async (req: Request, res: Response) => {
     // Step 3: Local semantic retrieval cosine similarity matching
     sendProgress(3);
 
-    // 3. Retrieve all cached/seeded jobs from MongoDB
-    const jobs = await JobModel.find({});
+    // 3. Retrieve all cached/seeded jobs from MongoDB (DISABLED FOR CHROMADB TEST)
+    // const jobs = await JobModel.find({});
+    // const topDbMatches = topKMatches(queryVector, jobs, 30, 0.20).map(...)
     
-    // 4. Compute cosine similarity scores and extract the top 30 database jobs
-    // using the optimized topKMatches algorithm with a threshold filter
-    const topDbMatches = topKMatches(queryVector, jobs, 30, 0.20).map(job => ({
-      _id: job._id,
-      title: job.title,
-      company: job.company,
-      description: job.description,
-      link: job.link,
-      score: job.score
-    }));
+    // NEW: Query ChromaDB natively using vectors
+    console.log("Querying ChromaDB for semantic matches...");
+    let topDbMatches: any[] = [];
+    try {
+      topDbMatches = await queryChroma(queryVector, 30);
+      console.log(`Retrieved ${topDbMatches.length} semantic matches from ChromaDB`);
+    } catch (e) {
+      console.error("ChromaDB query failed, falling back to empty:", e);
+    }
     
     // 6. Merge live jobs with local DB jobs (Target: 50 Total)
     const topMatches = [...liveEmbeddedJobs, ...topDbMatches];
-    console.log(`Merged ${liveEmbeddedJobs.length} live jobs with ${topDbMatches.length} local DB jobs for reranking.`);
+    console.log(`Merged ${liveEmbeddedJobs.length} live jobs with ${topDbMatches.length} Chroma DB jobs for reranking.`);
 
     // Step 4: Reranking matches using Nemotron Rerank model
     sendProgress(4);
@@ -194,7 +187,15 @@ export const matchJobsController = async (req: Request, res: Response) => {
     const rerankedMatches = await rerankJobs(queryCombined, topMatches, apiKeyToUse);
     const top5Reranked = rerankedMatches.slice(0, 5);
 
-    // Step 5: Generating career strategy & outreach pitches via DeepSeek Pro
+    // Stream matches to UI instantly while strategy generates in the background
+    res.write(JSON.stringify({
+      type: 'partial_result',
+      data: {
+        matches: rerankedMatches
+      }
+    }) + '\n');
+
+    // Step 5: Generating career strategy & outreach pitches via Fast Llama Model
     sendProgress(5);
 
     // 7. Generate career matches strategy and cover letters using fast Llama model

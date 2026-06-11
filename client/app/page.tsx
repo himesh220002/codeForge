@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
-import { Shield, GitBranch, BookOpen, Key, ArrowRight, UserCheck, CheckCircle2, Lock, Terminal } from "lucide-react";
+import { ArrowRight, Lock, BrainCircuit, Database, Fingerprint, Search, Zap, User, BookOpen } from "lucide-react";
 
 export default function Home() {
   const [userName, setUserName] = useState<string | null>(null);
@@ -39,18 +39,19 @@ export default function Home() {
 
       <main className="flex-grow max-w-7xl w-full mx-auto px-6 py-12 flex flex-col justify-center relative overflow-hidden">
         {/* Decorative background glows */}
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-indigo-600/10 rounded-full blur-[100px] pointer-events-none"></div>
 
         {/* Hero Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16 relative z-10">
-          <p className="text-xs uppercase tracking-[0.3em] bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent font-bold mb-3">
-            Secure Next.js Starter App
+        <div className="text-center max-w-4xl mx-auto mb-16 relative z-10">
+          <p className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-xs uppercase tracking-[0.2em] text-indigo-400 font-bold mb-6">
+            <Zap size={14} className="text-amber-400" />
+            Powered by NVIDIA NIM & ChromaDB
           </p>
-          <h1 className="text-4xl sm:text-5xl font-extrabold leading-tight tracking-tight text-white mb-6">
-            Building a practical foundation for modern fullstack development
+          <h1 className="text-5xl sm:text-6xl font-extrabold leading-tight tracking-tight text-white mb-6">
+            Cypher <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">AI Job Matcher</span>
           </h1>
-          <p className="text-slate-400 text-base sm:text-lg leading-relaxed">
-            A developer playground highlighting in-memory token storage, HttpOnly token rotation refresh mechanics, and custom role hierarchy validation.
+          <p className="text-slate-400 text-lg leading-relaxed max-w-2xl mx-auto">
+            A highly advanced hybrid Retrieval-Augmented Generation (RAG) platform. Semantically match your CV against vector databases and dynamically generate custom application strategies.
           </p>
         </div>
 
@@ -90,36 +91,36 @@ export default function Home() {
               </div>
 
               {/* Quick Actions Grid */}
-              <div>
-                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Quick Shortcuts</h3>
+              <div className="mt-8 pt-6 border-t border-slate-800">
+                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Platform Modules</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <Link href="/admin" className="p-4 bg-gray-950/40 hover:bg-gray-950/80 border border-slate-850 hover:border-slate-800 rounded-xl transition-all group flex flex-col justify-between min-h-[110px]">
-                    <div className="h-8 w-8 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-400 mb-2">
-                      <Shield size={16} />
-                    </div>
-                    <div className="flex items-center justify-between mt-2">
-                      <span className="text-sm font-semibold text-slate-200">Admin Control</span>
-                      <ArrowRight size={14} className="text-slate-500 group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  </Link>
-
-                  <Link href="/flowDiagrams/loginFlow" className="p-4 bg-gray-950/40 hover:bg-gray-950/80 border border-slate-850 hover:border-slate-800 rounded-xl transition-all group flex flex-col justify-between min-h-[110px]">
+                  <Link href="/job-matcher" className="p-4 bg-gray-950/40 hover:bg-gray-950/80 border border-slate-850 hover:border-indigo-500/30 rounded-xl transition-all group flex flex-col justify-between min-h-[110px]">
                     <div className="h-8 w-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400 mb-2">
-                      <GitBranch size={16} />
+                      <Search size={16} />
                     </div>
                     <div className="flex items-center justify-between mt-2">
-                      <span className="text-sm font-semibold text-slate-200">Lifecycle Flows</span>
-                      <ArrowRight size={14} className="text-slate-500 group-hover:translate-x-1 transition-transform" />
+                      <span className="text-sm font-semibold text-slate-200">AI Job Matcher</span>
+                      <ArrowRight size={14} className="text-slate-500 group-hover:translate-x-1 group-hover:text-indigo-400 transition-all" />
                     </div>
                   </Link>
 
-                  <Link href="/documentation" className="p-4 bg-gray-950/40 hover:bg-gray-950/80 border border-slate-850 hover:border-slate-800 rounded-xl transition-all group flex flex-col justify-between min-h-[110px]">
-                    <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400 mb-2">
+                  <Link href="/profile" className="p-4 bg-gray-950/40 hover:bg-gray-950/80 border border-slate-850 hover:border-teal-500/30 rounded-xl transition-all group flex flex-col justify-between min-h-[110px]">
+                    <div className="h-8 w-8 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-400 mb-2">
+                      <User size={16} />
+                    </div>
+                    <div className="flex items-center justify-between mt-2">
+                      <span className="text-sm font-semibold text-slate-200">Developer Profile</span>
+                      <ArrowRight size={14} className="text-slate-500 group-hover:translate-x-1 group-hover:text-teal-400 transition-all" />
+                    </div>
+                  </Link>
+
+                  <Link href="/documentation" className="p-4 bg-gray-950/40 hover:bg-gray-950/80 border border-slate-850 hover:border-blue-500/30 rounded-xl transition-all group flex flex-col justify-between min-h-[110px]">
+                    <div className="h-8 w-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400 mb-2">
                       <BookOpen size={16} />
                     </div>
                     <div className="flex items-center justify-between mt-2">
-                      <span className="text-sm font-semibold text-slate-200">Documentation</span>
-                      <ArrowRight size={14} className="text-slate-500 group-hover:translate-x-1 transition-transform" />
+                      <span className="text-sm font-semibold text-slate-200">Architecture Docs</span>
+                      <ArrowRight size={14} className="text-slate-500 group-hover:translate-x-1 group-hover:text-blue-400 transition-all" />
                     </div>
                   </Link>
                 </div>
@@ -154,35 +155,35 @@ export default function Home() {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Feature 1 */}
-            <div className="bg-gray-900/30 border border-slate-850 p-6 rounded-xl hover:bg-gray-900/50 transition-colors">
-              <div className="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400 mb-4">
-                <Key size={18} />
+            <div className="bg-gray-900/40 border border-slate-850 p-6 rounded-2xl hover:bg-gray-900/60 hover:border-indigo-500/30 transition-all shadow-lg group">
+              <div className="h-10 w-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 mb-4 group-hover:scale-110 transition-transform">
+                <BrainCircuit size={18} />
               </div>
-              <h4 className="text-base font-bold text-white mb-2">HttpOnly Cookies</h4>
+              <h4 className="text-base font-bold text-white mb-2">NVIDIA NIM AI</h4>
               <p className="text-slate-400 text-xs leading-relaxed">
-                Tokens are stored client-side in-memory for security, while refreshes are executed using HttpOnly cookies to defend against XSS attacks.
+                Powered by state-of-the-art NVIDIA microservices. Utilizes Nemotron for embeddings & reranking, and Llama 3.3 for strategy generation.
               </p>
             </div>
 
             {/* Feature 2 */}
-            <div className="bg-gray-900/30 border border-slate-850 p-6 rounded-xl hover:bg-gray-900/50 transition-colors">
-              <div className="h-10 w-10 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-400 mb-4">
-                <UserCheck size={18} />
+            <div className="bg-gray-900/40 border border-slate-850 p-6 rounded-2xl hover:bg-gray-900/60 hover:border-teal-500/30 transition-all shadow-lg group">
+              <div className="h-10 w-10 rounded-xl bg-teal-500/10 flex items-center justify-center text-teal-400 mb-4 group-hover:scale-110 transition-transform">
+                <Database size={18} />
               </div>
-              <h4 className="text-base font-bold text-white mb-2">Role Management</h4>
+              <h4 className="text-base font-bold text-white mb-2">ChromaDB Cloud</h4>
               <p className="text-slate-400 text-xs leading-relaxed">
-                Granular administrative permissions enforced via role scopes (Owner, Superuser, Admin, User) with hierarchy promotion restrictions.
+                Cloud-hosted Chroma cluster handles high-dimensional vector math and performs lightning-fast HNSW Cosine Distance queries.
               </p>
             </div>
 
             {/* Feature 3 */}
-            <div className="bg-gray-900/30 border border-slate-850 p-6 rounded-xl hover:bg-gray-900/50 transition-colors">
-              <div className="h-10 w-10 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400 mb-4">
-                <Terminal size={18} />
+            <div className="bg-gray-900/40 border border-slate-850 p-6 rounded-2xl hover:bg-gray-900/60 hover:border-pink-500/30 transition-all shadow-lg group">
+              <div className="h-10 w-10 rounded-xl bg-pink-500/10 flex items-center justify-center text-pink-400 mb-4 group-hover:scale-110 transition-transform">
+                <Fingerprint size={18} />
               </div>
-              <h4 className="text-base font-bold text-white mb-2">Next.js Proxying</h4>
+              <h4 className="text-base font-bold text-white mb-2">BYOK Architecture</h4>
               <p className="text-slate-400 text-xs leading-relaxed">
-                App router endpoints serve as API proxies to coordinate cookie manipulation, masking backend paths from direct client calls.
+                Local-first privacy. CV tracking, API keys, and generative workflows are processed securely from your client session.
               </p>
             </div>
           </div>

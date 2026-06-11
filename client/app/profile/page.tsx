@@ -43,6 +43,13 @@ interface ProfileHistoryItem {
   rating: number;
 }
 
+interface SavedCV {
+  id: string;
+  name: string;
+  text: string;
+  date: string;
+}
+
 // Helper to convert inline markdown (**bold**, [link](url)) to HTML
 const renderInlineMarkdown = (text: string) => {
   let html = text
@@ -170,6 +177,10 @@ export default function ProfilePage() {
   const [userName, setUserName] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [cvText, setCvText] = useState("");
+  const [savedCvs, setSavedCvs] = useState<SavedCV[]>([]);
+  const [expandedCvId, setExpandedCvId] = useState<string | null>(null);
+  const [showSaveCvModal, setShowSaveCvModal] = useState(false);
+  const [newCvName, setNewCvName] = useState("");
   const [apiKey, setApiKey] = useState("");
   const [history, setHistory] = useState<ProfileHistoryItem[]>([]);
   const [expandedHistoryId, setExpandedHistoryId] = useState<string | null>(null);
@@ -219,6 +230,16 @@ export default function ProfilePage() {
         console.error("Failed to parse profile history:", e);
       }
     }
+
+    // 5. Load Saved CVs
+    const savedCvsData = localStorage.getItem("saved_multiple_cvs");
+    if (savedCvsData) {
+      try {
+        setSavedCvs(JSON.parse(savedCvsData));
+      } catch (e) {
+        console.error("Failed to parse saved CVs:", e);
+      }
+    }
   }, []);
 
   const handlePdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -246,8 +267,54 @@ export default function ProfilePage() {
 
   const handleSaveCvText = () => {
     localStorage.setItem("uploaded_pdf_text", cvText);
-    setSuccess("✅ Your CV details have been saved locally.");
+    setSuccess("✅ Your active CV buffer has been cached locally.");
     setTimeout(() => setSuccess(''), 3000);
+  };
+
+  const submitNewCv = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCvName.trim() || !cvText.trim()) return;
+
+    const newCv: SavedCV = {
+      id: Date.now().toString(),
+      name: newCvName.trim(),
+      text: cvText,
+      date: new Date().toLocaleDateString()
+    };
+
+    const updatedCvs = [newCv, ...savedCvs];
+    setSavedCvs(updatedCvs);
+    localStorage.setItem("saved_multiple_cvs", JSON.stringify(updatedCvs));
+    
+    // Also save to default active buffer
+    localStorage.setItem("uploaded_pdf_text", cvText);
+
+    setSuccess(`✅ Successfully saved CV: "${newCvName}"`);
+    setNewCvName("");
+    setShowSaveCvModal(false);
+    setTimeout(() => setSuccess(''), 3000);
+  };
+
+  const handleDeleteCv = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const updatedCvs = savedCvs.filter(cv => cv.id !== id);
+    setSavedCvs(updatedCvs);
+    localStorage.setItem("saved_multiple_cvs", JSON.stringify(updatedCvs));
+    setSuccess("🗑️ CV removed.");
+    setTimeout(() => setSuccess(''), 3000);
+  };
+
+  const handleUseCv = (cv: SavedCV, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCvText(cv.text);
+    localStorage.setItem("uploaded_pdf_text", cv.text);
+    setSuccess(`✅ Switched active CV to: "${cv.name}"`);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setTimeout(() => setSuccess(''), 3000);
+  };
+
+  const toggleExpandCv = (id: string) => {
+    setExpandedCvId(expandedCvId === id ? null : id);
   };
 
   const handleSaveApiKey = (e: React.FormEvent) => {
@@ -475,7 +542,7 @@ export default function ProfilePage() {
                   <div className="h-8 w-8 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-400">
                     <FileText size={16} />
                   </div>
-                  <h3 className="font-bold text-white text-base">Curriculum Vitae (CV) Input</h3>
+                  <h3 className="font-bold text-white text-base">Active CV Buffer</h3>
                 </div>
 
                 <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -493,27 +560,107 @@ export default function ProfilePage() {
                   {cvText && (
                     <button
                       type="button"
-                      onClick={handleSaveCvText}
-                      className="text-xs font-bold text-indigo-400 hover:text-indigo-300 bg-indigo-500/5 hover:bg-indigo-500/10 border border-indigo-500/20 px-3 py-2 rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer"
+                      onClick={() => setShowSaveCvModal(!showSaveCvModal)}
+                      className={`text-xs font-bold px-3 py-2 rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer ${showSaveCvModal ? 'bg-indigo-600 text-white border-indigo-500' : 'text-indigo-400 hover:text-indigo-300 bg-indigo-500/5 hover:bg-indigo-500/10 border border-indigo-500/20'}`}
                     >
                       <Save size={12} />
-                      <span>Save CV Text</span>
+                      <span>Save as new CV...</span>
                     </button>
                   )}
                 </div>
               </div>
 
+              {showSaveCvModal && (
+                <div className="mb-4 p-4 bg-indigo-500/10 border border-indigo-500/30 rounded-xl flex flex-col gap-3 animate-fade-in">
+                  <h4 className="text-xs font-bold text-indigo-300 uppercase tracking-wider">Save Current Buffer</h4>
+                  <form onSubmit={submitNewCv} className="flex gap-2">
+                    <input
+                      type="text"
+                      required
+                      value={newCvName}
+                      onChange={(e) => setNewCvName(e.target.value)}
+                      placeholder="e.g. 'Frontend React Resume', 'Backend Node Resume'"
+                      className="flex-grow bg-gray-950 border border-slate-800 rounded-lg py-2 px-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 text-sm"
+                    />
+                    <button type="submit" className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-lg shadow-md transition-colors">
+                      Confirm
+                    </button>
+                  </form>
+                </div>
+              )}
+
               <div className="space-y-4">
                 <textarea
                   value={cvText}
                   onChange={(e) => setCvText(e.target.value)}
+                  onBlur={handleSaveCvText}
                   placeholder="Paste details of your education, skills, work history, and projects here, or upload your PDF resume using the button above to parse it client-side..."
-                  className="w-full h-80 bg-gray-950 border border-slate-800 rounded-xl p-3 text-slate-200 placeholder-slate-650 focus:outline-none focus:ring-2 focus:ring-teal-500/40 focus:border-teal-500/60 transition-all text-sm font-mono leading-relaxed"
+                  className="w-full h-48 bg-gray-950 border border-slate-800 rounded-xl p-3 text-slate-200 placeholder-slate-650 focus:outline-none focus:ring-2 focus:ring-teal-500/40 focus:border-teal-500/60 transition-all text-sm font-mono leading-relaxed"
                 />
                 <p className="text-[11px] text-slate-500">
-                  Tip: Uploading a resume PDF automatically extracts formatting structure and populates this local buffer.
+                  Tip: Uploading a resume PDF automatically extracts formatting structure and populates this local buffer. Editing this buffer auto-saves.
                 </p>
               </div>
+            </div>
+
+            {/* My Saved Resumes (Cards) */}
+            <div className="bg-gray-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-6 shadow-xl">
+              <div className="flex items-center gap-2 mb-6 pb-4 border-b border-slate-800">
+                <div className="h-8 w-8 rounded-lg bg-pink-500/10 flex items-center justify-center text-pink-400">
+                  <Sparkles size={16} />
+                </div>
+                <h3 className="font-bold text-white text-base">My Saved Resumes</h3>
+              </div>
+
+              {savedCvs.length === 0 ? (
+                <div className="text-center py-8 border border-dashed border-slate-850 rounded-xl">
+                  <p className="text-slate-500 text-sm">No resumes saved yet.</p>
+                  <p className="text-xs text-slate-600 mt-1">Upload a PDF or paste text above, then click 'Save as new CV...'</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {savedCvs.map((cv) => {
+                    const isExpanded = expandedCvId === cv.id;
+                    return (
+                      <div key={cv.id} className="bg-gray-950 border border-slate-850 hover:border-slate-800 rounded-xl overflow-hidden transition-all">
+                        <div 
+                          onClick={() => toggleExpandCv(cv.id)}
+                          className="p-4 flex justify-between items-center cursor-pointer select-none"
+                        >
+                          <div>
+                            <h4 className="text-sm font-bold text-white">{cv.name}</h4>
+                            <p className="text-[10px] text-slate-500 mt-1">Saved on {cv.date}</p>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <button
+                              onClick={(e) => handleUseCv(cv, e)}
+                              className="px-3 py-1.5 bg-teal-500/10 hover:bg-teal-500/20 text-teal-400 text-xs font-bold rounded-lg border border-teal-500/20 transition-colors"
+                            >
+                              Use this CV
+                            </button>
+                            <button
+                              onClick={(e) => handleDeleteCv(cv.id, e)}
+                              className="text-slate-500 hover:text-red-400 p-1 hover:bg-slate-900 rounded transition-colors"
+                              title="Delete CV"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                            {isExpanded ? <ChevronUp size={16} className="text-slate-400" /> : <ChevronDown size={16} className="text-slate-400" />}
+                          </div>
+                        </div>
+
+                        {isExpanded && (
+                          <div className="p-4 border-t border-slate-850 bg-slate-900/20">
+                            <pre className="p-3 bg-gray-950 border border-slate-800 rounded-lg text-xs font-mono text-slate-300 overflow-x-auto max-h-64 overflow-y-auto whitespace-pre-wrap leading-relaxed">
+                              {cv.text}
+                            </pre>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
             {/* Matching History and suggestions */}

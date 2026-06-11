@@ -16,7 +16,13 @@ import {
   UserCheck,
   Compass,
   Send,
-  Upload
+  Upload,
+  Search,
+  Zap,
+  Fingerprint,
+  BrainCircuit,
+  PenTool,
+  Check
 } from 'lucide-react';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
@@ -172,13 +178,13 @@ export default function JobMatcherPage() {
     }
   }, []);
 
-  const pipelineSteps = [
-    "Scraping latest live developer job listings in India...",
-    "Generating vector embeddings for new job postings...",
-    "Vectorizing CV text & preferences using NVIDIA NIM llama-nemotron-embed...",
-    "Calculating cosine similarity scores locally...",
-    "Reranking matches via NVIDIA Llama-Nemotron-Rerank...",
-    "Generating outreach pitches & custom strategy using Meta Llama 3.3..."
+  const pipelineNodes = [
+    { id: 0, title: "Initialize RAG", desc: "Skipping scraper (ChromaDB Testing Mode)", icon: Search },
+    { id: 1, title: "Embed Live", desc: "Skipping embedding generation for live jobs", icon: Zap },
+    { id: 2, title: "Vectorize Profile", desc: "NVIDIA NIM llama-nemotron-embed", icon: Fingerprint },
+    { id: 3, title: "Semantic Search", desc: "Querying ChromaDB Vector Database natively", icon: Database },
+    { id: 4, title: "AI Reranking", desc: "NVIDIA Llama-Nemotron-Rerank", icon: BrainCircuit },
+    { id: 5, title: "Strategy Gen", desc: "Meta Llama 3.3 Drafts", icon: PenTool }
   ];
 
   // Example CV text to let the user populate quickly
@@ -296,6 +302,8 @@ SKILLS:
             const payload = JSON.parse(line);
             if (payload.type === 'progress') {
               setLoadingStep(payload.step);
+            } else if (payload.type === 'partial_result') {
+              setMatches(payload.data.matches || []);
             } else if (payload.type === 'result') {
               const matchesList = payload.data.matches || [];
               const strategyText = payload.data.strategy || '';
@@ -558,8 +566,8 @@ SKILLS:
               </div>
             )}
 
-            {/* If loading */}
-            {loading && (
+            {/* If loading and matches not yet received */}
+            {loading && matches.length === 0 && (
               <div className="bg-gray-900/60 backdrop-blur-xl border border-slate-800/85 rounded-2xl p-8 shadow-xl min-h-[500px] flex flex-col justify-start relative overflow-hidden">
                 {/* Glow border overlay */}
                 <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 via-transparent to-blue-500/5 pointer-events-none" />
@@ -582,53 +590,54 @@ SKILLS:
                     <h3 className="font-bold text-white text-base">Running RAG Pipelines...</h3>
                   </div>
                   <span className="text-xs text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-0.5 rounded-md font-semibold">
-                    Step {loadingStep + 1} of {pipelineSteps.length}
+                    Step {loadingStep + 1} of {pipelineNodes.length}
                   </span>
                 </div>
 
-                {/* Pipeline Steps structure */}
-                <div className="space-y-6 relative pl-4">
-                  {/* Vertical connect line */}
-                  <div className="absolute left-3 top-2 bottom-6 w-[1.5px] bg-slate-800" />
-
-                  {pipelineSteps.map((stepDesc, idx) => {
-                    const isCompleted = idx < loadingStep;
-                    const isActive = idx === loadingStep;
-                    const isUpcoming = idx > loadingStep;
+                {/* Pipeline Flow Diagram */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 relative z-10">
+                  {pipelineNodes.map((node) => {
+                    const isCompleted = node.id < loadingStep;
+                    const isActive = node.id === loadingStep;
+                    const isUpcoming = node.id > loadingStep;
 
                     return (
-                      <div key={idx} className="flex items-start gap-4 relative z-10 transition-all duration-300">
-                        {/* Circle Status Blinker / Indicator */}
-                        <div className="flex items-center justify-center shrink-0 w-6.5 h-6.5 rounded-full relative mt-0.5 bg-gray-950">
-                          {isCompleted && (
-                            <CheckCircle2 className="h-5.5 w-5.5 text-emerald-400 rounded-full" />
-                          )}
+                      <div 
+                        key={node.id} 
+                        className={`relative overflow-hidden rounded-xl border p-4 transition-all duration-500 flex flex-col gap-3
+                          ${isCompleted ? 'bg-emerald-500/5 border-emerald-500/30' : 
+                            isActive ? 'bg-indigo-500/10 border-indigo-500/50 shadow-[0_0_20px_rgba(99,102,241,0.15)]' : 
+                            'bg-gray-900/40 border-slate-800 opacity-50'}`}
+                      >
+                        {/* Background Pulse for Active Node */}
+                        {isActive && (
+                          <div className="absolute -top-10 -right-10 w-32 h-32 bg-indigo-500/20 blur-3xl rounded-full animate-pulse pointer-events-none" />
+                        )}
 
-                          {isActive && (
-                            <>
-                              <div className="absolute inset-0 rounded-full bg-indigo-500/35 animate-pulse" />
-                              <div className="h-2.5 w-2.5 bg-indigo-450 rounded-full relative z-20" />
-                              <div className="absolute inset-0 rounded-full border border-indigo-500 animate-spin border-t-transparent z-10" />
-                            </>
-                          )}
-
-                          {isUpcoming && (
-                            <div className="h-2 w-2 bg-slate-800 border border-slate-750 rounded-full" />
-                          )}
+                        <div className="flex items-center justify-between">
+                          <div className={`flex items-center justify-center w-10 h-10 rounded-lg border shadow-sm transition-colors duration-500
+                            ${isCompleted ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400' : 
+                              isActive ? 'bg-indigo-500/20 border-indigo-500/50 text-indigo-400' : 
+                              'bg-slate-800 border-slate-700 text-slate-500'}`}
+                          >
+                            <node.icon size={18} strokeWidth={isActive ? 2.5 : 2} className={isActive ? 'animate-pulse' : ''} />
+                          </div>
+                          
+                          {/* Status Badge */}
+                          <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full
+                            ${isCompleted ? 'bg-emerald-500/10 text-emerald-400' : 
+                              isActive ? 'bg-indigo-500/10 text-indigo-400' : 
+                              'bg-slate-800 text-slate-500'}`}>
+                            {isCompleted ? 'Done' : isActive ? 'Processing' : 'Pending'}
+                          </span>
                         </div>
 
-                        {/* Text description */}
                         <div>
-                          <p className={`text-sm leading-tight transition-colors duration-300 ${isCompleted ? 'text-slate-500 font-medium line-through decoration-slate-700 decoration-1' :
-                            isActive ? 'text-white font-bold flex items-center gap-2' :
-                              'text-slate-650 font-normal'
-                            }`}>
-                            {stepDesc}
-                            {isActive && (
-                              <span className="inline-block text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded animate-pulse">
-                                Processing...
-                              </span>
-                            )}
+                          <h4 className={`text-sm font-bold transition-colors ${isCompleted ? 'text-emerald-300' : isActive ? 'text-white' : 'text-slate-500'}`}>
+                            {node.title}
+                          </h4>
+                          <p className={`text-xs mt-1 leading-relaxed ${isCompleted ? 'text-emerald-500/70' : isActive ? 'text-indigo-200/70' : 'text-slate-600'}`}>
+                            {node.desc}
                           </p>
                         </div>
                       </div>
@@ -639,7 +648,7 @@ SKILLS:
             )}
 
             {/* Match Listings and generative pitches */}
-            {!loading && (matches.length > 0 || strategy) && (
+            {(matches.length > 0 || strategy) && (
               <div className="space-y-6">
 
                 {/* Seed matches list */}
@@ -651,9 +660,9 @@ SKILLS:
                     </h3>
 
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                      {matches.map((job) => (
+                      {matches.map((job, index) => (
                         <div
-                          key={job._id}
+                          key={job._id || index}
                           className="bg-gray-900/60 border border-slate-800/80 rounded-xl p-4 flex flex-col justify-between hover:border-indigo-500/30 transition-all relative overflow-hidden group"
                         >
                           {/* Match score indicator */}
@@ -692,7 +701,7 @@ SKILLS:
                 )}
 
                 {/* AI generated report */}
-                {strategy && (
+                {strategy ? (
                   <div className="bg-gray-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-6 shadow-xl relative">
                     <div className="flex items-center gap-2 mb-4 pb-4 border-b border-slate-850">
                       <div className="h-8 w-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400">
@@ -708,6 +717,14 @@ SKILLS:
                       <MarkdownRenderer content={strategy} />
                     </div>
                   </div>
+                ) : (
+                  loading && matches.length > 0 && (
+                    <div className="bg-gray-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-6 shadow-xl relative flex flex-col items-center justify-center py-12">
+                      <Loader2 className="h-8 w-8 animate-spin text-indigo-500 mb-4" />
+                      <h3 className="font-bold text-white text-base">Drafting Custom Application Strategy...</h3>
+                      <p className="text-xs text-slate-400 mt-2 text-center max-w-md">Our AI is analyzing the top matched jobs and writing customized outreach pitches. This takes a few seconds.</p>
+                    </div>
+                  )
                 )}
 
               </div>

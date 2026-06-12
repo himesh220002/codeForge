@@ -86,24 +86,24 @@ export default function LoginPage() {
             <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none"></div>
 
             {/* Login Card */}
-            <div className="w-full max-w-md bg-gray-900/50 backdrop-blur-xl border border-slate-800 rounded-2xl p-8 shadow-2xl relative z-10 transition-all">
-                
+            <div className="w-full max-w-md bg-gray-900/50 backdrop-blur-xl border border-indigo-500/10 rounded-2xl p-8 shadow-2xl relative z-10 transition-all">
+
                 {/* Header */}
                 <div className="text-center mb-8">
-                  <Link href="/" className="inline-flex items-center gap-2 mb-4 group focus:outline-none">
-                    <div className="h-9 w-9 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-extrabold text-lg shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform">
-                      CF
-                    </div>
-                    <span className="text-lg font-bold tracking-wider text-slate-100 group-hover:text-white transition-colors">
-                      CodeForge
-                    </span>
-                  </Link>
-                  <h2 className="text-2xl font-bold text-slate-100 tracking-tight">
-                    {isSignup ? 'Create your account' : 'Sign in to platform'}
-                  </h2>
-                  <p className="text-sm text-gray-400 mt-1.5">
-                    {isSignup ? 'Get started with your developer dashboard' : 'Enter details to access your profile'}
-                  </p>
+                    <Link href="/" className="inline-flex items-center gap-2 mb-4 group focus:outline-none">
+                        <div className="h-9 w-9 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-extrabold text-lg shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform">
+                            CF
+                        </div>
+                        <span className="text-lg font-bold tracking-wider text-slate-100 group-hover:text-white transition-colors">
+                            CodeForge
+                        </span>
+                    </Link>
+                    <h2 className="text-2xl font-bold text-slate-100 tracking-tight">
+                        {isSignup ? 'Create your account' : 'Sign in to platform'}
+                    </h2>
+                    <p className="text-sm text-gray-400 mt-1.5">
+                        {isSignup ? 'Get started with your developer dashboard' : 'Enter details to access your profile'}
+                    </p>
                 </div>
 
                 {/* Form */}
@@ -120,7 +120,7 @@ export default function LoginPage() {
                                     placeholder="John Doe"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
-                                    className="w-full pl-10 pr-4 py-2.5 bg-gray-950/70 border border-slate-800 rounded-xl text-slate-155 placeholder-gray-655 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/80 transition-all text-sm"
+                                    className="w-full pl-10 pr-4 py-2.5 bg-gray-950/70 border border-indigo-500/10 rounded-xl text-slate-155 placeholder-gray-655 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/80 transition-all text-sm"
                                     disabled={loading || redirecting}
                                 />
                             </div>
@@ -138,7 +138,7 @@ export default function LoginPage() {
                                 placeholder="you@example.com"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2.5 bg-gray-950/70 border border-slate-800 rounded-xl text-slate-155 placeholder-gray-655 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/80 transition-all text-sm"
+                                className="w-full pl-10 pr-4 py-2.5 bg-gray-950/70 border border-indigo-500/10 rounded-xl text-slate-155 placeholder-gray-655 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/80 transition-all text-sm"
                                 disabled={loading || redirecting}
                             />
                         </div>
@@ -155,7 +155,7 @@ export default function LoginPage() {
                                 placeholder="••••••••"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2.5 bg-gray-950/70 border border-slate-800 rounded-xl text-slate-155 placeholder-gray-655 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/80 transition-all text-sm"
+                                className="w-full pl-10 pr-4 py-2.5 bg-gray-950/70 border border-indigo-500/10 rounded-xl text-slate-155 placeholder-gray-655 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/80 transition-all text-sm"
                                 disabled={loading || redirecting}
                             />
                         </div>
@@ -202,9 +202,9 @@ export default function LoginPage() {
                 {/* Footer toggle link */}
                 <p className="mt-6 text-center text-xs text-slate-400">
                     {isSignup ? 'Already have an account?' : "Don't have an account?"}{' '}
-                    <button 
+                    <button
                         type="button"
-                        className="text-blue-400 font-bold hover:underline ml-1 cursor-pointer focus:outline-none" 
+                        className="text-blue-400 font-bold hover:underline ml-1 cursor-pointer focus:outline-none"
                         onClick={() => setIsSignup(!isSignup)}
                         disabled={loading || redirecting}
                     >

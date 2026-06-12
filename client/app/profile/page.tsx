@@ -78,7 +78,7 @@ const MarkdownRenderer: React.FC<{ content: string }> = ({ content }) => {
         // H2 Header
         if (trimmed.startsWith('## ')) {
           return (
-            <h3 key={idx} className="text-lg font-bold text-white mt-6 mb-3 border-b border-slate-800 pb-1.5 flex items-center gap-2">
+            <h3 key={idx} className="text-lg font-bold text-white mt-6 mb-3 border-b border-indigo-500/10 pb-1.5 flex items-center gap-2">
               <Sparkles size={16} className="text-indigo-400" />
               {trimmed.replace('## ', '')}
             </h3>
@@ -285,7 +285,7 @@ export default function ProfilePage() {
     const updatedCvs = [newCv, ...savedCvs];
     setSavedCvs(updatedCvs);
     localStorage.setItem("saved_multiple_cvs", JSON.stringify(updatedCvs));
-    
+
     // Also save to default active buffer
     localStorage.setItem("uploaded_pdf_text", cvText);
 
@@ -421,14 +421,14 @@ export default function ProfilePage() {
           <div className="lg:col-span-4 space-y-6">
 
             {/* User Details Box */}
-            <div className="bg-gray-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-6 shadow-xl">
+            <div className="bg-gray-900/60 backdrop-blur-xl border border-indigo-500/10 rounded-2xl p-6 shadow-xl">
               <h3 className="font-bold text-white text-base mb-4 flex items-center gap-2">
                 <span className="h-7 w-7 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-400 text-sm font-bold">@</span>
                 Account Session Details
               </h3>
 
               <div className="space-y-4">
-                <div className="flex items-center gap-4 border-b border-slate-850 pb-4">
+                <div className="flex items-center gap-4 border-b border-indigo-500/10 pb-4">
                   <div className="h-12 w-12 rounded-xl bg-gradient-to-tr from-teal-500 to-indigo-600 flex items-center justify-center text-white font-extrabold text-xl shadow">
                     {userName ? userName.split(" ").map(n => n[0]).join("").toUpperCase().substring(0, 2) : "G"}
                   </div>
@@ -444,14 +444,14 @@ export default function ProfilePage() {
                     userRole === "superuser" ? "bg-orange-500/20 text-orange-300 border border-orange-500/35" :
                       userRole === "admin" ? "bg-purple-500/20 text-purple-300 border border-purple-500/35" :
                         userName ? "bg-blue-500/20 text-blue-300 border border-blue-500/35" :
-                          "bg-slate-800 text-slate-400 border border-slate-700"
+                          "bg-slate-800 text-slate-400 border border-indigo-700/20"
                     }`}>
                     {userRole || (userName ? "user" : "guest")}
                   </span>
                 </div>
 
                 {!userName && (
-                  <div className="pt-2 border-t border-slate-850">
+                  <div className="pt-2 border-t border-indigo-500/10">
                     <Link
                       href="/login"
                       className="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-xs font-bold text-white rounded-xl shadow-md transition-all"
@@ -464,7 +464,7 @@ export default function ProfilePage() {
             </div>
 
             {/* BYOK Settings Box */}
-            <div className="bg-gray-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-6 shadow-xl">
+            <div className="bg-gray-900/60 backdrop-blur-xl border border-indigo-500/10 rounded-2xl p-6 shadow-xl">
               <h3 className="font-bold text-white text-base mb-2 flex items-center gap-2">
                 <Key size={16} className="text-indigo-400" />
                 BYOK <span className='text-green-400 bg-gradient-to-r from-purple-400 to-teal-400 bg-clip-text text-transparent'>NVIDIA NIM Key</span>
@@ -480,7 +480,7 @@ export default function ProfilePage() {
                     value={apiKey}
                     onChange={(e) => setApiKey(e.target.value)}
                     placeholder="nvapi-..."
-                    className="w-full bg-gray-950 border border-slate-800 rounded-xl py-2.5 px-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500/60 placeholder:text-slate-700 transition-all font-mono text-sm"
+                    className="w-full bg-gray-950 border border-indigo-500/10 rounded-xl py-2.5 px-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500/60 placeholder:text-slate-700 transition-all font-mono text-sm"
                   />
                   <div className="absolute right-2.5 top-2.5">
                     <BsNvidia className="text-green-400 h-5 w-5" />
@@ -500,7 +500,7 @@ export default function ProfilePage() {
                     <button
                       type="button"
                       onClick={handleClearApiKey}
-                      className="inline-flex items-center justify-center px-3 py-2 bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-slate-750 text-xs font-bold text-slate-400 rounded-xl transition-colors cursor-pointer"
+                      className="inline-flex items-center justify-center px-3 py-2 bg-slate-950 hover:bg-slate-900 border border-indigo-500/10 hover:border-slate-750 text-xs font-bold text-slate-400 rounded-xl transition-colors cursor-pointer"
                     >
                       Clear
                     </button>
@@ -508,7 +508,7 @@ export default function ProfilePage() {
                 </div>
               </form>
 
-              <div className="mt-4 pt-3 border-t border-slate-850 text-center">
+              <div className="mt-4 pt-3 border-t border-indigo-500/10 text-center">
                 <a
                   href="https://build.nvidia.com/settings/api-keys"
                   target="_blank"
@@ -521,7 +521,7 @@ export default function ProfilePage() {
             </div>
 
             {/* Privacy Guarantee Information */}
-            <div className="bg-slate-900/35 border border-slate-850 rounded-2xl p-6">
+            <div className="bg-slate-900/35 border border-indigo-500/10 rounded-2xl p-6">
               <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1.5">
                 <span className="text-sm">🛡️</span> Privacy Guarantee
               </h4>
@@ -536,8 +536,8 @@ export default function ProfilePage() {
           <div className="lg:col-span-8 space-y-6">
 
             {/* CV Upload and Area */}
-            <div className="bg-gray-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-6 shadow-xl">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4 border-b border-slate-800 pb-4">
+            <div className="bg-gray-900/60 backdrop-blur-xl border border-indigo-500/10 rounded-2xl p-6 shadow-xl">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4 border-b border-indigo-500/10 pb-4">
                 <div className="flex items-center gap-2">
                   <div className="h-8 w-8 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-400">
                     <FileText size={16} />
@@ -580,7 +580,7 @@ export default function ProfilePage() {
                       value={newCvName}
                       onChange={(e) => setNewCvName(e.target.value)}
                       placeholder="e.g. 'Frontend React Resume', 'Backend Node Resume'"
-                      className="flex-grow bg-gray-950 border border-slate-800 rounded-lg py-2 px-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 text-sm"
+                      className="flex-grow bg-gray-950 border border-indigo-500/10 rounded-lg py-2 px-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 text-sm"
                     />
                     <button type="submit" className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-lg shadow-md transition-colors">
                       Confirm
@@ -595,7 +595,7 @@ export default function ProfilePage() {
                   onChange={(e) => setCvText(e.target.value)}
                   onBlur={handleSaveCvText}
                   placeholder="Paste details of your education, skills, work history, and projects here, or upload your PDF resume using the button above to parse it client-side..."
-                  className="w-full h-48 bg-gray-950 border border-slate-800 rounded-xl p-3 text-slate-200 placeholder-slate-650 focus:outline-none focus:ring-2 focus:ring-teal-500/40 focus:border-teal-500/60 transition-all text-sm font-mono leading-relaxed"
+                  className="w-full h-48 bg-gray-950 border border-indigo-500/10 rounded-xl p-3 text-slate-200 placeholder-slate-650 focus:outline-none focus:ring-2 focus:ring-teal-500/40 focus:border-teal-500/60 transition-all text-sm font-mono leading-relaxed"
                 />
                 <p className="text-[11px] text-slate-500">
                   Tip: Uploading a resume PDF automatically extracts formatting structure and populates this local buffer. Editing this buffer auto-saves.
@@ -604,8 +604,8 @@ export default function ProfilePage() {
             </div>
 
             {/* My Saved Resumes (Cards) */}
-            <div className="bg-gray-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-6 shadow-xl">
-              <div className="flex items-center gap-2 mb-6 pb-4 border-b border-slate-800">
+            <div className="bg-gray-900/60 backdrop-blur-xl border border-indigo-500/10 rounded-2xl p-6 shadow-xl">
+              <div className="flex items-center gap-2 mb-6 pb-4 border-b border-indigo-500/10">
                 <div className="h-8 w-8 rounded-lg bg-pink-500/10 flex items-center justify-center text-pink-400">
                   <Sparkles size={16} />
                 </div>
@@ -613,7 +613,7 @@ export default function ProfilePage() {
               </div>
 
               {savedCvs.length === 0 ? (
-                <div className="text-center py-8 border border-dashed border-slate-850 rounded-xl">
+                <div className="text-center py-8 border border-dashed border-indigo-500/10 rounded-xl">
                   <p className="text-slate-500 text-sm">No resumes saved yet.</p>
                   <p className="text-xs text-slate-600 mt-1">Upload a PDF or paste text above, then click 'Save as new CV...'</p>
                 </div>
@@ -622,8 +622,8 @@ export default function ProfilePage() {
                   {savedCvs.map((cv) => {
                     const isExpanded = expandedCvId === cv.id;
                     return (
-                      <div key={cv.id} className="bg-gray-950 border border-slate-850 hover:border-slate-800 rounded-xl overflow-hidden transition-all">
-                        <div 
+                      <div key={cv.id} className="bg-gray-950 border border-indigo-500/10 hover:border-indigo-500/10 rounded-xl overflow-hidden transition-all">
+                        <div
                           onClick={() => toggleExpandCv(cv.id)}
                           className="p-4 flex justify-between items-center cursor-pointer select-none"
                         >
@@ -650,8 +650,8 @@ export default function ProfilePage() {
                         </div>
 
                         {isExpanded && (
-                          <div className="p-4 border-t border-slate-850 bg-slate-900/20">
-                            <pre className="p-3 bg-gray-950 border border-slate-800 rounded-lg text-xs font-mono text-slate-300 overflow-x-auto max-h-64 overflow-y-auto whitespace-pre-wrap leading-relaxed">
+                          <div className="p-4 border-t border-indigo-500/10 bg-slate-900/20">
+                            <pre className="p-3 bg-gray-950 border border-indigo-500/10 rounded-lg text-xs font-mono text-slate-300 overflow-x-auto max-h-64 overflow-y-auto whitespace-pre-wrap leading-relaxed">
                               {cv.text}
                             </pre>
                           </div>
@@ -664,8 +664,8 @@ export default function ProfilePage() {
             </div>
 
             {/* Matching History and suggestions */}
-            <div className="bg-gray-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-6 shadow-xl">
-              <div className="flex justify-between items-center mb-6 pb-4 border-b border-slate-800">
+            <div className="bg-gray-900/60 backdrop-blur-xl border border-indigo-500/10 rounded-2xl p-6 shadow-xl">
+              <div className="flex justify-between items-center mb-6 pb-4 border-b border-indigo-500/10">
                 <div className="flex items-center gap-2">
                   <div className="h-8 w-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400">
                     <Clock size={16} />
@@ -684,7 +684,7 @@ export default function ProfilePage() {
               </div>
 
               {history.length === 0 ? (
-                <div className="text-center py-12 border border-dashed border-slate-850 rounded-xl">
+                <div className="text-center py-12 border border-dashed border-indigo-500/10 rounded-xl">
                   <p className="text-slate-500 text-sm">No job matches run yet.</p>
                   <p className="text-xs text-slate-600 mt-1">Use the Job Matcher to search jobs and generate recommendations.</p>
                   <Link
@@ -701,7 +701,7 @@ export default function ProfilePage() {
                     return (
                       <div
                         key={item.id}
-                        className="bg-gray-950 border border-slate-850 hover:border-slate-800 rounded-xl overflow-hidden transition-all"
+                        className="bg-gray-950 border border-indigo-500/10 hover:border-indigo-500/10 rounded-xl overflow-hidden transition-all"
                       >
                         {/* Header Summarized view */}
                         <div
@@ -714,7 +714,7 @@ export default function ProfilePage() {
                                 <Calendar size={11} className="text-indigo-400" />
                                 {item.timestamp}
                               </span>
-                              <span className="text-[10px] font-bold px-1.5 py-0.2 bg-slate-900 border border-slate-800 rounded text-slate-400 max-w-[200px] truncate">
+                              <span className="text-[10px] font-bold px-1.5 py-0.2 bg-slate-900 border border-indigo-500/10 rounded text-slate-400 max-w-[200px] truncate">
                                 Prompt: {item.prompt}
                               </span>
                             </div>
@@ -741,7 +741,7 @@ export default function ProfilePage() {
 
                         {/* Expanded detail view */}
                         {isExpanded && (
-                          <div className="p-5 border-t border-slate-850 bg-slate-900/10 space-y-6">
+                          <div className="p-5 border-t border-indigo-500/10 bg-slate-900/10 space-y-6">
 
                             {/* Matches list */}
                             {item.matches && item.matches.length > 0 && (
@@ -751,7 +751,7 @@ export default function ProfilePage() {
                                   {item.matches.slice(0, 4).map((job) => (
                                     <div
                                       key={job._id}
-                                      className="p-3 bg-gray-950/70 border border-slate-850/60 rounded-lg flex flex-col justify-between"
+                                      className="p-3 bg-gray-950/70 border border-indigo-500/10 rounded-lg flex flex-col justify-between"
                                     >
                                       <div>
                                         <div className="flex justify-between items-start gap-1">
@@ -780,21 +780,21 @@ export default function ProfilePage() {
 
                             {/* Strategy / Suggestions markdown */}
                             {item.strategy && (
-                              <div className="pt-4 border-t border-slate-850/60">
+                              <div className="pt-4 border-t border-indigo-500/10">
                                 <h5 className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-3">CV Recommendations & Application Strategy</h5>
-                                <div className="prose prose-invert max-w-none bg-gray-950/40 p-4 border border-slate-850/40 rounded-xl">
+                                <div className="prose prose-invert max-w-none bg-gray-950/40 p-4 border border-indigo-500/10/40 rounded-xl">
                                   <MarkdownRenderer content={item.strategy} />
                                 </div>
                               </div>
                             )}
 
                             {/* CV Text copy back details */}
-                            <div className="pt-4 border-t border-slate-850/60">
+                            <div className="pt-4 border-t border-indigo-500/10">
                               <details className="text-xs text-slate-500">
                                 <summary className="cursor-pointer font-semibold select-none hover:text-slate-400 transition-colors">
                                   View CV text snapshot used for this match
                                 </summary>
-                                <pre className="mt-2 p-3 bg-gray-950 border border-slate-850 rounded-lg text-[10px] font-mono text-slate-400 overflow-x-auto max-h-40 overflow-y-auto leading-relaxed">
+                                <pre className="mt-2 p-3 bg-gray-950 border border-indigo-500/10 rounded-lg text-[10px] font-mono text-slate-400 overflow-x-auto max-h-40 overflow-y-auto leading-relaxed">
                                   {item.cvText}
                                 </pre>
                               </details>

@@ -1,6 +1,6 @@
 import OpenAI from 'openai';
 
-const getOpenAIClient = (apiKey: string) => {
+export const getOpenAIClient = (apiKey: string) => {
   if (!apiKey) {
     throw new Error("NVIDIA API Key is required.");
   }
@@ -396,12 +396,41 @@ export async function generateAtsFeedback(
   jobDescription: string,
   matchScore: number,
   apiKey: string
-): Promise<string> {
-  const systemPrompt = `You are an elite, highly analytical Technical Recruiter and ATS Administrator. You just ran a candidate's resume against a job description through your custom semantic ATS scanner. 
+): Promise<any> {
+  const systemPrompt = `You are an elite, highly analytical Technical Recruiter and ATS Administrator. You just ran a candidate's resume against a job description through your custom semantic ATS scanner.
+You are also an elite ATS evaluator and career coach. 
 The final pipeline match score calculated is ${matchScore}/100.
 
-Provide exactly 2 to 3 short sentences of highly actionable, critical feedback. 
-Identify 1 or 2 specific missing hard skills, contextual gaps, or missing metrics from the JD that directly impacted this score. Do NOT use generic filler phrases like "Moderate alignment detected". Be highly specific based on the raw text provided. Speak directly to the candidate in a professional tone.`;
+Your task is to produce a **section-wise breakdown of scores and feedback**.
+
+### Scoring Breakdown
+For each section in the resume (experience, education, skills, projects, summary, and any other detected sections):
+- Provide three scores:
+  1. Overall section score (0-100)
+  2. Match-to-JD score (semantic similarity with job description)
+  3. Structure score (clarity, formatting, presence of section headers)
+
+### Feedback Notes
+For each section:
+- Write 1-2 sentences of **specific, actionable feedback**. 
+- Identify missing hard skills, weak descriptions, or formatting issues.
+- Speak directly to the candidate by name (e.g., "Himesh, your experience section highlights strong backend work, but it lacks quantified achievements.").
+- Avoid generic filler like "moderate alignment detected."
+
+### Output Format
+Return the result in a **strictly valid JSON** object for easy UI rendering. Use this exact structure:
+
+{
+  "sections": {
+    "experience": {
+      "score": 78,
+      "matchjd_score": 82,
+      "structure_score": 70,
+      "feedback": "Himesh, your experience aligns well with backend roles, but add metrics like project impact or team size."
+    }
+  },
+  "overall_summary": "Short overall summary (2-3 sentences) that synthesizes the candidate's readiness and top 2 improvements needed."
+}`;
 
   const userMessage = `Candidate Resume Extract: 
 ${cvText.substring(0, 3000)}
@@ -423,19 +452,31 @@ ${jobDescription.substring(0, 3000)}`;
           { role: "user", content: userMessage }
         ],
         temperature: 0.3,
-        max_tokens: 150,
+        max_tokens: 1000,
+        response_format: { type: "json_object" }
       }),
       signal: AbortSignal.timeout(120000)
     });
 
     if (!response.ok) throw new Error("API Error");
     const completion = await response.json() as any;
-    return completion.choices[0]?.message?.content?.trim() || "Feedback generation failed.";
+    const jsonString = completion.choices[0]?.message?.content?.trim() || "{}";
+    return JSON.parse(jsonString);
   } catch (error) {
     console.error("ATS LLM feedback failed, returning fallback:", error);
-    return matchScore >= 80
-      ? "Candidate shows strong semantic overlap with core requirements. High density of required keywords and matching action verbs isolated."
-      : "Moderate alignment detected. While structural layout is valid, semantic mapping highlights gaps in required hard skills.";
+    return {
+      sections: {
+        fallback: {
+          score: matchScore,
+          matchjd_score: matchScore,
+          structure_score: 100,
+          feedback: matchScore >= 80
+            ? "Candidate shows strong semantic overlap with core requirements. High density of required keywords and matching action verbs isolated."
+            : "Moderate alignment detected. While structural layout is valid, semantic mapping highlights gaps in required hard skills."
+        }
+      },
+      overall_summary: "Pipeline fallback triggered due to LLM timeout or error. Check API configuration."
+    };
   }
 }
 

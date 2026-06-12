@@ -54,7 +54,7 @@ export default function AIJobSearchFlowPage() {
                 <h2 className="text-2xl font-bold mb-4 text-slate-200">
                     Interactive RAG Lifecycle Flow (Dual-Stage Search)
                 </h2>
-                <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 overflow-x-auto flex justify-center min-h-[550px]">
+                <div className="bg-slate-900 border border-indigo-500/10 rounded-xl p-4 overflow-x-auto flex justify-center min-h-[550px]">
                     {ready && (
                         <div ref={ref} className="mermaid w-full">
                             {`sequenceDiagram
@@ -100,14 +100,14 @@ export default function AIJobSearchFlowPage() {
 
             {/* Ingestion & Match Architecture Flowchart */}
             <section className="p-6">
-                <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 overflow-x-auto flex flex-col items-center min-h-[1100px]">
+                <div className="bg-slate-900 border border-indigo-500/10 rounded-xl p-6 overflow-x-auto flex flex-col items-center min-h-[1100px]">
                     <h3 className="text-xl font-bold text-slate-200 mb-2">
                         Complete Pipeline Processing & Data Conversion Map
                     </h3>
                     <p className="text-gray-400 text-sm mb-8 text-center max-w-2xl">
                         A detailed view of how CSV datasets are parsed, how text features are chunked, how embeddings are generated and stored, and how vector search, reranking, and generation occurs.
                     </p>
-                    
+
                     {ready && (
                         <div ref={repoRef} className="mermaid w-full">
                             {`flowchart TD

@@ -3,8 +3,10 @@ import { PDFParse } from 'pdf-parse';
 import natural from 'natural';
 import nlp from 'compromise';
 import { getEmbedding, cosineSimilarity, generateAtsFeedback } from '../services/aiService.js';
+import { AtsLogModel } from '../models/atsLog.js';
 
 export const checkAtsScore = async (req: Request, res: Response): Promise<void> => {
+  const startTime = Date.now();
   try {
     const file = req.file;
     const { jobDescription } = req.body;
@@ -105,6 +107,46 @@ export const checkAtsScore = async (req: Request, res: Response): Promise<void> 
       }
     }) + '\n');
     res.end();
+
+    // Log the request asynchronously
+    const processingTimeMs = Date.now() - startTime;
+    const tokensUsed = Math.round((cvText.length + jobDescription.length) / 4);
+
+    // Extract basic candidate info for Talent Hub
+    // 1. Better Name Heuristic: usually the first non-empty line. If it's too long, fallback to Compromise.
+    const lines = cvText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+    let candidateName = "Unknown Candidate";
+    if (lines.length > 0 && lines[0].split(' ').length <= 4) {
+      candidateName = lines[0].replace(/[^a-zA-Z\s.-]/g, '');
+    } else {
+      const nameMatch = doc.match('#Person').out('array');
+      candidateName = nameMatch.length > 0 ? nameMatch[0] : "Unknown Candidate";
+    }
+    
+    // 2. Phone Extraction
+    const phoneMatch = cvText.match(/(?:\+?\d{1,3}[\s-]?)?\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4}/);
+    const candidatePhone = phoneMatch ? phoneMatch[0] : "Not Found";
+    
+    // 3. Email Extraction
+    const emailMatch = cvText.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+    const candidateEmail = emailMatch ? emailMatch[0] : "Not Found";
+    
+    // 4. Links Extraction (LinkedIn, GitHub, Portfolio)
+    const linksMatch = cvText.match(/https?:\/\/[^\s]+/g);
+    const candidateLinks = linksMatch ? Array.from(new Set(linksMatch)).slice(0, 3) : [];
+
+    const targetProfession = jobDescription.split(" ").slice(0, 4).join(" ").replace(/[^a-zA-Z0-9\s]/g, "");
+
+    AtsLogModel.create({
+      score: Math.round(finalMatchScore),
+      tokensUsed,
+      processingTimeMs,
+      candidateName,
+      candidatePhone,
+      candidateEmail,
+      candidateLinks,
+      targetProfession
+    }).catch(err => console.error("Failed to log ATS request:", err));
 
   } catch (err: any) {
     console.error('ATS check failed:', err);

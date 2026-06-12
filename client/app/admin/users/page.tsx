@@ -182,7 +182,7 @@ export default function AdminUsersPage() {
       owner: "bg-yellow-500/15 text-yellow-300 border border-yellow-500/30",
       superuser: "bg-purple-500/15 text-purple-300 border border-purple-500/30",
       admin: "bg-blue-500/15 text-blue-300 border border-blue-500/30",
-      user: "bg-slate-500/15 text-slate-300 border border-slate-500/30",
+      user: "bg-slate-500/15 text-slate-300 border border-indigo-500/30",
     };
     return styles[role] || styles.user;
   };
@@ -201,7 +201,7 @@ export default function AdminUsersPage() {
           placeholder="Search by name, email, or ID..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="w-full max-w-md px-4 py-2.5 bg-gray-900/60 border border-slate-800 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500/60 transition-all text-sm"
+          className="w-full max-w-md px-4 py-2.5 bg-gray-900/60 border border-indigo-500/10 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500/60 transition-all text-sm"
         />
       </div>
 
@@ -218,11 +218,11 @@ export default function AdminUsersPage() {
           ))}
         </div>
       ) : (
-        <div className="bg-gray-900/40 border border-slate-800/60 rounded-2xl overflow-hidden">
+        <div className="bg-gray-900/40 border border-indigo-500/10 rounded-2xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-slate-800/80">
+                <tr className="border-b border-indigo-500/10">
                   <th className="text-left px-4 py-3 text-xs font-bold uppercase tracking-wider text-slate-500">Name</th>
                   <th className="text-left px-4 py-3 text-xs font-bold uppercase tracking-wider text-slate-500">Email</th>
                   <th className="text-center px-4 py-3 text-xs font-bold uppercase tracking-wider text-slate-500">Role</th>
@@ -231,7 +231,7 @@ export default function AdminUsersPage() {
               </thead>
               <tbody>
                 {filtered.map(user => (
-                  <tr key={user._id} className="border-b border-slate-800/40 hover:bg-slate-800/20 transition-colors">
+                  <tr key={user._id} className="border-b border-indigo-500/30 hover:bg-slate-800/20 transition-colors">
                     <td className="px-4 py-3 text-sm text-slate-200 font-medium">{user.name}</td>
                     <td className="px-4 py-3 text-sm text-slate-400">{user.email}</td>
                     <td className="px-4 py-3 text-center">
@@ -244,7 +244,7 @@ export default function AdminUsersPage() {
                         <select
                           value={user.role}
                           onChange={e => handleRoleChange(user._id, e.target.value)}
-                          className="bg-slate-800 border border-slate-700 text-slate-200 text-xs px-2 py-1.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          className="bg-slate-800 border border-indigo-700/20 text-slate-200 text-xs px-2 py-1.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500"
                           disabled={
                             (user.role === "owner" && currentRole !== "owner") ||
                             (user.role === "superuser" && currentRole !== "owner")
@@ -277,7 +277,7 @@ export default function AdminUsersPage() {
           <button
             disabled={pagination.page <= 1}
             onClick={() => fetchUsers(pagination.page - 1)}
-            className="px-4 py-2 bg-slate-800/50 border border-slate-700 text-slate-300 text-sm rounded-xl hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+            className="px-4 py-2 bg-slate-800/50 border border-indigo-700/20 text-slate-300 text-sm rounded-xl hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
           >
             Previous
           </button>
@@ -287,7 +287,7 @@ export default function AdminUsersPage() {
           <button
             disabled={pagination.page >= pagination.totalPages}
             onClick={() => fetchUsers(pagination.page + 1)}
-            className="px-4 py-2 bg-slate-800/50 border border-slate-700 text-slate-300 text-sm rounded-xl hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+            className="px-4 py-2 bg-slate-800/50 border border-indigo-700/20 text-slate-300 text-sm rounded-xl hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
           >
             Next
           </button>

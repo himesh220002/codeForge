@@ -27,7 +27,7 @@ export default function AdminContactsPage() {
           return data.accessToken;
         }
       }
-    } catch {}
+    } catch { }
     return null;
   }
 
@@ -100,7 +100,7 @@ export default function AdminContactsPage() {
           placeholder="Search messages..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="w-full pl-9 pr-4 py-2.5 bg-gray-900/60 border border-slate-800 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500/60 transition-all text-sm"
+          className="w-full pl-9 pr-4 py-2.5 bg-gray-900/60 border border-indigo-500/10 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500/60 transition-all text-sm"
         />
       </div>
 
@@ -117,7 +117,7 @@ export default function AdminContactsPage() {
           ))}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-16 bg-gray-900/40 border border-slate-800/60 rounded-2xl">
+        <div className="text-center py-16 bg-gray-900/40 border border-indigo-500/10 rounded-2xl">
           <Mail size={40} className="mx-auto text-slate-600 mb-3" />
           <p className="text-slate-400 text-sm">No contact messages found.</p>
         </div>
@@ -129,11 +129,10 @@ export default function AdminContactsPage() {
               <button
                 key={contact._id}
                 onClick={() => setSelectedContact(contact)}
-                className={`w-full text-left p-4 rounded-xl border transition-all ${
-                  selectedContact?._id === contact._id
-                    ? "bg-indigo-500/10 border-indigo-500/30"
-                    : "bg-gray-900/40 border-slate-800/60 hover:bg-slate-800/40 hover:border-slate-700"
-                }`}
+                className={`w-full text-left p-4 rounded-xl border transition-all ${selectedContact?._id === contact._id
+                  ? "bg-indigo-500/10 border-indigo-500/30"
+                  : "bg-gray-900/40 border-indigo-500/10 hover:bg-slate-800/40 hover:border-indigo-700/20"
+                  }`}
               >
                 <div className="flex items-center gap-2 mb-1">
                   <UserIcon size={12} className="text-slate-500" />
@@ -152,7 +151,7 @@ export default function AdminContactsPage() {
           {/* Message Detail */}
           <div className="lg:col-span-2">
             {selectedContact ? (
-              <div className="bg-gray-900/40 border border-slate-800/60 rounded-2xl p-6">
+              <div className="bg-gray-900/40 border border-indigo-500/10 rounded-2xl p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h3 className="text-lg font-bold text-slate-100">{selectedContact.name}</h3>
@@ -168,7 +167,7 @@ export default function AdminContactsPage() {
                     {formatDate(selectedContact.createdAt)}
                   </div>
                 </div>
-                <div className="border-t border-slate-800/60 pt-4">
+                <div className="border-t border-indigo-500/10 pt-4">
                   <p className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Message</p>
                   <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap">
                     {selectedContact.message}
@@ -176,7 +175,7 @@ export default function AdminContactsPage() {
                 </div>
               </div>
             ) : (
-              <div className="flex items-center justify-center h-full bg-gray-900/20 border border-slate-800/40 rounded-2xl min-h-[300px]">
+              <div className="flex items-center justify-center h-full bg-gray-900/20 border border-indigo-500/10/40 rounded-2xl min-h-[300px]">
                 <div className="text-center">
                   <Mail size={32} className="mx-auto text-slate-700 mb-2" />
                   <p className="text-sm text-slate-500">Select a message to view details</p>

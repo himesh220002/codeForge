@@ -53,7 +53,7 @@ export default function ContactFlowPage() {
                 <h2 className="text-2xl font-bold mb-4 text-slate-200">
                     Interactive Contact Lifecycle Flow
                 </h2>
-                <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 overflow-x-auto flex justify-center min-h-[420px]">
+                <div className="bg-slate-900 border border-indigo-500/10 rounded-xl p-4 overflow-x-auto flex justify-center min-h-[420px]">
                     {ready && (
                         <div ref={ref} className="mermaid w-full">
                             {`sequenceDiagram
@@ -78,7 +78,7 @@ export default function ContactFlowPage() {
             </section>
             {/* Connections Diagram */}
             <section className="p-6">
-                <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 overflow-x-auto flex flex-col items-center min-h-[500px]">
+                <div className="bg-slate-900 border border-indigo-500/10 rounded-xl p-6 overflow-x-auto flex flex-col items-center min-h-[500px]">
                     <h3 className="text-lg font-bold text-slate-200 mb-2">
                         Architecture Connection Map
                     </h3>

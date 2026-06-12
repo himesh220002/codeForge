@@ -22,7 +22,7 @@ const Hero = () => {
           </a>
           <a
             href="/login"
-            className="inline-flex justify-center rounded-full border border-slate-700 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10 transition"
+            className="inline-flex justify-center rounded-full border border-indigo-700/20 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10 transition"
           >
             Open login
           </a>

@@ -80,7 +80,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div className="min-h-screen bg-gray-950 text-slate-100">
         <Navbar />
         <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50">
-          <div className="bg-gray-900 border border-slate-800 text-white rounded-2xl shadow-2xl max-w-sm w-full mx-4 p-8 space-y-4">
+          <div className="bg-gray-900 border border-indigo-500/10 text-white rounded-2xl shadow-2xl max-w-sm w-full mx-4 p-8 space-y-4">
             <div className="mx-auto mb-2 h-14 w-14 rounded-full bg-indigo-500/10 flex items-center justify-center">
               <Shield size={24} className="text-indigo-400" />
             </div>
@@ -92,7 +92,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 onKeyDown={e => e.key === "Enter" && handleUnlock()}
-                className="w-full px-4 py-2.5 rounded-xl bg-gray-800 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                className="w-full px-4 py-2.5 rounded-xl bg-gray-800 border border-indigo-700/20 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
                 placeholder="Admin password"
               />
               <button
@@ -124,16 +124,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <Navbar />
       <div className="flex">
         {/* Sidebar */}
-        <aside className="w-64 min-h-[calc(100vh-73px)] bg-gray-900/50 border-r border-slate-800/80 p-4 flex flex-col gap-1 shrink-0">
+        <aside className="w-64 min-h-[calc(100vh-73px)] bg-gray-900/50 border-r border-indigo-500/10 p-4 flex flex-col gap-1 shrink-0">
           <div className="mb-4 px-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">Admin Panel</h3>
             {currentRole && (
-              <span className={`inline-block text-[10px] font-bold px-1.5 py-0.5 rounded mt-1.5 uppercase ${
-                currentRole === "owner" ? "bg-red-500/20 text-red-300 border border-red-500/35" :
+              <span className={`inline-block text-[10px] font-bold px-1.5 py-0.5 rounded mt-1.5 uppercase ${currentRole === "owner" ? "bg-red-500/20 text-red-300 border border-red-500/35" :
                 currentRole === "superuser" ? "bg-orange-500/20 text-orange-300 border border-orange-500/35" :
-                currentRole === "admin" ? "bg-purple-500/20 text-purple-300 border border-purple-500/35" :
-                "bg-blue-500/20 text-blue-300 border border-blue-500/35"
-              }`}>
+                  currentRole === "admin" ? "bg-purple-500/20 text-purple-300 border border-purple-500/35" :
+                    "bg-blue-500/20 text-blue-300 border border-blue-500/35"
+                }`}>
                 {currentRole}
               </span>
             )}
@@ -146,11 +145,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <Link
                 key={link.href}
                 href={link.href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                  isActive
-                    ? "bg-indigo-500/15 text-indigo-300 border border-indigo-500/20 shadow-sm"
-                    : "text-slate-400 hover:text-white hover:bg-slate-800/50"
-                }`}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${isActive
+                  ? "bg-indigo-500/15 text-indigo-300 border border-indigo-500/20 shadow-sm"
+                  : "text-slate-400 hover:text-white hover:bg-slate-800/50"
+                  }`}
               >
                 <Icon size={16} className={isActive ? "text-indigo-400" : "text-slate-500"} />
                 {link.label}

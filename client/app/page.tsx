@@ -59,8 +59,8 @@ export default function Home() {
         <div className="w-full max-w-4xl mx-auto mb-16 relative z-10">
           {isClient && userName ? (
             /* Logged In Dashboard Card */
-            <div className="bg-gray-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-6 md:p-8 shadow-xl">
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-slate-800 pb-6 mb-6">
+            <div className="bg-gray-900/60 backdrop-blur-xl border border-indigo-500/10 rounded-2xl p-6 md:p-8 shadow-xl">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-indigo-500/10 pb-6 mb-6">
                 <div className="flex items-center gap-4">
                   <div className="h-14 w-14 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-extrabold text-2xl shadow-lg shadow-blue-500/20">
                     {userName.split(" ").map(n => n[0]).join("").toUpperCase().substring(0, 2)}
@@ -79,22 +79,21 @@ export default function Home() {
 
                 <div className="flex flex-col items-start md:items-end">
                   <span className="text-xs text-gray-500 font-semibold uppercase tracking-wider">Assigned Role</span>
-                  <span className={`inline-block text-xs font-bold px-2.5 py-1 rounded-lg mt-1 uppercase ${
-                    userRole === "owner" ? "bg-red-500/20 text-red-300 border border-red-500/35" :
+                  <span className={`inline-block text-xs font-bold px-2.5 py-1 rounded-lg mt-1 uppercase ${userRole === "owner" ? "bg-red-500/20 text-red-300 border border-red-500/35" :
                     userRole === "superuser" ? "bg-orange-500/20 text-orange-300 border border-orange-500/35" :
-                    userRole === "admin" ? "bg-purple-500/20 text-purple-300 border border-purple-500/35" :
-                    "bg-blue-500/20 text-blue-300 border border-blue-500/35"
-                  }`}>
+                      userRole === "admin" ? "bg-purple-500/20 text-purple-300 border border-purple-500/35" :
+                        "bg-blue-500/20 text-blue-300 border border-blue-500/35"
+                    }`}>
                     {userRole || "User"}
                   </span>
                 </div>
               </div>
 
               {/* Quick Actions Grid */}
-              <div className="mt-8 pt-6 border-t border-slate-800">
+              <div className="mt-8 pt-6 border-t border-indigo-500/10">
                 <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Platform Modules</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <Link href="/job-matcher" className="p-4 bg-gray-950/40 hover:bg-gray-950/80 border border-slate-850 hover:border-indigo-500/30 rounded-xl transition-all group flex flex-col justify-between min-h-[110px]">
+                  <Link href="/job-matcher" className="p-4 bg-gray-950/40 hover:bg-gray-950/80 border border-indigo-500/10 hover:border-indigo-500/30 rounded-xl transition-all group flex flex-col justify-between min-h-[110px]">
                     <div className="h-8 w-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400 mb-2">
                       <Search size={16} />
                     </div>
@@ -104,7 +103,7 @@ export default function Home() {
                     </div>
                   </Link>
 
-                  <Link href="/profile" className="p-4 bg-gray-950/40 hover:bg-gray-950/80 border border-slate-850 hover:border-teal-500/30 rounded-xl transition-all group flex flex-col justify-between min-h-[110px]">
+                  <Link href="/profile" className="p-4 bg-gray-950/40 hover:bg-gray-950/80 border border-indigo-500/10 hover:border-teal-500/30 rounded-xl transition-all group flex flex-col justify-between min-h-[110px]">
                     <div className="h-8 w-8 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-400 mb-2">
                       <User size={16} />
                     </div>
@@ -114,7 +113,7 @@ export default function Home() {
                     </div>
                   </Link>
 
-                  <Link href="/documentation" className="p-4 bg-gray-950/40 hover:bg-gray-950/80 border border-slate-850 hover:border-blue-500/30 rounded-xl transition-all group flex flex-col justify-between min-h-[110px]">
+                  <Link href="/documentation" className="p-4 bg-gray-950/40 hover:bg-gray-950/80 border border-indigo-500/10 hover:border-blue-500/30 rounded-xl transition-all group flex flex-col justify-between min-h-[110px]">
                     <div className="h-8 w-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400 mb-2">
                       <BookOpen size={16} />
                     </div>
@@ -128,7 +127,7 @@ export default function Home() {
             </div>
           ) : (
             /* Guest Card */
-            <div className="bg-gray-900/40 border border-slate-850 rounded-2xl p-8 shadow-xl text-center flex flex-col items-center max-w-xl mx-auto">
+            <div className="bg-gray-900/40 border border-indigo-500/10 rounded-2xl p-8 shadow-xl text-center flex flex-col items-center max-w-xl mx-auto">
               <div className="h-12 w-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 mb-4">
                 <Lock size={20} />
               </div>
@@ -152,10 +151,10 @@ export default function Home() {
         {/* Feature Cards Grid */}
         <div className="max-w-4xl mx-auto w-full relative z-10">
           <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest text-center mb-8">Architectural Foundations</h3>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Feature 1 */}
-            <div className="bg-gray-900/40 border border-slate-850 p-6 rounded-2xl hover:bg-gray-900/60 hover:border-indigo-500/30 transition-all shadow-lg group">
+            <div className="bg-gray-900/40 border border-indigo-500/10 p-6 rounded-2xl hover:bg-gray-900/60 hover:border-indigo-500/30 transition-all shadow-lg group">
               <div className="h-10 w-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 mb-4 group-hover:scale-110 transition-transform">
                 <BrainCircuit size={18} />
               </div>
@@ -166,7 +165,7 @@ export default function Home() {
             </div>
 
             {/* Feature 2 */}
-            <div className="bg-gray-900/40 border border-slate-850 p-6 rounded-2xl hover:bg-gray-900/60 hover:border-teal-500/30 transition-all shadow-lg group">
+            <div className="bg-gray-900/40 border border-indigo-500/10 p-6 rounded-2xl hover:bg-gray-900/60 hover:border-teal-500/30 transition-all shadow-lg group">
               <div className="h-10 w-10 rounded-xl bg-teal-500/10 flex items-center justify-center text-teal-400 mb-4 group-hover:scale-110 transition-transform">
                 <Database size={18} />
               </div>
@@ -177,7 +176,7 @@ export default function Home() {
             </div>
 
             {/* Feature 3 */}
-            <div className="bg-gray-900/40 border border-slate-850 p-6 rounded-2xl hover:bg-gray-900/60 hover:border-pink-500/30 transition-all shadow-lg group">
+            <div className="bg-gray-900/40 border border-indigo-500/10 p-6 rounded-2xl hover:bg-gray-900/60 hover:border-pink-500/30 transition-all shadow-lg group">
               <div className="h-10 w-10 rounded-xl bg-pink-500/10 flex items-center justify-center text-pink-400 mb-4 group-hover:scale-110 transition-transform">
                 <Fingerprint size={18} />
               </div>

@@ -40,7 +40,7 @@ export default function DocumentationPage() {
         <div className="absolute top-1/4 -right-1/4 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[100px] pointer-events-none"></div>
 
         <section className="mb-16 relative z-10 text-center max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-xs uppercase tracking-[0.2em] text-slate-400 font-bold mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900 border border-indigo-500/10 text-xs uppercase tracking-[0.2em] text-slate-400 font-bold mb-6">
             <BookOpen size={14} className="text-blue-400" />
             System Architecture
           </div>
@@ -57,13 +57,13 @@ export default function DocumentationPage() {
             <Link
               key={topic.title}
               href={topic.href}
-              className={`group flex flex-col justify-between p-6 rounded-2xl bg-gray-900/40 border border-slate-850 backdrop-blur-sm transition-all duration-300 ${topic.glowClass} ${idx === 0 ? 'md:col-span-2 lg:col-span-3 lg:flex-row lg:items-center' : ''}`}
+              className={`group flex flex-col justify-between p-6 rounded-2xl bg-gray-900/40 shadow-md shadow-blue-800/10 hover:shadow-blue-800/40 backdrop-blur-sm transition-all duration-300 ${topic.glowClass} ${idx === 0 ? 'md:col-span-2 lg:col-span-3 lg:flex-row lg:items-center' : ''}`}
             >
               <div className={idx === 0 ? "lg:w-2/3 lg:pr-8" : ""}>
                 <div className={`h-12 w-12 rounded-xl bg-gradient-to-br ${topic.colorClass} flex items-center justify-center text-white mb-6 shadow-lg`}>
                   <topic.icon size={22} />
                 </div>
-                <h2 className="text-xl font-bold text-white mb-3 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-slate-300 transition-colors">
+                <h2 className="text-xl font-bold text-white mb-3  group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-slate-300 transition-colors">
                   {topic.title}
                 </h2>
                 <p className="text-slate-400 text-sm leading-relaxed mb-6">

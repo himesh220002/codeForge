@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
 import mermaid from "mermaid";
-import { Folder, FolderOpen, FileCode, ChevronDown, ChevronRight, Link2, Info, ArrowRightLeft } from "lucide-react";
+import { Folder, FolderOpen, FileCode, ChevronDown, ChevronRight, Link2, Info, ArrowRightLeft, ZoomIn, ZoomOut, RefreshCw } from "lucide-react";
 import Link from "next/link";
 
 interface FileDetail {
@@ -197,6 +197,44 @@ const fileDetails: Record<string, FileDetail> = {
   }
 };
 
+function ZoomableMermaid({ content, defaultZoom = 1 }: { content: string, defaultZoom?: number }) {
+  const [zoom, setZoom] = useState(defaultZoom);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y });
+  };
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+    setPosition({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
+  };
+  const handleMouseUpOrLeave = () => {
+    setIsDragging(false);
+  };
+
+  return (
+    <div className="relative overflow-hidden w-full flex justify-center bg-slate-900 border border-indigo-500/10 rounded-xl min-h-[500px]">
+      <div className="absolute top-4 right-4 z-10 flex flex-col gap-2 bg-slate-900 border border-indigo-700/20 p-1.5 rounded-lg shadow-lg">
+        <button onClick={() => setZoom(prev => Math.min(prev + 0.2, 3))} className="p-2 hover:bg-slate-800 rounded text-slate-300 hover:text-white transition-colors" title="Zoom In"><ZoomIn size={20} /></button>
+        <button onClick={() => { setZoom(defaultZoom); setPosition({ x: 0, y: 0 }); }} className="p-2 hover:bg-slate-800 rounded text-slate-300 hover:text-white transition-colors" title="Reset Zoom"><RefreshCw size={20} /></button>
+        <button onClick={() => setZoom(prev => Math.max(prev - 0.2, 0.4))} className="p-2 hover:bg-slate-800 rounded text-slate-300 hover:text-white transition-colors" title="Zoom Out"><ZoomOut size={20} /></button>
+      </div>
+      <div
+        onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUpOrLeave} onMouseLeave={handleMouseUpOrLeave}
+        className={`w-full flex justify-center ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+        style={{ transform: `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`, transformOrigin: 'center center', transition: isDragging ? 'none' : 'transform 0.2s ease-in-out', minWidth: '1000px' }}
+      >
+        <div className="mermaid w-full flex justify-center pointer-events-none select-none py-8">
+          {content}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminPage() {
   const ref = useRef<HTMLDivElement>(null);
   const repoRef = useRef<HTMLDivElement>(null);
@@ -251,11 +289,9 @@ export default function AdminPage() {
 
   useEffect(() => {
     if (ready) {
-      if (ref.current) {
-        mermaid.run({ nodes: [ref.current] });
-      }
-      if (repoRef.current) {
-        mermaid.run({ nodes: [repoRef.current] });
+      const nodes = document.querySelectorAll('.mermaid');
+      if (nodes.length > 0) {
+        mermaid.run({ nodes: Array.from(nodes) as HTMLElement[] });
       }
     }
   }, [ready]);
@@ -280,10 +316,9 @@ export default function AdminPage() {
       {/* Flow Diagram */}
       <section className="p-6 border-b border-gray-800 bg-gray-900/50">
         <h2 className="text-2xl font-bold mb-4 text-slate-200">Interactive Auth Lifecycle Flow</h2>
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 overflow-x-auto custom-scrollbar flex justify-center min-h-[420px]">
+        <div className="flex justify-center w-full">
           {ready && (
-            <div ref={ref} className="mermaid w-full">
-              {`sequenceDiagram
+            <ZoomableMermaid defaultZoom={1} content={`sequenceDiagram
     autonumber
     actor User as User Agent
     participant NextAPI as Next.js API Proxy
@@ -330,23 +365,89 @@ export default function AdminPage() {
     Express->>AdminMW: Verify admin role
     AdminMW-->>Express: Authorized
     Express->>DB: findByIdAndUpdate (server/src/models/user.ts)
-    Express-->>User: 200 OK (Role updated)`}
-            </div>
+    Express-->>User: 200 OK (Role updated)`} />
           )}
         </div>
       </section>
 
       {/* Code Repository with Interactive Folder Tree and Connections */}
       <section className="p-6 bg-gray-950">
-        <h2 className="text-2xl font-bold mb-2 text-slate-200">Repository Tree & Connections Explorer</h2>
+
+        {/* Connections Diagram */}
+        <div className="flex w-full justify-center">
+          {ready && (
+            <ZoomableMermaid defaultZoom={1} content={`flowchart TD
+    %% Styling defined with classes
+    classDef clientPage fill:#3b82f6,stroke:#1d4ed8,stroke-width:2px,color:#fff;
+    classDef clientApi fill:#06b6d4,stroke:#0891b2,stroke-width:2px,color:#fff;
+    classDef serverRoute fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff;
+    classDef serverController fill:#f59e0b,stroke:#d97706,stroke-width:2px,color:#1f2937;
+    classDef serverMiddleware fill:#ec4899,stroke:#db2777,stroke-width:2px,color:#fff;
+    classDef serverService fill:#8b5cf6,stroke:#7c3aed,stroke-width:2px,color:#fff;
+    classDef serverModel fill:#ef4444,stroke:#dc2626,stroke-width:2px,color:#fff;
+    classDef serverConfig fill:#6b7280,stroke:#4b5563,stroke-width:2px,color:#fff;
+
+    subgraph Client ["Client Interface (Next.js)"]
+        direction TB
+        c_login["client/app/login/page.tsx<br>(Login/Signup UI)"]:::clientPage
+        c_admin["client/app/admin/page.tsx<br>(Admin Panel & Refresh)"]:::clientPage
+        c_nav["client/components/navbar.tsx<br>(Navbar Logout)"]:::clientPage
+    end
+
+    subgraph APIProxy ["Next.js API Proxies"]
+        direction TB
+        c_api_login["client/app/api/auth/login/route.ts"]:::clientApi
+        c_api_signup["client/app/api/auth/signup/route.ts"]:::clientApi
+        c_api_refresh["client/app/api/auth/refresh/route.ts"]:::clientApi
+        c_api_users["client/app/api/admin/users/route.ts"]:::clientApi
+        c_api_users_id["client/app/api/admin/users/[id]/route.ts"]:::clientApi
+    end
+
+    subgraph ServerInit ["Server Config"]
+        direction TB
+        s_index["server/src/index.ts<br>(Express Server)"]:::serverConfig
+        s_db["server/src/config/db.ts<br>(Mongoose Connect)"]:::serverConfig
+    end
+
+    subgraph Routes ["Express Routes"]
+        direction TB
+        s_route_auth["server/src/routes/authRoutes.ts"]:::serverRoute
+        s_route_admin["server/src/routes/adminRoutes.ts"]:::serverRoute
+        s_route_owner["server/src/routes/ownershipRoutes.ts"]:::serverRoute
+    end
+
+    subgraph Controllers ["Controllers & Middleware"]
+        direction TB
+        s_mw_admin["server/src/middleware/adminMiddleware.ts"]:::serverMiddleware
+        s_ctrl_auth["server/src/controllers/authController.ts"]:::serverController
+        s_ctrl_admin["server/src/controllers/adminController.ts"]:::serverController
+        s_ctrl_owner["server/src/controllers/ownershipController.ts"]:::serverController
+    end
+
+    subgraph DBTier ["Services & DB Models"]
+        direction TB
+        s_svc_sec["server/src/services/services.ts<br>(Token & Session Logic)"]:::serverService
+        s_model_user["server/src/models/user.ts"]:::serverModel
+        s_model_session["server/src/models/session.ts"]:::serverModel
+    end
+
+    Client --> APIProxy
+    APIProxy --> Routes
+    ServerInit -.-> Routes
+    Routes --> Controllers
+    Controllers --> DBTier`} />
+          )}
+        </div>
+
+        <h2 className="text-2xl font-bold mt-10 mb-2 text-slate-200">Repository Tree & Connections Explorer</h2>
         <p className="text-gray-400 text-sm mb-6">Click any file in the structure directory tree below to inspect its purpose, relative code path, and dependency connections.</p>
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
-          
+
           {/* Column 1: Interactive Tree View */}
           <div className="lg:col-span-5 bg-gray-900/80 rounded-xl p-4 border border-gray-800 min-h-[480px] overflow-y-auto max-h-[600px] select-none">
             <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4 px-2">File Directory</h3>
-            
+
             <div className="space-y-1 text-sm">
               {/* CLIENT ROOT */}
               <div>
@@ -355,7 +456,7 @@ export default function AdminPage() {
                   {expandedFolders.client ? <FolderOpen size={16} /> : <Folder size={16} />}
                   <span>client/</span>
                 </div>
-                
+
                 {expandedFolders.client && (
                   <div className="pl-6 border-l border-gray-800 ml-4 mt-0.5 space-y-1">
                     {/* client/components */}
@@ -484,7 +585,7 @@ export default function AdminPage() {
                   {expandedFolders.server ? <FolderOpen size={16} /> : <Folder size={16} />}
                   <span>server/</span>
                 </div>
-                
+
                 {expandedFolders.server && (
                   <div className="pl-6 border-l border-gray-800 ml-4 mt-0.5 space-y-1">
                     {/* server/src */}
@@ -494,7 +595,7 @@ export default function AdminPage() {
                         {expandedFolders.server_src ? <FolderOpen size={14} /> : <Folder size={14} />}
                         <span>src/</span>
                       </div>
-                      
+
                       {expandedFolders.server_src && (
                         <div className="pl-6 border-l border-gray-800 ml-3 space-y-1.5 mt-0.5">
                           {/* entry point */}
@@ -634,16 +735,15 @@ export default function AdminPage() {
               <div className="space-y-6">
                 <div>
                   <div className="flex items-center gap-2 mb-2">
-                    <span className={`px-2 py-0.5 text-xs font-semibold rounded uppercase tracking-wider ${
-                      selectedFileData.role === "page" ? "bg-blue-600 text-white" :
+                    <span className={`px-2 py-0.5 text-xs font-semibold rounded uppercase tracking-wider ${selectedFileData.role === "page" ? "bg-blue-600 text-white" :
                       selectedFileData.role === "component" ? "bg-sky-600 text-white" :
-                      selectedFileData.role === "api" ? "bg-cyan-600 text-white" :
-                      selectedFileData.role === "route" ? "bg-emerald-600 text-white" :
-                      selectedFileData.role === "middleware" ? "bg-pink-600 text-white" :
-                      selectedFileData.role === "controller" ? "bg-yellow-600 text-slate-900" :
-                      selectedFileData.role === "service" ? "bg-purple-600 text-white" :
-                      selectedFileData.role === "model" ? "bg-red-600 text-white" : "bg-gray-600 text-white"
-                    }`}>
+                        selectedFileData.role === "api" ? "bg-cyan-600 text-white" :
+                          selectedFileData.role === "route" ? "bg-emerald-600 text-white" :
+                            selectedFileData.role === "middleware" ? "bg-pink-600 text-white" :
+                              selectedFileData.role === "controller" ? "bg-yellow-600 text-slate-900" :
+                                selectedFileData.role === "service" ? "bg-purple-600 text-white" :
+                                  selectedFileData.role === "model" ? "bg-red-600 text-white" : "bg-gray-600 text-white"
+                      }`}>
                       {selectedFileData.role}
                     </span>
                     <h3 className="text-xl font-bold text-slate-100">{selectedFileData.name}</h3>
@@ -708,7 +808,7 @@ export default function AdminPage() {
                 <p>Select any file from the directory tree to inspect its relationships.</p>
               </div>
             )}
-            
+
             <div className="pt-4 border-t border-gray-800/80 mt-4 text-xs text-gray-500 flex justify-between items-center">
               <span>Selected Node: <b className="font-mono text-gray-400">{selectedFile || "None"}</b></span>
               <span className="text-slate-400">Next.js + Express Auth Architecture</span>
@@ -717,80 +817,7 @@ export default function AdminPage() {
 
         </div>
 
-        {/* Connections Diagram */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 overflow-x-auto custom-scrollbar flex flex-col items-center min-h-[500px]">
-          <h3 className="text-lg font-bold text-slate-200 mb-2">Architecture Connection Map</h3>
-          <p className="text-gray-400 text-xs mb-6 text-center max-w-xl">Flowchart visualization of security token proxy paths, backend routing controllers, and services dependencies.</p>
-          {ready && (
-            <div ref={repoRef} className="mermaid w-full flex justify-center">
-              {`flowchart TD
-    %% Styling defined with classes
-    classDef clientPage fill:#3b82f6,stroke:#1d4ed8,stroke-width:2px,color:#fff;
-    classDef clientApi fill:#06b6d4,stroke:#0891b2,stroke-width:2px,color:#fff;
-    classDef serverRoute fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff;
-    classDef serverController fill:#f59e0b,stroke:#d97706,stroke-width:2px,color:#1f2937;
-    classDef serverMiddleware fill:#ec4899,stroke:#db2777,stroke-width:2px,color:#fff;
-    classDef serverService fill:#8b5cf6,stroke:#7c3aed,stroke-width:2px,color:#fff;
-    classDef serverModel fill:#ef4444,stroke:#dc2626,stroke-width:2px,color:#fff;
-    classDef serverConfig fill:#6b7280,stroke:#4b5563,stroke-width:2px,color:#fff;
 
-    c_login["client/app/login/page.tsx<br>(Login/Signup UI)"]:::clientPage
-    c_admin["client/app/admin/page.tsx<br>(Admin Panel & Refresh)"]:::clientPage
-    c_nav["client/components/navbar.tsx<br>(Navbar Logout)"]:::clientPage
-
-    c_api_login["client/app/api/auth/login/route.ts"]:::clientApi
-    c_api_signup["client/app/api/auth/signup/route.ts"]:::clientApi
-    c_api_refresh["client/app/api/auth/refresh/route.ts"]:::clientApi
-    c_api_users["client/app/api/admin/users/route.ts"]:::clientApi
-    c_api_users_id["client/app/api/admin/users/[id]/route.ts"]:::clientApi
-
-    s_index["server/src/index.ts<br>(Express Server)"]:::serverConfig
-    s_db["server/src/config/db.ts<br>(Mongoose Connect)"]:::serverConfig
-
-    s_route_auth["server/src/routes/authRoutes.ts"]:::serverRoute
-    s_route_admin["server/src/routes/adminRoutes.ts"]:::serverRoute
-    s_route_owner["server/src/routes/ownershipRoutes.ts"]:::serverRoute
-
-    s_mw_admin["server/src/middleware/adminMiddleware.ts"]:::serverMiddleware
-
-    s_ctrl_auth["server/src/controllers/authController.ts"]:::serverController
-    s_ctrl_admin["server/src/controllers/adminController.ts"]:::serverController
-    s_ctrl_owner["server/src/controllers/ownershipController.ts"]:::serverController
-
-    s_svc_sec["server/src/services/services.ts<br>(Token & Session Logic)"]:::serverService
-    s_model_user["server/src/models/user.ts"]:::serverModel
-    s_model_session["server/src/models/session.ts"]:::serverModel
-
-    c_login --> c_api_login
-    c_login --> c_api_signup
-    c_admin --> c_api_refresh
-    c_admin --> c_api_users
-    c_admin --> c_api_users_id
-
-    c_api_login --> s_route_auth
-    c_api_signup --> s_route_auth
-    c_api_refresh --> s_route_auth
-    c_api_users --> s_route_admin
-    c_api_users_id --> s_route_admin
-
-    s_index --> s_route_auth
-    s_index --> s_route_admin
-    s_index --> s_route_owner
-    s_index --> s_db
-
-    s_route_auth --> s_ctrl_auth
-    s_route_admin --> s_mw_admin
-    s_mw_admin --> s_ctrl_admin
-    s_route_owner --> s_ctrl_owner
-
-    s_ctrl_auth --> s_svc_sec
-    s_ctrl_admin --> s_model_user
-    s_ctrl_owner --> s_model_user
-    s_svc_sec --> s_model_user
-    s_svc_sec --> s_model_session`}
-            </div>
-          )}
-        </div>
       </section>
     </div>
   );

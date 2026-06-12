@@ -1,6 +1,8 @@
 // server/src/controllers/adminController.ts
 import { Request, Response } from "express";
 import { UserModel } from "../models/user.js";
+import { AtsLogModel } from "../models/atsLog.js";
+import { getOpenAIClient } from "../services/aiService.js";
 
 // GET users with pagination
 export async function getUsersController(req: Request, res: Response) {
@@ -153,6 +155,65 @@ export async function deleteUserController(req: Request, res: Response) {
   } catch (err) {
     console.error("Delete error:", err);
     res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+}
+
+export async function getSystemHealthController(req: Request, res: Response) {
+  try {
+    const nvidiaKey = process.env.NVIDIA_API_KEY;
+    const hasNvidiaKey = !!nvidiaKey;
+    let nvidiaApiStatus = "Unknown";
+
+    if (hasNvidiaKey) {
+      try {
+        const openai = getOpenAIClient(nvidiaKey);
+        // Make a very lightweight models request to verify key
+        await openai.models.list({ timeout: 5000 });
+        nvidiaApiStatus = "Online";
+      } catch (e: any) {
+        console.error("NVIDIA API Ping failed:", e);
+        nvidiaApiStatus = "Offline / Invalid Key";
+      }
+    } else {
+      nvidiaApiStatus = "Missing Key";
+    }
+
+    res.json({
+      success: true,
+      data: {
+        database: "Online", // Assuming if we hit this route, DB is likely online or handled upstream
+        nvidia_api: nvidiaApiStatus,
+        has_nvidia_key: hasNvidiaKey,
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Error checking system health" });
+  }
+}
+
+export async function getAtsAnalyticsController(req: Request, res: Response) {
+  try {
+    const logs = await AtsLogModel.find({}).sort({ createdAt: 1 }).limit(100);
+    
+    // Aggregate by day or just return raw logs
+    const totalRuns = await AtsLogModel.countDocuments();
+    
+    // Average score
+    const avgScoreResult = await AtsLogModel.aggregate([
+      { $group: { _id: null, avgScore: { $avg: "$score" } } }
+    ]);
+    const averageScore = avgScoreResult.length > 0 ? Math.round(avgScoreResult[0].avgScore) : 0;
+
+    res.json({
+      success: true,
+      data: {
+        totalRuns,
+        averageScore,
+        recentLogs: logs
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Error fetching analytics" });
   }
 }
 

@@ -84,7 +84,7 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full px-6 py-4 bg-gray-950/80 backdrop-blur-md border-b border-slate-800/80">
+    <header className="sticky top-0 z-50 w-full px-6 py-4 bg-gray-950/80 backdrop-blur-md border-b border-indigo-500/10">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
 
         {/* Logo */}
@@ -106,13 +106,13 @@ export default function Navbar() {
           <div className="relative" ref={dropdownRef1}>
             <button
               onClick={() => setOpen1(!open1)}
-              className="flex items-center gap-2 px-3 py-1.5 bg-slate-900 hover:bg-slate-850 border border-slate-850 hover:border-slate-700 rounded-full transition-all text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+              className="flex items-center gap-2 px-3 py-1.5 bg-slate-900 hover:bg-slate-850 border border-indigo-500/10 hover:border-indigo-700/20 rounded-full transition-all text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
             >
               <GitBranch size={14} className="text-indigo-400" />
               <span>Architecture Flow</span>
             </button>
             {open1 && (
-              <div className="absolute right-0 mt-2 w-56 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl py-1.5 text-slate-300 animate-in fade-in slide-in-from-top-2 duration-150">
+              <div className="absolute right-0 mt-2 w-56 bg-slate-900 border border-indigo-500/10 rounded-xl shadow-2xl py-1.5 text-slate-300 animate-in fade-in slide-in-from-top-2 duration-150">
                 <div className="py-1">
                   <Link href="/flowDiagrams/loginFlow" className="flex items-center gap-2 px-4 py-2 text-sm text-slate-350 hover:bg-slate-800 hover:text-white transition-colors">
                     <GitBranch size={14} className="text-indigo-400" />
@@ -129,14 +129,14 @@ export default function Navbar() {
           <div className="relative" ref={dropdownRef2}>
             <button
               onClick={() => setOpen2(!open2)}
-              className="flex items-center gap-2 px-3 py-1.5 bg-slate-900 hover:bg-slate-850 border border-slate-850 hover:border-slate-700 rounded-full transition-all text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+              className="flex items-center gap-2 px-3 py-1.5 bg-slate-900 hover:bg-slate-850 border border-indigo-500/10 hover:border-indigo-700/20 rounded-full transition-all text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
             >
               <Briefcase size={14} className="text-amber-400" />
               <span>AI Job Matcher</span>
             </button>
 
             {open2 && (
-              <div className="absolute right-0 mt-2 w-56 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl py-1.5 text-slate-300 animate-in fade-in slide-in-from-top-2 duration-150">
+              <div className="absolute right-0 mt-2 w-56 bg-slate-900 border border-indigo-500/10 rounded-xl shadow-2xl py-1.5 text-slate-300 animate-in fade-in slide-in-from-top-2 duration-150">
                 <div className="py-1">
                   <Link href="/job-matcher" className="flex items-center gap-2 px-4 py-2 text-sm text-slate-350 hover:bg-slate-800 hover:text-white transition-colors">
                     <Briefcase size={14} className="text-amber-400" />
@@ -168,7 +168,7 @@ export default function Navbar() {
             <div className="relative" ref={dropdownRef3}>
               <button
                 onClick={() => setOpen3(!open3)}
-                className="flex items-center gap-2 px-3 py-1.5 bg-slate-900 hover:bg-slate-850 border border-slate-850 hover:border-slate-700 rounded-full transition-all text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                className="flex items-center gap-2 px-3 py-1.5 bg-slate-900 hover:bg-slate-850 border border-indigo-500/10 hover:border-indigo-700/20 rounded-full transition-all text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
               >
                 <div className="h-7 w-7 rounded-full bg-gradient-to-r from-blue-500 to-teal-500 text-white font-bold text-xs flex items-center justify-center shadow-inner">
                   {getInitials(userName)}
@@ -178,8 +178,8 @@ export default function Navbar() {
               </button>
 
               {open3 && (
-                <div className="absolute right-0 mt-2 w-56 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl py-1.5 text-slate-300 animate-in fade-in slide-in-from-top-2 duration-150">
-                  <div className="px-4 py-2.5 border-b border-slate-850">
+                <div className="absolute right-0 mt-2 w-56 bg-slate-900 border border-indigo-500/10 rounded-xl shadow-2xl py-1.5 text-slate-300 animate-in fade-in slide-in-from-top-2 duration-150">
+                  <div className="px-4 py-2.5 border-b border-indigo-500/10">
                     <p className="text-xs text-slate-555 font-semibold uppercase tracking-wider">Signed in as</p>
                     <p className="text-sm font-bold text-slate-200 truncate mt-0.5">{userName}</p>
                     {userRole && (
@@ -216,7 +216,7 @@ export default function Navbar() {
                     </Link>
                   </div>
 
-                  <div className="border-t border-slate-850 py-1">
+                  <div className="border-t border-indigo-500/10 py-1">
                     <button
                       onClick={handleLogout}
                       className="flex items-center gap-2 w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors"

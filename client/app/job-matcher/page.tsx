@@ -110,7 +110,7 @@ const MarkdownRenderer: React.FC<{ content: string }> = ({ content }) => {
         // H2 Header
         if (trimmed.startsWith('## ')) {
           return (
-            <h3 key={idx} className="text-lg font-bold text-white mt-6 mb-3 border-b border-slate-800 pb-1.5 flex items-center gap-2">
+            <h3 key={idx} className="text-lg font-bold text-white mt-6 mb-3 border-b border-indigo-500/10 pb-1.5 flex items-center gap-2">
               <Sparkles size={16} className="text-indigo-400" />
               {trimmed.replace('## ', '')}
             </h3>
@@ -389,7 +389,7 @@ SKILLS:
         </div>
 
         {/* BYOK Settings Section */}
-        <div className="bg-gray-900/30 border border-slate-850 rounded-2xl p-6 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="bg-gray-900/30 border border-indigo-500/10 rounded-2xl p-6 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h4 className="text-sm font-bold text-white flex items-center gap-1.5">
               <span className="text-xl">🔑</span>
@@ -414,8 +414,8 @@ SKILLS:
 
           {/* Left Column: Input Form */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="bg-gray-900/60 backdrop-blur-xl border border-slate-800/85 rounded-2xl p-6 shadow-xl relative">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-6 border-b border-slate-800/60 pb-4">
+            <div className="bg-gray-900/60 backdrop-blur-xl border border-indigo-500/10/85 rounded-2xl p-6 shadow-xl relative">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-6 border-b border-indigo-500/10 pb-4">
                 <div className="flex items-center gap-2">
                   <div className="h-8 w-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400">
                     <UserCheck size={16} />
@@ -454,7 +454,7 @@ SKILLS:
                     value={cvText}
                     onChange={(e) => setCvText(e.target.value)}
                     placeholder="Paste details of your education, skills, work history, and projects here..."
-                    className="w-full h-72 bg-gray-950 border border-slate-800 rounded-xl p-3 text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500/60 transition-all text-sm font-mono leading-relaxed"
+                    className="w-full h-72 bg-gray-950 border border-indigo-500/10 rounded-xl p-3 text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500/60 transition-all text-sm font-mono leading-relaxed"
                   />
                 </div>
 
@@ -468,7 +468,7 @@ SKILLS:
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
                     placeholder="e.g. Remote Next.js jobs with full-stack capabilities."
-                    className="w-full bg-gray-950 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500/60 transition-all text-sm"
+                    className="w-full bg-gray-950 border border-indigo-500/10 rounded-xl px-3 py-2.5 text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500/60 transition-all text-sm"
                   />
                 </div>
 
@@ -493,7 +493,7 @@ SKILLS:
             </div>
 
             {/* Database Utility Section */}
-            <div className="bg-gray-900/30 border border-slate-850 rounded-2xl p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="bg-gray-900/30 border border-indigo-500/10 rounded-2xl p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div>
                 <h4 className="text-sm font-bold text-white flex items-center gap-1.5">
                   <Database size={15} className="text-slate-400" />
@@ -507,7 +507,7 @@ SKILLS:
                 type="button"
                 onClick={handleSeedJobs}
                 disabled={seeding || loading}
-                className="w-full sm:w-auto shrink-0 bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-xs font-semibold px-4 py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full sm:w-auto shrink-0 bg-slate-900 hover:bg-slate-800 border border-indigo-500/10 hover:border-indigo-700/20 text-xs font-semibold px-4 py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {seeding ? (
                   <>
@@ -524,7 +524,7 @@ SKILLS:
             </div>
 
             {/* BYOK Settings Section */}
-            <div className="bg-gray-900/30 border border-slate-850 rounded-2xl p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="bg-gray-900/30 border border-indigo-500/10 rounded-2xl p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div>
                 <h4 className="text-sm font-bold text-white flex items-center gap-1.5">
                   <span className="text-xl">🔑</span>
@@ -549,8 +549,8 @@ SKILLS:
 
             {/* If not loaded yet */}
             {!loading && matches.length === 0 && !strategy && (
-              <div className="bg-gray-900/40 border border-slate-800/60 rounded-2xl p-12 text-center flex flex-col items-center justify-center min-h-[450px]">
-                <div className="h-16 w-16 rounded-full bg-slate-900 flex items-center justify-center text-slate-600 border border-slate-800 mb-4">
+              <div className="bg-gray-900/40 border border-indigo-500/10 rounded-2xl p-12 text-center flex flex-col items-center justify-center min-h-[450px]">
+                <div className="h-16 w-16 rounded-full bg-slate-900 flex items-center justify-center text-slate-600 border border-indigo-500/10 mb-4">
                   <Briefcase size={26} />
                 </div>
                 <h3 className="text-lg font-bold text-white mb-2">No Matches Generated Yet</h3>
@@ -568,7 +568,7 @@ SKILLS:
 
             {/* If loading and matches not yet received */}
             {loading && matches.length === 0 && (
-              <div className="bg-gray-900/60 backdrop-blur-xl border border-slate-800/85 rounded-2xl p-8 shadow-xl min-h-[500px] flex flex-col justify-start relative overflow-hidden">
+              <div className="bg-gray-900/60 backdrop-blur-xl border border-indigo-500/10/85 rounded-2xl p-8 shadow-xl min-h-[500px] flex flex-col justify-start relative overflow-hidden">
                 {/* Glow border overlay */}
                 <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 via-transparent to-blue-500/5 pointer-events-none" />
 
@@ -584,7 +584,7 @@ SKILLS:
                 </div>
 
                 {/* Processing Header */}
-                <div className="flex items-center justify-between mb-8 pb-4 border-b border-slate-850">
+                <div className="flex items-center justify-between mb-8 pb-4 border-b border-indigo-500/10">
                   <div className="flex items-center gap-2.5">
                     <Loader2 className="h-5 w-5 animate-spin text-indigo-500" />
                     <h3 className="font-bold text-white text-base">Running RAG Pipelines...</h3>
@@ -602,12 +602,12 @@ SKILLS:
                     const isUpcoming = node.id > loadingStep;
 
                     return (
-                      <div 
-                        key={node.id} 
+                      <div
+                        key={node.id}
                         className={`relative overflow-hidden rounded-xl border p-4 transition-all duration-500 flex flex-col gap-3
-                          ${isCompleted ? 'bg-emerald-500/5 border-emerald-500/30' : 
-                            isActive ? 'bg-indigo-500/10 border-indigo-500/50 shadow-[0_0_20px_rgba(99,102,241,0.15)]' : 
-                            'bg-gray-900/40 border-slate-800 opacity-50'}`}
+                          ${isCompleted ? 'bg-emerald-500/5 border-emerald-500/30' :
+                            isActive ? 'bg-indigo-500/10 border-indigo-500/50 shadow-[0_0_20px_rgba(99,102,241,0.15)]' :
+                              'bg-gray-900/40 border-indigo-500/10 opacity-50'}`}
                       >
                         {/* Background Pulse for Active Node */}
                         {isActive && (
@@ -616,18 +616,18 @@ SKILLS:
 
                         <div className="flex items-center justify-between">
                           <div className={`flex items-center justify-center w-10 h-10 rounded-lg border shadow-sm transition-colors duration-500
-                            ${isCompleted ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400' : 
-                              isActive ? 'bg-indigo-500/20 border-indigo-500/50 text-indigo-400' : 
-                              'bg-slate-800 border-slate-700 text-slate-500'}`}
+                            ${isCompleted ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400' :
+                              isActive ? 'bg-indigo-500/20 border-indigo-500/50 text-indigo-400' :
+                                'bg-slate-800 border-indigo-700/20 text-slate-500'}`}
                           >
                             <node.icon size={18} strokeWidth={isActive ? 2.5 : 2} className={isActive ? 'animate-pulse' : ''} />
                           </div>
-                          
+
                           {/* Status Badge */}
                           <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full
-                            ${isCompleted ? 'bg-emerald-500/10 text-emerald-400' : 
-                              isActive ? 'bg-indigo-500/10 text-indigo-400' : 
-                              'bg-slate-800 text-slate-500'}`}>
+                            ${isCompleted ? 'bg-emerald-500/10 text-emerald-400' :
+                              isActive ? 'bg-indigo-500/10 text-indigo-400' :
+                                'bg-slate-800 text-slate-500'}`}>
                             {isCompleted ? 'Done' : isActive ? 'Processing' : 'Pending'}
                           </span>
                         </div>
@@ -663,7 +663,7 @@ SKILLS:
                       {matches.map((job, index) => (
                         <div
                           key={job._id || index}
-                          className="bg-gray-900/60 border border-slate-800/80 rounded-xl p-4 flex flex-col justify-between hover:border-indigo-500/30 transition-all relative overflow-hidden group"
+                          className="bg-gray-900/60 border border-indigo-500/10 rounded-xl p-4 flex flex-col justify-between hover:border-indigo-500/30 transition-all relative overflow-hidden group"
                         >
                           {/* Match score indicator */}
                           <div className="absolute top-0 right-0 h-16 w-16 bg-gradient-to-bl from-indigo-500/10 to-transparent pointer-events-none" />
@@ -683,12 +683,12 @@ SKILLS:
                             </p>
                           </div>
 
-                          <div className="mt-4 pt-3 border-t border-slate-850">
+                          <div className="mt-4 pt-3 border-t border-indigo-500/10">
                             <a
                               href={job.link}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-slate-700 text-xs font-bold text-slate-200 rounded-lg transition-all"
+                              className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-slate-950 hover:bg-slate-900 border border-indigo-500/10 hover:border-indigo-700/20 text-xs font-bold text-slate-200 rounded-lg transition-all"
                             >
                               <span>Apply Directly</span>
                               <ExternalLink size={10} />
@@ -702,8 +702,8 @@ SKILLS:
 
                 {/* AI generated report */}
                 {strategy ? (
-                  <div className="bg-gray-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-6 shadow-xl relative">
-                    <div className="flex items-center gap-2 mb-4 pb-4 border-b border-slate-850">
+                  <div className="bg-gray-900/60 backdrop-blur-xl border border-indigo-500/10 rounded-2xl p-6 shadow-xl relative">
+                    <div className="flex items-center gap-2 mb-4 pb-4 border-b border-indigo-500/10">
                       <div className="h-8 w-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400">
                         <Brain size={16} />
                       </div>
@@ -719,7 +719,7 @@ SKILLS:
                   </div>
                 ) : (
                   loading && matches.length > 0 && (
-                    <div className="bg-gray-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-6 shadow-xl relative flex flex-col items-center justify-center py-12">
+                    <div className="bg-gray-900/60 backdrop-blur-xl border border-indigo-500/10 rounded-2xl p-6 shadow-xl relative flex flex-col items-center justify-center py-12">
                       <Loader2 className="h-8 w-8 animate-spin text-indigo-500 mb-4" />
                       <h3 className="font-bold text-white text-base">Drafting Custom Application Strategy...</h3>
                       <p className="text-xs text-slate-400 mt-2 text-center max-w-md">Our AI is analyzing the top matched jobs and writing customized outreach pitches. This takes a few seconds.</p>

@@ -2,6 +2,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import mermaid from "mermaid";
 import Link from "next/link";
+import DiagramTabs from "@/components/DiagramTabs";
+import { contactFlowDiagrams } from "./diagramsData";
 
 export default function ContactFlowPage() {
     const ref = useRef<HTMLDivElement>(null);
@@ -116,6 +118,13 @@ export default function ContactFlowPage() {
                         </div>
                     )}
                 </div>
+            </section>
+
+            {/* Additional Diagrams Section */}
+            <section className="p-6">
+                <h2 className="text-2xl font-bold text-slate-200 mb-2">Comprehensive Process Diagrams</h2>
+                <p className="text-slate-400 text-sm mb-4">Detailed views of database relations, component networks, and user states.</p>
+                <DiagramTabs diagrams={contactFlowDiagrams} />
             </section>
         </div>
     );

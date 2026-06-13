@@ -3,6 +3,8 @@ import { useEffect, useState, useRef } from "react";
 import mermaid from "mermaid";
 import { Folder, FolderOpen, FileCode, ChevronDown, ChevronRight, Link2, Info, ArrowRightLeft, ZoomIn, ZoomOut, RefreshCw } from "lucide-react";
 import Link from "next/link";
+import DiagramTabs from "@/components/DiagramTabs";
+import { loginFlowDiagrams } from "./diagramsData";
 
 interface FileDetail {
   id: string;
@@ -815,6 +817,13 @@ export default function AdminPage() {
             </div>
           </div>
 
+          {/* Additional Diagrams Section */}
+          <div className="lg:col-span-12 mt-12 mb-8">
+            <h2 className="text-2xl font-bold text-slate-200 mb-2">Comprehensive Process Diagrams</h2>
+            <p className="text-slate-400 text-sm mb-4">Detailed views of database relations, component networks, and user states.</p>
+            <DiagramTabs diagrams={loginFlowDiagrams} />
+          </div>
+
         </div>
 
 
@@ -822,4 +831,3 @@ export default function AdminPage() {
     </div>
   );
 }
-

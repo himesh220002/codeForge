@@ -3,6 +3,8 @@ import React, { useEffect, useState, useRef } from "react";
 import mermaid from "mermaid";
 import Link from "next/link";
 import { Upload, FileText, CheckCircle, AlertTriangle, ArrowRight, Play, Server, Database, ZoomIn, ZoomOut, RefreshCw } from "lucide-react";
+import DiagramTabs from "@/components/DiagramTabs";
+import { atsPipelineDiagrams } from "./diagramsData";
 
 export default function AtsPipelinePage() {
     const [ready, setReady] = useState(false);
@@ -265,6 +267,13 @@ export default function AtsPipelinePage() {
                             </div>
                         )}
                     </div>
+                </section>
+
+                {/* Additional Diagrams Section */}
+                <section className="bg-slate-900 border border-indigo-500/10 rounded-xl overflow-hidden shadow-2xl mt-12 p-6">
+                    <h2 className="text-2xl font-bold text-slate-100 mb-2">Comprehensive Process Diagrams</h2>
+                    <p className="text-slate-400 text-sm mb-4">Explore detailed models including State Machines, Entity-Relationships, and Component architecture.</p>
+                    <DiagramTabs diagrams={atsPipelineDiagrams} />
                 </section>
             </div>
         </div>

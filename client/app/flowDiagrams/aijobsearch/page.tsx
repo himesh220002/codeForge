@@ -2,6 +2,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import mermaid from "mermaid";
 import Link from "next/link";
+import DiagramTabs from "@/components/DiagramTabs";
+import { aiJobSearchDiagrams } from "./diagramsData";
 
 export default function AIJobSearchFlowPage() {
     const ref = useRef<HTMLDivElement>(null);
@@ -178,6 +180,13 @@ export default function AIJobSearchFlowPage() {
                         </div>
                     )}
                 </div>
+            </section>
+
+            {/* Additional Diagrams Section */}
+            <section className="p-6">
+                <h2 className="text-2xl font-bold text-slate-200 mb-2">Comprehensive Process Diagrams</h2>
+                <p className="text-gray-400 text-sm mb-4">Explore various architectural and behavioral diagrams representing the entire RAG pipeline process.</p>
+                <DiagramTabs diagrams={aiJobSearchDiagrams} />
             </section>
         </div>
     );

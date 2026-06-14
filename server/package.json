@@ -11,6 +11,17 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/multer": "^2.1.0",
+    "@types/natural": "^5.1.5",
+    "@types/node": "^25.6.0",
+    "@types/nodemailer": "^8.0.0",
+    "@types/pdf-parse": "^1.1.5",
+    "@types/react": "^18.0.37",
+    "@types/react-dom": "^18.0.11",
     "bcrypt": "^6.0.0",
     "chromadb": "^3.4.3",
     "compromise": "^14.15.1",
@@ -32,22 +43,9 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "socket.io": "^4.8.3",
-    "zod": "^4.4.3"
-  },
-  "devDependencies": {
-    "@types/bcrypt": "^6.0.0",
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.6",
-    "@types/jsonwebtoken": "^9.0.10",
-    "@types/multer": "^2.1.0",
-    "@types/natural": "^5.1.5",
-    "@types/node": "^25.6.0",
-    "@types/nodemailer": "^8.0.0",
-    "@types/pdf-parse": "^1.1.5",
-    "@types/react": "^18.0.37",
-    "@types/react-dom": "^18.0.11",
     "ts-node": "^10.9.2",
     "tsx": "^4.21.0",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "zod": "^4.4.3"
   }
 }

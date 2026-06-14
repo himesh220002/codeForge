@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
 export async function GET(req: NextRequest) {
   try {
     const authHeader = req.headers.get("Authorization");
 
-    const response = await fetch("http://localhost:5000/api/admin/analytics/ats", {
+    const response = await fetch(`${API_BASE_URL}/api/admin/analytics/ats`, {
       headers: {
         ...(authHeader ? { Authorization: authHeader } : {}),
       },

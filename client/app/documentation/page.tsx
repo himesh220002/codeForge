@@ -28,6 +28,14 @@ const documentationTopics = [
     colorClass: "from-pink-500 to-rose-600",
     glowClass: "group-hover:shadow-[0_0_30px_rgba(236,72,153,0.2)] group-hover:border-pink-500/50"
   },
+  {
+    title: "ATS score checker Flow",
+    description: "Visualize the contact submission lifecycle and validation layers.",
+    href: "/flowDiagrams/atspipeline",
+    icon: Mail,
+    colorClass: "from-pink-500 to-rose-600",
+    glowClass: "group-hover:shadow-[0_0_30px_rgba(236,72,153,0.2)] group-hover:border-pink-500/50"
+  },
 ];
 
 export default function DocumentationPage() {

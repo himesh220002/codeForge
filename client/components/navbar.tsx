@@ -1,7 +1,7 @@
 "use client"
 import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
-import { User, LogOut, ChevronDown, LayoutDashboard, Shield, GitBranch, BookOpen, Home, Briefcase, Settings, BriefcaseConveyorBelt } from "lucide-react";
+import { User, LogOut, ChevronDown, LayoutDashboard, Shield, GitBranch, BookOpen, Home, Briefcase, Settings, BriefcaseConveyorBelt, Menu, X } from "lucide-react";
 
 export default function Navbar() {
   const [userName, setUserName] = useState<string | null>(null);
@@ -14,6 +14,8 @@ export default function Navbar() {
 
   const [open3, setOpen3] = useState(false);
   const dropdownRef3 = useRef<HTMLDivElement>(null);
+
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     setUserName(localStorage.getItem("userName"));
@@ -162,8 +164,8 @@ export default function Navbar() {
           </Link>
         </nav>
 
-        {/* User Session Action */}
-        <div className="flex items-center gap-4">
+        {/* User Session Action (Desktop) */}
+        <div className="hidden md:flex items-center gap-4">
           {userName ? (
             <div className="relative" ref={dropdownRef3}>
               <button
@@ -238,7 +240,87 @@ export default function Navbar() {
           )}
         </div>
 
+        {/* Mobile Hamburger Toggle */}
+        <div className="md:hidden flex items-center">
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="text-slate-300 hover:text-white focus:outline-none p-2"
+          >
+            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
+
       </div>
+
+      {/* Mobile Menu Dropdown */}
+      {mobileMenuOpen && (
+        <div className="md:hidden absolute top-full left-0 w-full bg-gray-950/95 backdrop-blur-xl border-b border-indigo-500/20 shadow-2xl py-4 px-6 flex flex-col gap-5 animate-in slide-in-from-top-2 duration-200">
+          <div className="flex flex-col gap-4">
+            <Link href="/" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 text-slate-300 hover:text-white transition-colors">
+              <Home size={18} className="text-blue-400" />
+              <span className="font-medium">Home</span>
+            </Link>
+            <Link href="/job-matcher" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 text-slate-300 hover:text-white transition-colors">
+              <Briefcase size={18} className="text-amber-400" />
+              <span className="font-medium">AI Job Matcher</span>
+            </Link>
+            <Link href="/atsPipeline" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 text-slate-300 hover:text-white transition-colors">
+              <BriefcaseConveyorBelt size={18} className="text-blue-400" />
+              <span className="font-medium">ATS Score Checker</span>
+            </Link>
+            <Link href="/flowDiagrams/loginFlow" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 text-slate-300 hover:text-white transition-colors">
+              <GitBranch size={18} className="text-indigo-400" />
+              <span className="font-medium">Architecture Flow</span>
+            </Link>
+            <Link href="/documentation" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 text-slate-300 hover:text-white transition-colors">
+              <BookOpen size={18} className="text-emerald-400" />
+              <span className="font-medium">Documentation</span>
+            </Link>
+            <Link href="/contact" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 text-slate-300 hover:text-white transition-colors">
+              <Shield size={18} className="text-purple-400" />
+              <span className="font-medium">Contact</span>
+            </Link>
+          </div>
+
+          <div className="h-px bg-indigo-500/20 w-full"></div>
+
+          <div className="flex flex-col gap-4">
+            {userName ? (
+              <>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-teal-500 text-white font-bold text-sm flex items-center justify-center shadow-inner">
+                    {getInitials(userName)}
+                  </div>
+                  <div>
+                    <span className="text-sm font-bold text-white block">{userName}</span>
+                    {userRole && <span className="text-xs text-indigo-300 uppercase font-semibold">{userRole}</span>}
+                  </div>
+                </div>
+                <Link href="/profile" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 text-slate-300 hover:text-white transition-colors">
+                  <User size={18} className="text-teal-400" />
+                  <span className="font-medium">My Profile</span>
+                </Link>
+                <Link href="/admin" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 text-slate-300 hover:text-white transition-colors">
+                  <LayoutDashboard size={18} className="text-purple-400" />
+                  <span className="font-medium">Admin Panel</span>
+                </Link>
+                <button onClick={() => { handleLogout(); setMobileMenuOpen(false); }} className="flex items-center gap-3 text-red-400 hover:text-red-300 transition-colors w-full text-left mt-2">
+                  <LogOut size={18} />
+                  <span className="font-medium">Sign Out</span>
+                </button>
+              </>
+            ) : (
+              <Link
+                href="/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full text-center px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-sm font-semibold rounded-xl shadow-lg shadow-blue-500/20 text-white transition-all"
+              >
+                Sign In
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
     </header>
   );
 }

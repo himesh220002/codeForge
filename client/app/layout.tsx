@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import NextTopLoader from 'nextjs-toploader';
-import BackendStatus from "@/components/BackendStatus";
+
 import "./globals.css";
 
 const geistSans = Geist({
@@ -32,7 +32,7 @@ export default function RootLayout({
       <body className="min-h-full">
         <NextTopLoader color="#8b5cf6" showSpinner={false} />
         {children}
-        <BackendStatus />
+
       </body>
     </html>
   );

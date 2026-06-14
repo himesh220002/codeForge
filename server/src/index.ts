@@ -14,8 +14,24 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'https://cyphertech.online',
+  'https://www.cyphertech.online'
+];
+
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    if (origin.includes('localhost') || origin.toLowerCase().includes('cyphertech.online') || origin.includes('vercel.app')) {
+      return callback(null, true);
+    }
+    return callback(new Error('CORS not allowed'), false);
+  },
+  credentials: true
+}));
 app.use(express.json());
 
 // Custom cookie parsing middleware to support HttpOnly cookie checks without external package dependencies

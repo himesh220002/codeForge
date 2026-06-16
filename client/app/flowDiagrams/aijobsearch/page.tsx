@@ -4,6 +4,8 @@ import mermaid from "mermaid";
 import Link from "next/link";
 import DiagramTabs from "@/components/DiagramTabs";
 import { aiJobSearchDiagrams } from "./diagramsData";
+import Navbar from "@/components/navbar";
+import Footer from "@/components/footer";
 
 export default function AIJobSearchFlowPage() {
     const ref = useRef<HTMLDivElement>(null);
@@ -33,8 +35,9 @@ export default function AIJobSearchFlowPage() {
 
     return (
         <div className="flex flex-col min-h-screen bg-gray-950 text-slate-100 font-sans">
+            <Navbar />
             {/* Title Header */}
-            <header className="p-6 border-b border-gray-800 bg-gray-900 flex justify-between items-center">
+            <header className="p-6 my-6 mx-10 rounded-xl flex justify-center items-center">
                 <div>
                     <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                         AI Job Matcher RAG Pipeline Architecture
@@ -43,16 +46,10 @@ export default function AIJobSearchFlowPage() {
                         Comprehensive processing maps showing vectorization, local search, reranking, and LLM output streams.
                     </p>
                 </div>
-                <Link
-                    href="/"
-                    className="px-4 py-2 bg-indigo-900 hover:bg-indigo-800 border border-indigo-700 text-sm font-medium rounded-lg transition-colors"
-                >
-                    Go Back Home
-                </Link>
             </header>
 
             {/* Sequence Flow */}
-            <section className="p-6 border-b border-gray-800 bg-gray-900/50">
+            <section className="p-6 mx-10 mb-6 rounded-xl border border-gray-800 ">
                 <h2 className="text-2xl font-bold mb-4 text-slate-200">
                     Interactive RAG Lifecycle Flow (Dual-Stage Search)
                 </h2>
@@ -101,7 +98,7 @@ export default function AIJobSearchFlowPage() {
             </section>
 
             {/* Ingestion & Match Architecture Flowchart */}
-            <section className="p-6">
+            <section className="p-6 mt-6 mx-10 rounded-xl border border-gray-800 ">
                 <div className="bg-slate-900 border border-indigo-500/10 rounded-xl p-6 overflow-x-auto flex flex-col items-center min-h-[1100px]">
                     <h3 className="text-xl font-bold text-slate-200 mb-2">
                         Complete Pipeline Processing & Data Conversion Map
@@ -183,11 +180,13 @@ export default function AIJobSearchFlowPage() {
             </section>
 
             {/* Additional Diagrams Section */}
-            <section className="p-6">
+            <section className="p-6 mt-6 mx-10 rounded-xl border border-gray-800 ">
                 <h2 className="text-2xl font-bold text-slate-200 mb-2">Comprehensive Process Diagrams</h2>
                 <p className="text-gray-400 text-sm mb-4">Explore various architectural and behavioral diagrams representing the entire RAG pipeline process.</p>
                 <DiagramTabs diagrams={aiJobSearchDiagrams} />
             </section>
+
+            <Footer />
         </div>
     );
 }

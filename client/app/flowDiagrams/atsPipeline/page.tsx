@@ -5,6 +5,8 @@ import Link from "next/link";
 import { Upload, FileText, CheckCircle, AlertTriangle, ArrowRight, Play, Server, Database, ZoomIn, ZoomOut, RefreshCw } from "lucide-react";
 import DiagramTabs from "@/components/DiagramTabs";
 import { atsPipelineDiagrams } from "./diagramsData";
+import Navbar from "@/components/navbar";
+import Footer from "@/components/footer";
 
 export default function AtsPipelinePage() {
     const [ready, setReady] = useState(false);
@@ -12,6 +14,15 @@ export default function AtsPipelinePage() {
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [isDragging, setIsDragging] = useState(false);
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+
+    const containerRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        if (containerRef.current) {
+            containerRef.current.style.transform = `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`;
+            containerRef.current.style.transformOrigin = 'center center';
+            containerRef.current.style.transition = isDragging ? 'none' : 'transform 0.2s ease-in-out';
+        }
+    }, [zoom, position.x, position.y, isDragging]);
 
     const handleMouseDown = (e: React.MouseEvent) => {
         setIsDragging(true);
@@ -52,9 +63,10 @@ export default function AtsPipelinePage() {
 
 
     return (
-        <div className="flex flex-col min-h-screen bg-gray-950 text-slate-100 font-sans">
+        <div className="flex flex-col px-10 min-h-screen bg-gray-950 text-slate-100 font-sans">
+            <Navbar />
             {/* Title Header */}
-            <header className="p-6 border-b border-gray-800 bg-gray-900 flex justify-between items-center sticky top-0 z-10">
+            <header className="p-6 mt-6 mx-6 rounded-xl flex justify-center items-center top-0 z-10">
                 <div>
                     <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">
                         ATS Pipeline Architecture & Demo
@@ -63,15 +75,10 @@ export default function AtsPipelinePage() {
                         Industrial-Grade Custom ATS Pipeline utilizing NVIDIA NIM and ChromaDB.
                     </p>
                 </div>
-                <Link
-                    href="/"
-                    className="px-4 py-2 bg-indigo-900 hover:bg-indigo-800 border border-indigo-700 text-sm font-medium rounded-lg transition-colors"
-                >
-                    Go Back Home
-                </Link>
+
             </header>
 
-            <div className="max-w-7xl mx-auto w-full p-6 space-y-10">
+            <div className="p-6 space-y-10">
 
                 {/* ------------------------------------- */}
                 {/* DIAGRAM SECTION                       */}
@@ -121,12 +128,12 @@ export default function AtsPipelinePage() {
 
                         {ready && (
                             <div
+                                ref={containerRef}
                                 onMouseDown={handleMouseDown}
                                 onMouseMove={handleMouseMove}
                                 onMouseUp={handleMouseUpOrLeave}
                                 onMouseLeave={handleMouseUpOrLeave}
-                                className={`w-full flex justify-center ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
-                                style={{ transform: `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`, transformOrigin: 'center center', transition: isDragging ? 'none' : 'transform 0.2s ease-in-out', minWidth: '1000px' }}
+                                className={`w-full flex justify-center min-w-[1000px] ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
                             >
                                 <div className="mermaid w-full flex justify-center pointer-events-none select-none">
                                     {`flowchart LR
@@ -276,6 +283,7 @@ export default function AtsPipelinePage() {
                     <DiagramTabs diagrams={atsPipelineDiagrams} />
                 </section>
             </div>
+            <Footer />
         </div>
     );
 }

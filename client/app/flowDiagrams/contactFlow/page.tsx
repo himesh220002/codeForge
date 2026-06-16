@@ -4,6 +4,8 @@ import mermaid from "mermaid";
 import Link from "next/link";
 import DiagramTabs from "@/components/DiagramTabs";
 import { contactFlowDiagrams } from "./diagramsData";
+import Navbar from "@/components/navbar";
+import Footer from "@/components/footer";
 
 export default function ContactFlowPage() {
     const ref = useRef<HTMLDivElement>(null);
@@ -33,8 +35,9 @@ export default function ContactFlowPage() {
 
     return (
         <div className="flex flex-col min-h-screen bg-gray-950 text-slate-100 font-sans">
+            <Navbar />
             {/* Title Header */}
-            <header className="p-6 border-b border-gray-800 bg-gray-900 flex justify-between items-center">
+            <header className="p-6 mt-6 mx-6 rounded-xl mb-6 border border-gray-800  flex justify-center items-center top-0 z-10">
                 <div>
                     <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-pink-400 via-red-400 to-yellow-400 bg-clip-text text-transparent">
                         Contact Form Architecture
@@ -43,15 +46,9 @@ export default function ContactFlowPage() {
                         Interactive lifecycle flow and file relationship directory map
                     </p>
                 </div>
-                <Link
-                    href="/"
-                    className="px-4 py-2 bg-pink-900 hover:bg-pink-800 border border-pink-700 text-sm font-medium rounded-lg transition-colors"
-                >
-                    Go Back Home
-                </Link>
             </header>
             {/* Flow Diagram */}
-            <section className="p-6 border-b border-gray-800 bg-gray-900/50">
+            <section className="p-6 mt-6 mx-6 rounded-xl mb-6 border border-gray-800 ">
                 <h2 className="text-2xl font-bold mb-4 text-slate-200">
                     Interactive Contact Lifecycle Flow
                 </h2>
@@ -79,7 +76,7 @@ export default function ContactFlowPage() {
                 </div>
             </section>
             {/* Connections Diagram */}
-            <section className="p-6">
+            <section className="p-6 mt-6 mx-6 rounded-xl mb-6 border border-gray-800 ">
                 <div className="bg-slate-900 border border-indigo-500/10 rounded-xl p-6 overflow-x-auto flex flex-col items-center min-h-[500px]">
                     <h3 className="text-lg font-bold text-slate-200 mb-2">
                         Architecture Connection Map
@@ -121,11 +118,12 @@ export default function ContactFlowPage() {
             </section>
 
             {/* Additional Diagrams Section */}
-            <section className="p-6">
+            <section className="p-6 mt-6 mx-6 rounded-xl mb-6 border border-gray-800 ">
                 <h2 className="text-2xl font-bold text-slate-200 mb-2">Comprehensive Process Diagrams</h2>
                 <p className="text-slate-400 text-sm mb-4">Detailed views of database relations, component networks, and user states.</p>
                 <DiagramTabs diagrams={contactFlowDiagrams} />
             </section>
+            <Footer />
         </div>
     );
 }

@@ -57,7 +57,7 @@ export default function ContactForm() {
       className="space-y-6"
     >
       <div>
-        <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-1">
+        <label htmlFor="name" className="block text-sm font-semibold text-slate-300 mb-1.5">
           Name
         </label>
         <input
@@ -66,13 +66,13 @@ export default function ContactForm() {
           type="text"
           value={formData.name}
           onChange={handleChange}
-          className="w-full rounded-lg border border-gray-300 text-gray-700 p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+          className="w-full rounded-xl bg-gray-950/50 border border-gray-800 text-white p-3.5 focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-400 transition-all placeholder:text-gray-600 shadow-inner"
           placeholder="Your full name"
         />
       </div>
 
       <div>
-        <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-1">
+        <label htmlFor="email" className="block text-sm font-semibold text-slate-300 mb-1.5">
           Email
         </label>
         <input
@@ -81,13 +81,13 @@ export default function ContactForm() {
           type="email"
           value={formData.email}
           onChange={handleChange}
-          className="w-full rounded-lg border border-gray-300 text-gray-700 p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+          className="w-full rounded-xl bg-gray-950/50 border border-gray-800 text-white p-3.5 focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-400 transition-all placeholder:text-gray-600 shadow-inner"
           placeholder="you@example.com"
         />
       </div>
 
       <div>
-        <label htmlFor="message" className="block text-sm font-semibold text-gray-700 mb-1">
+        <label htmlFor="message" className="block text-sm font-semibold text-slate-300 mb-1.5">
           Message
         </label>
         <textarea
@@ -95,17 +95,17 @@ export default function ContactForm() {
           name="message"
           value={formData.message}
           onChange={handleChange}
-          className="w-full rounded-lg border border-gray-300 text-gray-700 p-3 h-32 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+          className="w-full rounded-xl bg-gray-950/50 border border-gray-800 text-white p-3.5 h-32 focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-400 transition-all placeholder:text-gray-600 shadow-inner resize-y"
           placeholder="Write your message here..."
         />
       </div>
 
-      {error && <p className="text-red-500 text-sm">{error}</p>}
-      {success && <p className="text-green-600 text-sm">{success}</p>}
+      {error && <p className="text-red-400 text-sm bg-red-500/10 border border-red-500/20 p-3 rounded-lg">{error}</p>}
+      {success && <p className="text-emerald-400 text-sm bg-emerald-500/10 border border-emerald-500/20 p-3 rounded-lg">{success}</p>}
 
       <button
         type="submit"
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg shadow-md transition"
+        className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white font-bold py-3.5 rounded-xl shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:shadow-[0_0_30px_rgba(99,102,241,0.5)] transition-all transform hover:-translate-y-0.5"
       >
         Send Message
       </button>

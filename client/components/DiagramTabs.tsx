@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import mermaid from "mermaid";
 import { ZoomIn, ZoomOut, RefreshCw } from "lucide-react";
 
@@ -16,6 +16,15 @@ export default function DiagramTabs({ diagrams }: { diagrams: Diagram[] }) {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (containerRef.current) {
+      containerRef.current.style.transform = `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`;
+      containerRef.current.style.transformOrigin = 'center center';
+      containerRef.current.style.transition = isDragging ? 'none' : 'transform 0.2s ease-in-out';
+    }
+  }, [zoom, position.x, position.y, isDragging]);
 
   const activeDiagram = diagrams.find((d) => d.id === activeTab);
 
@@ -37,12 +46,12 @@ export default function DiagramTabs({ diagrams }: { diagrams: Diagram[] }) {
     if (ready && activeDiagram) {
       setZoom(1);
       setPosition({ x: 0, y: 0 });
-      
+
       const timer = setTimeout(() => {
-         const nodes = document.querySelectorAll('.mermaid-dynamic');
-         if (nodes.length > 0) {
-            mermaid.run({ nodes: Array.from(nodes) as HTMLElement[] });
-         }
+        const nodes = document.querySelectorAll('.mermaid-dynamic');
+        if (nodes.length > 0) {
+          mermaid.run({ nodes: Array.from(nodes) as HTMLElement[] });
+        }
       }, 50); // slight delay for React to mount the new div
       return () => clearTimeout(timer);
     }
@@ -70,11 +79,10 @@ export default function DiagramTabs({ diagrams }: { diagrams: Diagram[] }) {
           <button
             key={d.id}
             onClick={() => setActiveTab(d.id)}
-            className={`px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors ${
-              activeTab === d.id
+            className={`px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors ${activeTab === d.id
                 ? "border-b-2 border-indigo-500 text-indigo-400 bg-slate-900"
                 : "text-slate-400 hover:text-slate-200 hover:bg-slate-800"
-            }`}
+              }`}
           >
             {d.title}
           </button>
@@ -91,12 +99,12 @@ export default function DiagramTabs({ diagrams }: { diagrams: Diagram[] }) {
         </div>
 
         <div
+          ref={containerRef}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUpOrLeave}
           onMouseLeave={handleMouseUpOrLeave}
           className={`w-full flex justify-center ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
-          style={{ transform: `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`, transformOrigin: 'center center', transition: isDragging ? 'none' : 'transform 0.2s ease-in-out' }}
         >
           {ready && activeDiagram && (
             <div key={activeTab} className="mermaid-dynamic w-full flex justify-center pointer-events-none select-none">

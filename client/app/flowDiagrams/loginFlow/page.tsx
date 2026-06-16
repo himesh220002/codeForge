@@ -5,6 +5,8 @@ import { Folder, FolderOpen, FileCode, ChevronDown, ChevronRight, Link2, Info, A
 import Link from "next/link";
 import DiagramTabs from "@/components/DiagramTabs";
 import { loginFlowDiagrams } from "./diagramsData";
+import Navbar from "@/components/navbar";
+import Footer from "@/components/footer";
 
 interface FileDetail {
   id: string;
@@ -205,6 +207,15 @@ function ZoomableMermaid({ content, defaultZoom = 1 }: { content: string, defaul
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
 
+  const containerRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (containerRef.current) {
+        containerRef.current.style.transform = `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`;
+        containerRef.current.style.transformOrigin = 'center center';
+        containerRef.current.style.transition = isDragging ? 'none' : 'transform 0.2s ease-in-out';
+    }
+  }, [zoom, position.x, position.y, isDragging]);
+
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
     setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y });
@@ -225,9 +236,9 @@ function ZoomableMermaid({ content, defaultZoom = 1 }: { content: string, defaul
         <button onClick={() => setZoom(prev => Math.max(prev - 0.2, 0.4))} className="p-2 hover:bg-slate-800 rounded text-slate-300 hover:text-white transition-colors" title="Zoom Out"><ZoomOut size={20} /></button>
       </div>
       <div
+        ref={containerRef}
         onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUpOrLeave} onMouseLeave={handleMouseUpOrLeave}
-        className={`w-full flex justify-center ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
-        style={{ transform: `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`, transformOrigin: 'center center', transition: isDragging ? 'none' : 'transform 0.2s ease-in-out', minWidth: '1000px' }}
+        className={`w-full flex justify-center min-w-[1000px] ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
       >
         <div className="mermaid w-full flex justify-center pointer-events-none select-none py-8">
           {content}
@@ -302,21 +313,19 @@ export default function AdminPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-950 text-slate-100 font-sans">
+      <Navbar />
       {/* Title Header */}
-      <header className="p-6 border-b border-gray-800 bg-gray-900 flex justify-between items-center">
+      <header className="p-6 mt-6 mx-6 rounded-xl mb-6 border border-gray-800 flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">
             Authentication & Security Architecture
           </h1>
           <p className="text-gray-400 text-sm mt-1">Interactive system flows and file relationship directory map</p>
         </div>
-        <Link href="/" className="px-4 py-2 bg-blue-900 hover:bg-blue-800 border border-blue-700 text-sm font-medium rounded-lg transition-colors">
-          Go Back Home
-        </Link>
       </header>
 
       {/* Flow Diagram */}
-      <section className="p-6 border-b border-gray-800 bg-gray-900/50">
+      <section className="p-6 mt-6 mx-6 rounded-xl mb-6 border border-gray-800 ">
         <h2 className="text-2xl font-bold mb-4 text-slate-200">Interactive Auth Lifecycle Flow</h2>
         <div className="flex justify-center w-full">
           {ready && (
@@ -373,7 +382,7 @@ export default function AdminPage() {
       </section>
 
       {/* Code Repository with Interactive Folder Tree and Connections */}
-      <section className="p-6 bg-gray-950">
+      <section className="p-6 mt-6 mx-6 rounded-xl mb-6 border border-gray-800 ">
 
         {/* Connections Diagram */}
         <div className="flex w-full justify-center">

@@ -4,6 +4,7 @@ import natural from 'natural';
 import nlp from 'compromise';
 import { getEmbedding, cosineSimilarity, generateAtsFeedback } from '../services/aiService.js';
 import { AtsLogModel } from '../models/atsLog.js';
+import { extractNvidiaKey } from '../utils/crypto.js';
 
 export const checkAtsScore = async (req: Request, res: Response): Promise<void> => {
   const startTime = Date.now();
@@ -16,7 +17,7 @@ export const checkAtsScore = async (req: Request, res: Response): Promise<void> 
       return;
     }
 
-    const userApiKey = req.headers.authorization?.replace("Bearer ", "") || undefined;
+    const userApiKey = await extractNvidiaKey(req.headers.authorization);
     const isProduction = process.env.NODE_ENV === "production";
     const apiKeyToUse = userApiKey || (!isProduction ? process.env.NVIDIA_API_KEY : undefined);
 

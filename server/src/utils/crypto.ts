@@ -1,4 +1,6 @@
 import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
+import { UserModel } from '../models/user.js';
 
 const ALGORITHM = 'aes-256-gcm';
 
@@ -43,4 +45,29 @@ export function decrypt(encryptedData: string): string {
     decrypted += decipher.final('utf8');
     
     return decrypted;
+}
+
+export async function extractNvidiaKey(authHeader: string | undefined): Promise<string | undefined> {
+    if (!authHeader) return undefined;
+    const token = authHeader.replace("Bearer ", "").trim();
+    if (!token) return undefined;
+
+    // If it's a JWT (usually 3 parts separated by dots)
+    if (token.split('.').length === 3) {
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret_key_change_me_in_prod') as any;
+            if (decoded && decoded.userId) {
+                const user = await UserModel.findById(decoded.userId);
+                if (user && user.nvidiaApiHash) {
+                    const decrypted = decrypt(user.nvidiaApiHash);
+                    if (decrypted) return decrypted;
+                }
+            }
+        } catch (e) {
+            console.error("Failed to decode JWT or fetch user key:", e);
+        }
+    }
+
+    // Otherwise, assume it's the raw NVIDIA API key
+    return token;
 }

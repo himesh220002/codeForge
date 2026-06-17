@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { JobModel } from '../models/job.js';
 import { getEmbedding, topKMatches, generateJobMatchStrategy, scrapeMultiPlatformJobs, rerankJobs } from '../services/aiService.js';
 import { addJobsToChroma, queryChroma } from '../services/chromaService.js';
+import { extractNvidiaKey } from '../utils/crypto.js';
 
 // Seed job postings into the database
 export const seedJobsController = async (req: Request, res: Response) => {
@@ -115,8 +116,8 @@ export const matchJobsController = async (req: Request, res: Response) => {
     const searchPrompt = prompt || "Find jobs matching my profile.";
     console.log("Matching jobs for CV... Preferences:", searchPrompt);
 
-    // Extract user API key for BYOK support
-    const userApiKey = req.headers.authorization?.replace("Bearer ", "") || undefined;
+    // Extract user API key for BYOK support or JWT token
+    const userApiKey = await extractNvidiaKey(req.headers.authorization);
     
     // In production (Render), we strictly require userApiKey.
     // In local development, we can fall back to process.env.NVIDIA_API_KEY.

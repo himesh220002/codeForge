@@ -60,12 +60,14 @@ export default function AtsPipelineCheckerPage() {
             formData.append("resume", resumeFile);
             formData.append("jobDescription", jobDescription);
 
-            // Fetch NVIDIA API Key from local storage if BYOK is active
-            const apiKey = localStorage.getItem("nvidia_api_key") || "";
+            // Fetch NVIDIA API Key from local storage or use access token
+            const apiKey = localStorage.getItem("nvidia_api_key");
+            const token = localStorage.getItem("accessToken");
+            const authValue = apiKey || token || "";
 
             const response = await fetch("/codeforge/api/ats", {
                 method: "POST",
-                headers: apiKey ? { "Authorization": `Bearer ${apiKey}` } : {},
+                headers: authValue ? { "Authorization": `Bearer ${authValue}` } : {},
                 body: formData,
             });
 

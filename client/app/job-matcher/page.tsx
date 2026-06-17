@@ -288,9 +288,12 @@ SKILLS:
 
     try {
       const apiKey = localStorage.getItem("nvidia_api_key");
+      const token = localStorage.getItem("accessToken");
+      const authValue = apiKey || token || "";
+
       const headers: any = { 'Content-Type': 'application/json' };
-      if (apiKey) {
-        headers['Authorization'] = `Bearer ${apiKey}`;
+      if (authValue) {
+        headers['Authorization'] = `Bearer ${authValue}`;
       }
 
       const res = await fetch(`${API_BASE_URL}/api/jobs/match`, {

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Upload, FileText, CheckCircle, AlertTriangle, ArrowRight, Play, Server, Database } from "lucide-react";
 import Navbar from "@/components/navbar";
 
@@ -13,6 +13,32 @@ export default function AtsPipelineCheckerPage() {
     const [result, setResult] = useState<{ structureScore: number; matchScore: number; feedback?: any } | null>(null);
     const [loadingStep, setLoadingStep] = useState(0);
     const [loadingLogs, setLoadingLogs] = useState<{ time: string; label: string }[]>([]);
+
+    // Auto-recover NVIDIA API key from backend if missing
+    useEffect(() => {
+        const checkApiKey = async () => {
+            const existingKey = localStorage.getItem("nvidia_api_key");
+            if (!existingKey) {
+                try {
+                    const token = localStorage.getItem("accessToken");
+                    if (token) {
+                        const res = await fetch("/codeforge/api/user/settings", {
+                            headers: { Authorization: `Bearer ${token}` }
+                        });
+                        if (res.ok) {
+                            const data = await res.json();
+                            if (data.nvidiaApiKey) {
+                                localStorage.setItem("nvidia_api_key", data.nvidiaApiKey);
+                            }
+                        }
+                    }
+                } catch (err) {
+                    console.error("Failed to auto-recover API key:", err);
+                }
+            }
+        };
+        checkApiKey();
+    }, []);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
@@ -34,14 +60,7 @@ export default function AtsPipelineCheckerPage() {
             formData.append("jobDescription", jobDescription);
 
             // Fetch NVIDIA API Key from local storage if BYOK is active
-            const userSettingsRaw = localStorage.getItem("userSettings");
-            let apiKey = "";
-            if (userSettingsRaw) {
-                try {
-                    const userSettings = JSON.parse(userSettingsRaw);
-                    apiKey = userSettings.nvidiaApiKey || "";
-                } catch (e) { }
-            }
+            const apiKey = localStorage.getItem("nvidia_api_key") || "";
 
             const response = await fetch("/codeforge/api/ats", {
                 method: "POST",
@@ -141,6 +160,7 @@ export default function AtsPipelineCheckerPage() {
                                 <div className="w-full border-2 border-dashed border-indigo-700/20 bg-slate-950/50 hover:bg-slate-800/50 transition-colors rounded-xl p-8 flex flex-col items-center justify-center text-center cursor-pointer relative">
                                     <input
                                         type="file"
+                                        placeholder="pdf file"
                                         accept=".pdf"
                                         onChange={handleFileChange}
                                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"

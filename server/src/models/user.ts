@@ -5,6 +5,7 @@ export interface IUser extends Document {
     passwordHash: string;
     name: string;
     role: 'owner' | 'superuser' | 'admin' | 'user';
+    nvidiaApiKey?: string;
     createdAt: Date;
 }
 
@@ -13,6 +14,7 @@ const UserSchema: Schema = new Schema<IUser>({
     passwordHash: {type: String, required: true},
     name: {type: String, required: true},
     role: {type: String, enum: ['owner', 'superuser', 'admin', 'user'], default: 'user'},
+    nvidiaApiKey: {type: String, required: false},
     createdAt: {type: Date, default: Date.now},
 });
 

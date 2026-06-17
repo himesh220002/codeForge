@@ -122,13 +122,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="min-h-screen bg-gray-950 text-slate-100">
       <Navbar />
-      <div className="flex">
+      <div className="flex flex-col md:flex-row min-h-[calc(100vh-73px)] w-full">
         {/* Sidebar */}
-        <aside className="w-64 min-h-[calc(100vh-73px)] bg-gray-900/50 border-r border-indigo-500/10 p-4 flex flex-col gap-1 shrink-0">
-          <div className="mb-4 px-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">Admin Panel</h3>
+        <aside className="w-full md:w-64 bg-gray-900/50 border-b md:border-b-0 md:border-r border-indigo-500/10 p-3 md:p-4 flex flex-row md:flex-col items-center md:items-stretch gap-4 md:gap-1 shrink-0 overflow-x-auto">
+          <div className="md:mb-4 md:px-3 shrink-0 flex items-center md:items-start flex-col">
+            <h3 className="hidden md:block text-xs font-bold uppercase tracking-wider text-slate-500">Admin Panel</h3>
             {currentRole && (
-              <span className={`inline-block text-[10px] font-bold px-1.5 py-0.5 rounded mt-1.5 uppercase ${currentRole === "owner" ? "bg-red-500/20 text-red-300 border border-red-500/35" :
+              <span className={`inline-block text-[10px] font-bold px-2 py-1 md:px-1.5 md:py-0.5 rounded md:mt-1.5 uppercase ${currentRole === "owner" ? "bg-red-500/20 text-red-300 border border-red-500/35" :
                 currentRole === "superuser" ? "bg-orange-500/20 text-orange-300 border border-orange-500/35" :
                   currentRole === "admin" ? "bg-purple-500/20 text-purple-300 border border-purple-500/35" :
                     "bg-blue-500/20 text-blue-300 border border-blue-500/35"
@@ -138,27 +138,29 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             )}
           </div>
 
-          {sidebarLinks.map((link) => {
-            const isActive = pathname === link.href;
-            const Icon = link.icon;
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${isActive
-                  ? "bg-indigo-500/15 text-indigo-300 border border-indigo-500/20 shadow-sm"
-                  : "text-slate-400 hover:text-white hover:bg-slate-800/50"
-                  }`}
-              >
-                <Icon size={16} className={isActive ? "text-indigo-400" : "text-slate-500"} />
-                {link.label}
-              </Link>
-            );
-          })}
+          <nav className="flex flex-row md:flex-col gap-2">
+            {sidebarLinks.map((link) => {
+              const isActive = pathname === link.href;
+              const Icon = link.icon;
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`flex items-center gap-2 md:gap-3 px-3 py-2 md:py-2.5 rounded-xl text-sm font-medium transition-all shrink-0 ${isActive
+                    ? "bg-indigo-500/15 text-indigo-300 border border-indigo-500/20 shadow-sm"
+                    : "text-slate-400 hover:text-white hover:bg-slate-800/50"
+                    }`}
+                >
+                  <Icon size={16} className={isActive ? "text-indigo-400" : "text-slate-500"} />
+                  <span className="whitespace-nowrap">{link.label}</span>
+                </Link>
+              );
+            })}
+          </nav>
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 p-6 min-h-[calc(100vh-73px)]">
+        <main className="flex-1 p-4 md:p-6 w-full min-w-0">
           {children}
         </main>
       </div>

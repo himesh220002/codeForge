@@ -416,12 +416,12 @@ export default function AdminDashboard() {
 
       {/* Analytics Dashboard */}
       <div className="mt-8 bg-gray-900/40 border border-indigo-500/10 rounded-2xl p-6">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
           <div>
             <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500">Telemetry</h3>
             <h2 className="text-xl font-bold text-slate-200 mt-1">Live ATS Pipeline Usage</h2>
           </div>
-          <div className="flex gap-4">
+          <div className="flex gap-4 w-full sm:w-auto justify-end">
             <div className="text-right">
               <p className="text-xs text-slate-500 uppercase">Avg Score</p>
               <p className="text-xl font-bold text-purple-400">{atsData?.averageScore ?? "--"}%</p>
@@ -451,17 +451,17 @@ export default function AdminDashboard() {
 
         {/* Selected Candidate Card */}
         {selectedCandidate && (
-          <div className="mt-6 p-4 bg-slate-800/40 border border-indigo-500/30 rounded-xl flex items-center justify-between animate-in fade-in slide-in-from-bottom-2">
-            <div>
+          <div className="mt-6 p-4 bg-slate-800/40 border border-indigo-500/30 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-in fade-in slide-in-from-bottom-2">
+            <div className="w-full">
               <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Selected Candidate from Graph</p>
               <h4 className="text-lg font-bold text-slate-200">{selectedCandidate.candidateName || "Unknown Candidate"}</h4>
-              <p className="text-sm text-slate-400 mt-0.5">
+              <p className="text-sm text-slate-400 mt-0.5 break-words">
                 <span className="text-indigo-400 font-semibold">{selectedCandidate.targetProfession || "Unspecified Role"}</span> 
                 {selectedCandidate.candidatePhone && ` • ${selectedCandidate.candidatePhone}`}
                 {selectedCandidate.candidateEmail && ` • ${selectedCandidate.candidateEmail}`}
               </p>
               {selectedCandidate.candidateLinks && selectedCandidate.candidateLinks.length > 0 && (
-                <div className="flex gap-2 mt-1">
+                <div className="flex flex-wrap gap-2 mt-1">
                   {selectedCandidate.candidateLinks.map((link: string, i: number) => (
                     <a key={i} href={link} target="_blank" rel="noreferrer" className="text-xs text-blue-400 hover:underline truncate max-w-[150px] inline-block">
                       {new URL(link).hostname}
@@ -473,7 +473,7 @@ export default function AdminDashboard() {
             </div>
             <button
               onClick={handleAddTalent}
-              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-semibold transition-colors shadow-lg shadow-indigo-500/20 whitespace-nowrap ml-4"
+              className="w-full sm:w-auto px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-semibold transition-colors shadow-lg shadow-indigo-500/20 whitespace-nowrap sm:ml-4"
             >
               Add to Talent Hub
             </button>

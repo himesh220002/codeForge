@@ -10,22 +10,82 @@ export default function SettingsPage() {
 
   // Load existing key on mount
   useEffect(() => {
-    const existingKey = localStorage.getItem("nvidia_api_key");
-    if (existingKey) {
-      setApiKey(existingKey);
+    async function loadKey() {
+      // 1. Check local storage first for immediate load
+      const existingKey = localStorage.getItem("nvidia_api_key");
+      if (existingKey) {
+        setApiKey(existingKey);
+      }
+
+      // 2. Fetch from DB in background to sync (e.g. if logging in from new device)
+      try {
+        const token = localStorage.getItem("accessToken");
+        if (token) {
+          const res = await fetch("/codeforge/api/user/settings", {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.nvidiaApiKey && data.nvidiaApiKey !== existingKey) {
+              setApiKey(data.nvidiaApiKey);
+              localStorage.setItem("nvidia_api_key", data.nvidiaApiKey);
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load synced settings", err);
+      }
     }
+    loadKey();
   }, []);
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    localStorage.setItem("nvidia_api_key", apiKey.trim());
+    const keyToSave = apiKey.trim();
+    localStorage.setItem("nvidia_api_key", keyToSave);
+    
+    // Sync to DB
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (token) {
+        await fetch("/codeforge/api/user/settings", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({ nvidiaApiKey: keyToSave })
+        });
+      }
+    } catch (err) {
+      console.error("Failed to sync settings to DB", err);
+    }
+
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
   };
 
-  const handleClear = () => {
+  const handleClear = async () => {
     localStorage.removeItem("nvidia_api_key");
     setApiKey("");
+    
+    // Clear from DB
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (token) {
+        await fetch("/codeforge/api/user/settings", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({ nvidiaApiKey: "" })
+        });
+      }
+    } catch (err) {
+      console.error("Failed to clear settings from DB", err);
+    }
+
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
   };
@@ -117,7 +177,7 @@ export default function SettingsPage() {
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    Settings saved successfully to local storage.
+                    Settings saved and synced across devices.
                   </div>
                 )}
               </div>

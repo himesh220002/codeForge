@@ -210,9 +210,9 @@ function ZoomableMermaid({ content, defaultZoom = 1 }: { content: string, defaul
   const containerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (containerRef.current) {
-        containerRef.current.style.transform = `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`;
-        containerRef.current.style.transformOrigin = 'center center';
-        containerRef.current.style.transition = isDragging ? 'none' : 'transform 0.2s ease-in-out';
+      containerRef.current.style.transform = `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`;
+      containerRef.current.style.transformOrigin = 'center center';
+      containerRef.current.style.transition = isDragging ? 'none' : 'transform 0.2s ease-in-out';
     }
   }, [zoom, position.x, position.y, isDragging]);
 
@@ -228,6 +228,22 @@ function ZoomableMermaid({ content, defaultZoom = 1 }: { content: string, defaul
     setIsDragging(false);
   };
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      setIsDragging(true);
+      setDragStart({ x: e.touches[0].clientX - position.x, y: e.touches[0].clientY - position.y });
+    }
+  };
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging) return;
+    if (e.touches.length === 1) {
+      setPosition({ x: e.touches[0].clientX - dragStart.x, y: e.touches[0].clientY - dragStart.y });
+    }
+  };
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+  };
+
   return (
     <div className="relative overflow-hidden w-full flex justify-center bg-slate-900 border border-indigo-500/10 rounded-xl min-h-[500px]">
       <div className="absolute top-4 right-4 z-10 flex flex-col gap-2 bg-slate-900 border border-indigo-700/20 p-1.5 rounded-lg shadow-lg">
@@ -238,7 +254,8 @@ function ZoomableMermaid({ content, defaultZoom = 1 }: { content: string, defaul
       <div
         ref={containerRef}
         onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUpOrLeave} onMouseLeave={handleMouseUpOrLeave}
-        className={`w-full flex justify-center min-w-[1000px] ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+        onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd}
+        className={`w-full flex justify-center touch-none md:min-w-[1000px] ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
       >
         <div className="mermaid w-full flex justify-center pointer-events-none select-none py-8">
           {content}
@@ -325,8 +342,8 @@ export default function AdminPage() {
       </header>
 
       {/* Flow Diagram */}
-      <section className="p-6 mt-6 mx-6 rounded-xl mb-6 border border-gray-800 ">
-        <h2 className="text-2xl font-bold mb-4 text-slate-200">Interactive Auth Lifecycle Flow</h2>
+      <section className="p-2 md:p-6 mt-6 mx-1 md:mx-6 rounded-xl mb-6 border border-gray-800 ">
+        <h2 className="text-md md:text-2xl font-bold mb-4 text-slate-200">Interactive Auth Lifecycle Flow</h2>
         <div className="flex justify-center w-full">
           {ready && (
             <ZoomableMermaid defaultZoom={1} content={`sequenceDiagram
@@ -382,7 +399,7 @@ export default function AdminPage() {
       </section>
 
       {/* Code Repository with Interactive Folder Tree and Connections */}
-      <section className="p-6 mt-6 mx-6 rounded-xl mb-6 border border-gray-800 ">
+      <section className="p-2 md:p-6 mt-6 mx-1 md:mx-6 rounded-xl mb-6 border border-gray-800 ">
 
         {/* Connections Diagram */}
         <div className="flex w-full justify-center">
@@ -837,6 +854,7 @@ export default function AdminPage() {
 
 
       </section>
+      <Footer />
     </div>
   );
 }

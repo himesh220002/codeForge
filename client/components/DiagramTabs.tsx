@@ -69,6 +69,22 @@ export default function DiagramTabs({ diagrams }: { diagrams: Diagram[] }) {
     setIsDragging(false);
   };
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      setIsDragging(true);
+      setDragStart({ x: e.touches[0].clientX - position.x, y: e.touches[0].clientY - position.y });
+    }
+  };
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging) return;
+    if (e.touches.length === 1) {
+      setPosition({ x: e.touches[0].clientX - dragStart.x, y: e.touches[0].clientY - dragStart.y });
+    }
+  };
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+  };
+
   if (!diagrams.length) return null;
 
   return (
@@ -104,7 +120,11 @@ export default function DiagramTabs({ diagrams }: { diagrams: Diagram[] }) {
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUpOrLeave}
           onMouseLeave={handleMouseUpOrLeave}
-          className={`w-full flex justify-center ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onTouchCancel={handleTouchEnd}
+          className={`w-full flex justify-center touch-none ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
         >
           {ready && activeDiagram && (
             <div key={activeTab} className="mermaid-dynamic w-full flex justify-center pointer-events-none select-none">

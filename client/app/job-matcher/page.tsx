@@ -170,12 +170,36 @@ export default function JobMatcherPage() {
   const [loadingStep, setLoadingStep] = useState(0);
   const [parsingPdf, setParsingPdf] = useState(false);
 
-  // Load existing CV text from local storage if present
+  // Load existing CV text and check API Key on mount
   useEffect(() => {
     const savedCv = localStorage.getItem("uploaded_pdf_text");
     if (savedCv) {
       setCvText(savedCv);
     }
+
+    // Auto-recover NVIDIA API key from backend if missing
+    const checkApiKey = async () => {
+      const existingKey = localStorage.getItem("nvidia_api_key");
+      if (!existingKey) {
+        try {
+          const token = localStorage.getItem("accessToken");
+          if (token) {
+            const res = await fetch("/codeforge/api/user/settings", {
+              headers: { Authorization: `Bearer ${token}` }
+            });
+            if (res.ok) {
+              const data = await res.json();
+              if (data.nvidiaApiKey) {
+                localStorage.setItem("nvidia_api_key", data.nvidiaApiKey);
+              }
+            }
+          }
+        } catch (err) {
+          console.error("Failed to auto-recover API key:", err);
+        }
+      }
+    };
+    checkApiKey();
   }, []);
 
   const pipelineNodes = [

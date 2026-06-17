@@ -37,9 +37,9 @@ export default function ContactFlowPage() {
         <div className="flex flex-col min-h-screen bg-gray-950 text-slate-100 font-sans">
             <Navbar />
             {/* Title Header */}
-            <header className="p-6 mt-6 mx-6 rounded-xl mb-6 border border-gray-800  flex justify-center items-center top-0 z-10">
+            <header className="p-2 md:p-6 mt-6 mx-1 md:mx-6 rounded-xl flex justify-center items-center">
                 <div>
-                    <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-pink-400 via-red-400 to-yellow-400 bg-clip-text text-transparent">
+                    <h1 className="text-md md:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-pink-400 via-red-400 to-yellow-400 bg-clip-text text-transparent">
                         Contact Form Architecture
                     </h1>
                     <p className="text-gray-400 text-sm mt-1">
@@ -48,13 +48,13 @@ export default function ContactFlowPage() {
                 </div>
             </header>
             {/* Flow Diagram */}
-            <section className="p-6 mt-6 mx-6 rounded-xl mb-6 border border-gray-800 ">
-                <h2 className="text-2xl font-bold mb-4 text-slate-200">
+            <section className="p-2 md:p-6 mt-6 mx-1 md:mx-6 rounded-xl mb-6 border border-gray-800 ">
+                <h2 className="text-md md:text-2xl font-bold mb-4 text-slate-200">
                     Interactive Contact Lifecycle Flow
                 </h2>
-                <div className="bg-slate-900 border border-indigo-500/10 rounded-xl p-4 overflow-x-auto flex justify-center min-h-[420px]">
+                <div className="bg-slate-900 border border-indigo-500/10 rounded-xl p-4 overflow-x-auto flex justify-start md:justify-center min-h-[420px]">
                     {ready && (
-                        <div ref={ref} className="mermaid w-full">
+                        <div ref={ref} className="mermaid w-full min-w-[700px]">
                             {`sequenceDiagram
     autonumber
     actor User as User Agent
@@ -76,16 +76,16 @@ export default function ContactFlowPage() {
                 </div>
             </section>
             {/* Connections Diagram */}
-            <section className="p-6 mt-6 mx-6 rounded-xl mb-6 border border-gray-800 ">
-                <div className="bg-slate-900 border border-indigo-500/10 rounded-xl p-6 overflow-x-auto flex flex-col items-center min-h-[500px]">
-                    <h3 className="text-lg font-bold text-slate-200 mb-2">
+            <section className="p-2 md:p-6 mt-6 mx-1 md:mx-6 rounded-xl mb-6 border border-gray-800 ">
+                <div className="bg-slate-900 border border-indigo-500/10 rounded-xl p-6 overflow-x-auto flex flex-col items-start md:items-center min-h-[500px]">
+                    <h3 className="text-lg font-bold text-slate-200 mb-2 self-center">
                         Architecture Connection Map
                     </h3>
-                    <p className="text-gray-400 text-xs mb-6 text-center max-w-xl">
+                    <p className="text-gray-400 text-xs mb-6 text-center max-w-xl self-center">
                         Flowchart visualization of contact form proxy paths, backend routing controllers, and MongoDB dependencies.
                     </p>
                     {ready && (
-                        <div ref={repoRef} className="mermaid w-full flex justify-center">
+                        <div ref={repoRef} className="mermaid w-full flex justify-start md:justify-center min-w-[700px]">
                             {`flowchart TD
     classDef clientPage fill:#3b82f6,stroke:#1d4ed8,stroke-width:2px,color:#fff;
     classDef clientApi fill:#06b6d4,stroke:#0891b2,stroke-width:2px,color:#fff;
@@ -118,7 +118,7 @@ export default function ContactFlowPage() {
             </section>
 
             {/* Additional Diagrams Section */}
-            <section className="p-6 mt-6 mx-6 rounded-xl mb-6 border border-gray-800 ">
+            <section className="p-2 md:p-6 mt-6 mx-1 md:mx-6 rounded-xl mb-6 border border-gray-800 ">
                 <h2 className="text-2xl font-bold text-slate-200 mb-2">Comprehensive Process Diagrams</h2>
                 <p className="text-slate-400 text-sm mb-4">Detailed views of database relations, component networks, and user states.</p>
                 <DiagramTabs diagrams={contactFlowDiagrams} />

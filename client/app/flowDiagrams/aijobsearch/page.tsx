@@ -37,9 +37,9 @@ export default function AIJobSearchFlowPage() {
         <div className="flex flex-col min-h-screen bg-gray-950 text-slate-100 font-sans">
             <Navbar />
             {/* Title Header */}
-            <header className="p-6 my-6 mx-10 rounded-xl flex justify-center items-center">
+            <header className="p-2 md:p-6 my-6 mx-1 md:mx-10 rounded-xl flex justify-center items-center">
                 <div>
-                    <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                    <h1 className="text-md md:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                         AI Job Matcher RAG Pipeline Architecture
                     </h1>
                     <p className="text-gray-400 text-sm mt-1">
@@ -49,13 +49,13 @@ export default function AIJobSearchFlowPage() {
             </header>
 
             {/* Sequence Flow */}
-            <section className="p-6 mx-10 mb-6 rounded-xl border border-gray-800 ">
-                <h2 className="text-2xl font-bold mb-4 text-slate-200">
+            <section className="p-2 md:p-6 mx-1 md:mx-10 mb-6 rounded-xl border border-gray-800 ">
+                <h2 className="text-md md:text-2xl font-bold mb-4 text-slate-200">
                     Interactive RAG Lifecycle Flow (Dual-Stage Search)
                 </h2>
-                <div className="bg-slate-900 border border-indigo-500/10 rounded-xl p-4 overflow-x-auto flex justify-center min-h-[550px]">
+                <div className="bg-slate-900 border border-indigo-500/10 rounded-xl p-4 overflow-x-auto flex justify-start md:justify-center min-h-[550px]">
                     {ready && (
-                        <div ref={ref} className="mermaid w-full">
+                        <div ref={ref} className="mermaid w-full min-w-[800px]">
                             {`sequenceDiagram
     autonumber
     actor User as User UI (Client)
@@ -98,17 +98,17 @@ export default function AIJobSearchFlowPage() {
             </section>
 
             {/* Ingestion & Match Architecture Flowchart */}
-            <section className="p-6 mt-6 mx-10 rounded-xl border border-gray-800 ">
-                <div className="bg-slate-900 border border-indigo-500/10 rounded-xl p-6 overflow-x-auto flex flex-col items-center min-h-[1100px]">
+            <section className="p-2 md:p-6 mt-6 mx-1 md:mx-10 rounded-xl border border-gray-800 ">
+                <div className="bg-slate-900 border border-indigo-500/10 rounded-xl p-6 overflow-x-auto flex flex-col items-start md:items-center min-h-[1100px]">
                     <h3 className="text-xl font-bold text-slate-200 mb-2">
                         Complete Pipeline Processing & Data Conversion Map
                     </h3>
-                    <p className="text-gray-400 text-sm mb-8 text-center max-w-2xl">
+                    <p className="text-gray-400 text-sm mb-8 text-center max-w-2xl self-center">
                         A detailed view of how CSV datasets are parsed, how text features are chunked, how embeddings are generated and stored, and how vector search, reranking, and generation occurs.
                     </p>
 
                     {ready && (
-                        <div ref={repoRef} className="mermaid w-full">
+                        <div ref={repoRef} className="mermaid w-full min-w-[1000px]">
                             {`flowchart TD
     classDef fileNode fill:#334155,stroke:#475569,stroke-width:2px,color:#fff;
     classDef processNode fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#fff;
@@ -180,7 +180,7 @@ export default function AIJobSearchFlowPage() {
             </section>
 
             {/* Additional Diagrams Section */}
-            <section className="p-6 mt-6 mx-10 rounded-xl border border-gray-800 ">
+            <section className="p-2md:p-6 mt-6 mx-1 md:mx-10 rounded-xl border border-gray-800 ">
                 <h2 className="text-2xl font-bold text-slate-200 mb-2">Comprehensive Process Diagrams</h2>
                 <p className="text-gray-400 text-sm mb-4">Explore various architectural and behavioral diagrams representing the entire RAG pipeline process.</p>
                 <DiagramTabs diagrams={aiJobSearchDiagrams} />

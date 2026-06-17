@@ -36,3 +36,4 @@ function requireRole(roles: TokenPayload['role'][]) {
 export const ownerMiddleware = requireRole(['owner']);
 export const superUserMiddleware = requireRole(['owner', 'superuser']);
 export const adminMiddleware = requireRole(['owner', 'superuser', 'admin']);
+export const requireAuth = requireRole(['owner', 'superuser', 'admin', 'user']);

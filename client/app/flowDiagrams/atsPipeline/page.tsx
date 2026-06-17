@@ -38,6 +38,22 @@ export default function AtsPipelinePage() {
         setIsDragging(false);
     };
 
+    const handleTouchStart = (e: React.TouchEvent) => {
+        if (e.touches.length === 1) {
+            setIsDragging(true);
+            setDragStart({ x: e.touches[0].clientX - position.x, y: e.touches[0].clientY - position.y });
+        }
+    };
+    const handleTouchMove = (e: React.TouchEvent) => {
+        if (!isDragging) return;
+        if (e.touches.length === 1) {
+            setPosition({ x: e.touches[0].clientX - dragStart.x, y: e.touches[0].clientY - dragStart.y });
+        }
+    };
+    const handleTouchEnd = () => {
+        setIsDragging(false);
+    };
+
     useEffect(() => {
         mermaid.initialize({
             startOnLoad: false,
@@ -63,12 +79,12 @@ export default function AtsPipelinePage() {
 
 
     return (
-        <div className="flex flex-col px-10 min-h-screen bg-gray-950 text-slate-100 font-sans">
+        <div className="flex flex-col px-1 md:px-10 min-h-screen bg-gray-950 text-slate-100 font-sans">
             <Navbar />
             {/* Title Header */}
-            <header className="p-6 mt-6 mx-6 rounded-xl flex justify-center items-center top-0 z-10">
+            <header className="p-2 md:p-6 mt-6 mx-1 md:mx-6 rounded-xl flex justify-center items-center top-0 z-10">
                 <div>
-                    <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">
+                    <h1 className="text-md md:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">
                         ATS Pipeline Architecture & Demo
                     </h1>
                     <p className="text-gray-400 text-sm mt-1">
@@ -78,14 +94,14 @@ export default function AtsPipelinePage() {
 
             </header>
 
-            <div className="p-6 space-y-10">
+            <div className="p-2 md:p-6 space-y-10">
 
                 {/* ------------------------------------- */}
                 {/* DIAGRAM SECTION                       */}
                 {/* ------------------------------------- */}
                 <section className="bg-slate-900 border border-indigo-500/10 rounded-xl overflow-hidden shadow-2xl">
-                    <div className="p-6 border-b border-indigo-500/10 bg-slate-900/50">
-                        <h2 className="text-2xl font-bold text-slate-100 mb-2 flex items-center gap-2">
+                    <div className="p-2 md:p-6 border-b border-indigo-500/10 bg-slate-900/50">
+                        <h2 className="text-lg md:text-2xl font-bold text-slate-100 mb-2 flex items-center gap-2">
                             <Server className="text-indigo-400" /> Pipeline Architecture Mapping
                         </h2>
                         <p className="text-slate-400 text-sm max-w-4xl leading-relaxed">
@@ -100,7 +116,7 @@ export default function AtsPipelinePage() {
                         </div>
                     </div>
 
-                    <div className="p-4 bg-slate-950 overflow-hidden min-h-[500px] flex justify-center relative">
+                    <div className="p-2 md:p-4 bg-slate-950 overflow-hidden min-h-[500px] flex justify-center relative">
                         {/* Zoom Controls */}
                         <div className="absolute top-4 right-4 z-10 flex flex-col gap-2 bg-slate-900 border border-indigo-700/20 p-1.5 rounded-lg shadow-lg">
                             <button
@@ -111,7 +127,7 @@ export default function AtsPipelinePage() {
                                 <ZoomIn size={20} />
                             </button>
                             <button
-                                onClick={() => { setZoom(1.6); setPosition({ x: 0, y: 0 }); }}
+                                onClick={() => { setZoom(1.2); setPosition({ x: -50, y: 200 }); }}
                                 className="p-2 hover:bg-slate-800 rounded text-slate-300 hover:text-white transition-colors"
                                 title="Reset Zoom"
                             >
@@ -133,10 +149,14 @@ export default function AtsPipelinePage() {
                                 onMouseMove={handleMouseMove}
                                 onMouseUp={handleMouseUpOrLeave}
                                 onMouseLeave={handleMouseUpOrLeave}
-                                className={`w-full flex justify-center min-w-[1000px] ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+                                onTouchStart={handleTouchStart}
+                                onTouchMove={handleTouchMove}
+                                onTouchEnd={handleTouchEnd}
+                                onTouchCancel={handleTouchEnd}
+                                className={`w-full flex justify-center touch-none md:min-w-[1000px] ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
                             >
                                 <div className="mermaid w-full flex justify-center pointer-events-none select-none">
-                                    {`flowchart LR
+                                    {`flowchart TD
     %% Global Styling Declarations
     classDef ingestion fill:#0c4a6e,stroke:#0284c7,stroke-width:2px,color:#e0f2fe,rx:8px,ry:8px;
     classDef extraction fill:#4a044e,stroke:#c084fc,stroke-width:2px,color:#fae8ff,rx:8px,ry:8px;
@@ -225,7 +245,7 @@ export default function AtsPipelinePage() {
                 {/* ADVANCED INTERNAL ENGINE DIAGRAM      */}
                 {/* ------------------------------------- */}
                 <section className="bg-slate-900 border border-indigo-500/10 rounded-xl overflow-hidden shadow-2xl mt-12">
-                    <div className="p-6 border-b border-indigo-500/10 bg-slate-900/50">
+                    <div className="p-2 md:p-6 border-b border-indigo-500/10 bg-slate-900/50">
                         <h2 className="text-2xl font-bold text-slate-100 mb-2 flex items-center gap-2">
                             <Server className="text-purple-400" /> Internal Architecture: Llama 3.1 8B Structured JSON Feedback Engine
                         </h2>
@@ -234,7 +254,7 @@ export default function AtsPipelinePage() {
                         </p>
                     </div>
 
-                    <div className="p-4 bg-slate-950 overflow-hidden flex justify-center">
+                    <div className="p-2 md:p-4 bg-slate-950 overflow-hidden flex justify-center">
                         {ready && (
                             <div className="mermaid w-full flex justify-center py-6">
                                 {`flowchart TD
@@ -277,7 +297,7 @@ export default function AtsPipelinePage() {
                 </section>
 
                 {/* Additional Diagrams Section */}
-                <section className="bg-slate-900 border border-indigo-500/10 rounded-xl overflow-hidden shadow-2xl mt-12 p-6">
+                <section className="bg-slate-900 border border-indigo-500/10 rounded-xl overflow-hidden shadow-2xl mt-12 p-2 md:p-6">
                     <h2 className="text-2xl font-bold text-slate-100 mb-2">Comprehensive Process Diagrams</h2>
                     <p className="text-slate-400 text-sm mb-4">Explore detailed models including State Machines, Entity-Relationships, and Component architecture.</p>
                     <DiagramTabs diagrams={atsPipelineDiagrams} />

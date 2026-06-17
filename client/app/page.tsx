@@ -42,8 +42,8 @@ export default function Home() {
         {/* Decorative background glows */}
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-indigo-600/10 rounded-full blur-[100px] pointer-events-none"></div>
 
-        {/* Hero Header & Background Workflow */}
-        <div className="relative w-full min-h-[500px] flex flex-col items-center justify-center mb-16 rounded-3xl overflow-hidden border border-indigo-500/20 bg-gradient-to-b from-gray-950/60 to-gray-950/20 shadow-[0_0_50px_rgba(99,102,241,0.05)] group">
+        {/* Hero Header & Background Workflow (Desktop) */}
+        <div className="hidden md:flex relative w-full min-h-[500px] flex-col items-center justify-center mb-16 rounded-3xl overflow-hidden border border-indigo-500/20 bg-gradient-to-b from-gray-950/60 to-gray-950/20 shadow-[0_0_50px_rgba(99,102,241,0.05)] group">
 
           {/* Top highlight border line */}
           <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent"></div>
@@ -136,6 +136,30 @@ export default function Home() {
             </h1>
             <p className="text-slate-300 text-lg md:text-xl leading-relaxed max-w-2xl mx-auto drop-shadow-md">
               A highly advanced hybrid Retrieval-Augmented Generation (RAG) platform. Semantically match your CV against vector databases and dynamically generate custom application strategies.
+            </p>
+          </div>
+        </div>
+
+        {/* Hero Header (Mobile) */}
+        <div className="flex md:hidden relative w-full flex-col items-center justify-center mb-12 rounded-3xl overflow-hidden border border-indigo-500/20 bg-gradient-to-b from-gray-950/80 to-gray-950/40 p-8 shadow-xl">
+          {/* Top highlight border line */}
+          <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent"></div>
+
+          <div className="relative z-10 text-center flex flex-col items-center">
+            {/* Center Icon */}
+            <div className="w-16 h-16 rounded-2xl bg-indigo-950/80 border border-purple-500/60 flex items-center justify-center backdrop-blur-md shadow-[0_0_30px_rgba(168,85,247,0.3)] mb-6 animate-pulse">
+              <BrainCircuit className="text-purple-400" size={28} />
+            </div>
+
+            <p className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-[10px] uppercase tracking-widest text-indigo-300 font-bold mb-5 backdrop-blur-md">
+              <Zap size={12} className="text-amber-400" />
+              Powered by NVIDIA NIM
+            </p>
+            <h1 className="text-4xl font-extrabold leading-tight tracking-tight text-white mb-4">
+              Cypher <span className="block bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">AI Job Matcher</span>
+            </h1>
+            <p className="text-slate-300 text-sm leading-relaxed max-w-sm drop-shadow-md">
+              A highly advanced hybrid RAG platform. Match your CV and generate custom application strategies.
             </p>
           </div>
         </div>
@@ -264,7 +288,7 @@ export default function Home() {
                     Deep PDF parsing and semantic chunking of user profile and skill data.
                   </p>
                   {/* Simulated Terminal Log */}
-                  <div className="bg-gray-950 rounded-lg p-2.5 font-mono text-[10px] text-green-400 border border-gray-800 flex flex-col gap-1 overflow-hidden h-[44px]">
+                  <div className="bg-gray-950 rounded-lg p-2.5 font-mono text-[10px] text-green-400 border border-gray-800 flex flex-col gap-1 overflow-hidden h-[54px]">
                     <span><span className="text-gray-500">{'>'}</span> init pdf_parser</span>
                     <span className="animate-pulse"><span className="text-gray-500">{'>'}</span> chunking_text...</span>
                   </div>
@@ -293,7 +317,7 @@ export default function Home() {
                     NVIDIA Nemotron microservice heavily vectorizes the semantic chunks.
                   </p>
                   {/* Simulated Terminal Log */}
-                  <div className="bg-gray-950 rounded-lg p-2.5 font-mono text-[10px] text-blue-400 border border-gray-800 flex flex-col gap-1 overflow-hidden h-[44px]">
+                  <div className="bg-gray-950 rounded-lg p-2.5 font-mono text-[10px] text-blue-400 border border-gray-800 flex flex-col gap-1 overflow-hidden h-[54px]">
                     <span><span className="text-gray-500">{'>'}</span> fetch nemotron</span>
                     <span className="animate-pulse"><span className="text-gray-500">{'>'}</span> dim: [1024] vec...</span>
                   </div>
@@ -319,7 +343,7 @@ export default function Home() {
                     ChromaDB cloud performs rapid HNSW Cosine Distance similarity search.
                   </p>
                   {/* Simulated Terminal Log */}
-                  <div className="bg-gray-950 rounded-lg p-2.5 font-mono text-[10px] text-teal-400 border border-gray-800 flex flex-col gap-1 overflow-hidden h-[44px]">
+                  <div className="bg-gray-950 rounded-lg p-2.5 font-mono text-[10px] text-teal-400 border border-gray-800 flex flex-col gap-1 overflow-hidden h-[54px]">
                     <span><span className="text-gray-500">{'>'}</span> insert index</span>
                     <span className="animate-pulse"><span className="text-gray-500">{'>'}</span> calc cosine...</span>
                   </div>
@@ -348,7 +372,7 @@ export default function Home() {
                     Generative LLM synthesizes retrieved context into actionable strategies.
                   </p>
                   {/* Simulated Terminal Log */}
-                  <div className="bg-gray-950 rounded-lg p-2.5 font-mono text-[10px] text-purple-400 border border-gray-800 flex flex-col gap-1 overflow-hidden h-[44px]">
+                  <div className="bg-gray-950 rounded-lg p-2.5 font-mono text-[10px] text-purple-400 border border-gray-800 flex flex-col gap-1 overflow-hidden h-[54px]">
                     <span><span className="text-gray-500">{'>'}</span> RAG context ok</span>
                     <span className="animate-pulse"><span className="text-gray-500">{'>'}</span> generating...</span>
                   </div>

@@ -1,6 +1,7 @@
 "use client";
 import React from 'react';
-import { FileText, Code2, Cpu, Database, User, Search, Brain, FileOutput, Monitor, ArrowRight, Layers } from 'lucide-react';
+import { FileText, Code2, Cpu, Database, User, Search, Brain, FileOutput, Monitor, ArrowRight, Layers, BrainCircuit, Network, ChevronDown } from 'lucide-react';
+import Image from 'next/image';
 
 interface NodeProps {
     positionClass: string;
@@ -39,16 +40,153 @@ export default function PipelineDataMap() {
             <div className="relative w-full h-[2200px] md:h-[1800px] overflow-hidden">
                 {/* Domain Backgrounds (Z-0) */}
                 <div className="absolute top-0 left-0 w-full h-[40%] bg-blue-900/5 border-b border-blue-500/10 transition-all">
-                    <span className="absolute top-4 left-4 text-[10px] font-bold uppercase tracking-widest text-blue-500/40">Data Ingestion Domain</span>
+                    <span className="absolute top-4 left-4 text-[10px] font-bold uppercase tracking-widest text-blue-500/70">Data Ingestion Domain</span>
+                </div>
+
+                {/* Internal Data Ingestion Diagram (Right Side of Data Ingestion Domain) */}
+                <div className="absolute top-[12%] right-[5%] w-[30%] max-w-[380px] h-[30%] min-h-[300px] border border-blue-500/40 rounded-2xl shadow-2xl z-30 hidden md:flex flex-col p-5 overflow-hidden bg-gray-950/90 backdrop-blur-2xl">
+                    {/* Title */}
+                    <h4 className="text-white text-sm font-bold mb-6 flex items-center justify-center gap-2 w-full">
+                        <FileText size={18} className="text-blue-400" />
+                        Data Ingestion Pipeline
+                    </h4>
+
+                    <div className="flex flex-col items-center justify-between h-full pb-4">
+                        {/* Step 1: Large File */}
+                        <div className="flex flex-col items-center gap-2">
+                            <div className="bg-blue-500/10 text-blue-300 px-2 py-4 rounded-xl border border-blue-500/30 flex flex-col items-center gap-2 shadow-[0_0_15px_rgba(59,130,246,0.15)] relative">
+                                <FileText size={32} className="text-blue-400" />
+                                <div className="text-[10px] font-bold">RAW DOCUMENT</div>
+                                <div className="text-[8px] text-blue-400/70">PDF / DOCX / TXT</div>
+                                {/* Scanning line animation */}
+                                <div className="absolute top-0 left-0 w-full h-[2px] bg-blue-400/50 shadow-[0_0_8px_#60a5fa] animate-[ping_2s_infinite]"></div>
+                            </div>
+                        </div>
+
+                        <div className="h-4 w-px bg-blue-500/40 my-1 relative">
+                            <ArrowRight size={14} className="absolute -bottom-2 -left-1.5 text-blue-400 rotate-90" />
+                        </div>
+
+                        {/* Step 2: Chunks */}
+                        <div className="flex flex-col items-center gap-2 w-full">
+                            <div className="text-[10px] text-slate-400 font-bold tracking-widest mb-1">SEMANTIC CHUNKING</div>
+                            <div className="flex flex-col gap-2 w-full px-6">
+                                <div className="bg-indigo-500/10 text-indigo-300 px-3 py-2 rounded-lg text-[10px] border border-indigo-500/30 w-full flex items-center justify-between">
+                                    <span>Chunk 1: Skills</span> <Code2 size={12} />
+                                </div>
+                                <div className="bg-indigo-500/10 text-indigo-300 px-3 py-2 rounded-lg text-[10px] border border-indigo-500/30 w-full flex items-center justify-between">
+                                    <span>Chunk 2: Experience</span> <Code2 size={12} />
+                                </div>
+                                <div className="bg-indigo-500/10 text-indigo-300 px-3 py-2 rounded-lg text-[10px] border border-indigo-500/30 w-full flex items-center justify-between opacity-60">
+                                    <span>Chunk N: Education</span> <Code2 size={12} />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="h-3 w-px bg-indigo-500/40 my-1 relative">
+                            <ArrowRight size={14} className="absolute -bottom-2 -left-1.5 text-indigo-400 rotate-90" />
+                        </div>
+
+                        {/* Step 3: Embeddings */}
+                        <div className="flex flex-col items-center gap-2 w-full">
+                            <div className="text-[10px] text-purple-400 font-bold tracking-widest mb-1 flex items-center gap-1">
+                                <Cpu size={12} /> EMBEDDING MODEL
+                            </div>
+                            <div className="bg-purple-900/30 text-purple-300 font-mono text-[10px] p-3 rounded-xl border border-purple-500/40 w-5/6 shadow-[0_0_15px_rgba(168,85,247,0.15)] relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-16 h-16 bg-purple-500/10 rounded-full blur-xl animate-pulse"></div>
+                                <div className="flex justify-between"><span>Vector 1:</span> <span>[0.12, -0.85, 0.44...]</span></div>
+                                <div className="flex justify-between"><span>Vector 2:</span> <span>[0.91,  0.23, -0.1...]</span></div>
+                                <div className="flex justify-between"><span>Vector 3:</span> <span>[0.88,  0.12, -0.45...]</span></div>
+                                <div className="flex justify-between"><span>Vector 4:</span> <span>[0.71,  0.76, -0.91...]</span></div>
+                                <div className="flex justify-between text-purple-500"><span>...</span> <span>...</span></div>
+                                <div className="flex justify-between text-purple-400/50" ><span>Vector N:</span> <span className="ml-2">[0.66,  0.15, -0.23...]</span></div>
+                            </div>
+                            <div className="text-[9px] text-slate-500 mt-1">1024-Dimensional Dense Vectors</div>
+                        </div>
+                    </div>
                 </div>
                 <div className="absolute top-[40%] left-0 w-full h-[22%] bg-teal-900/5 border-b border-teal-500/10 transition-all">
-                    <span className="absolute top-4 left-4 text-[10px] font-bold uppercase tracking-widest text-teal-500/40">Semantic Retrieval Domain</span>
+                    <span className="absolute top-4 left-4 text-[10px] font-bold uppercase tracking-widest text-teal-500/70">Semantic Retrieval Domain</span>
                 </div>
                 <div className="absolute top-[62%] left-0 w-full h-[16%] bg-purple-900/5 border-b border-purple-500/10 transition-all">
-                    <span className="absolute top-4 left-4 text-[10px] font-bold uppercase tracking-widest text-purple-500/40">Augmentation Domain</span>
+                    <span className="absolute top-4 left-4 text-[10px] font-bold uppercase tracking-widest text-purple-500/70">Augmentation Domain</span>
                 </div>
                 <div className="absolute top-[78%] left-0 w-full h-[22%] bg-pink-900/5 transition-all">
-                    <span className="absolute top-4 left-4 text-[10px] font-bold uppercase tracking-widest text-pink-500/40">Generation Domain</span>
+                    <span className="absolute top-4 left-4 text-[10px] font-bold uppercase tracking-widest text-pink-500/70">Generation Domain</span>
+                </div>
+
+                {/* Internal Vector Search Diagram (Right Side of Augmentation Domain) */}
+                <div className="absolute top-[44%] right-[5%] w-[30%] max-w-[480px] bg-gray-950/90 backdrop-blur-2xl border border-indigo-500/40 rounded-2xl p-5 shadow-2xl z-30 hidden md:flex flex-col">
+                    <h4 className="text-white text-sm font-bold mb-6 flex items-center gap-2">
+                        <Network size={18} className="text-teal-400" />
+                        Vector Search Internal Workflow
+                    </h4>
+
+                    <div className="flex items-start justify-between text-xs text-gray-400 relative h-full">
+                        {/* Connecting arrows between columns */}
+                        <div className="absolute top-[39.7%] left-[34%] w-[5%] h-[2.5px] bg-indigo-500/30"></div>
+                        <div className="absolute top-[39.7%] right-[34%] w-[5%] h-[2.5px] bg-indigo-500/30"></div>
+                        <ArrowRight size={14} className="absolute top-[38%] left-[36%] text-indigo-400" />
+                        <ArrowRight size={14} className="absolute top-[38%] right-[36%] text-indigo-400 rotate-180" />
+
+                        {/* Left Side: Stored Vectors */}
+                        <div className="flex flex-col items-center gap-3 w-1/3">
+                            <span className="text-[10px] uppercase tracking-wider text-slate-500 mb-1">Database</span>
+                            <div className="flex flex-col gap-1.5 w-full items-center">
+                                <div className="bg-blue-500/10 text-blue-300 px-3 py-1.5 rounded-lg text-[10px] border border-blue-500/30 flex items-center gap-1.5 w-full justify-center">
+                                    <FileText size={12} /> Profiles
+                                </div>
+                                <div className="bg-blue-500/10 text-blue-300 px-3 py-1.5 rounded-lg text-[10px] border border-blue-500/30 flex items-center gap-1.5 w-full justify-center">
+                                    <FileText size={12} /> Jobs
+                                </div>
+                            </div>
+                            <ChevronDown size={14} className="text-slate-600 mt-2" />
+                            <div className="bg-indigo-900/40 text-indigo-300 font-mono text-[10px] py-2 rounded-lg border border-indigo-500/40 mt-1 text-center w-full flex flex-col gap-1 flex min-h-0 overflow-hidden">
+                                <div>[0.12, -0.81, 0.45...]</div>
+                                <div>[0.85, 0.44, -0.12...]</div>
+                                <div>[0.95, -0.23, 0.67...]</div>
+                                <div>[-0.33, 0.67, 0.15...]</div>
+                                <div>[0.67, -0.42, 0.76...]</div>
+                                <div>[-0.42, 0.15, -0.91...]</div>
+                                <div className="text-indigo-500 my-0.5">...</div>
+                                <div>[ 0.55, 0.23, -0.88... ]</div>
+                            </div>
+                            <span className="text-[9px] text-indigo-400 font-medium">Large Dense Vectors</span>
+                        </div>
+
+                        {/* Center: Nearest Neighbor */}
+                        <div className="flex flex-col items-center gap-3 w-1/3 px-2">
+                            <span className="text-[10px] uppercase tracking-wider text-teal-500 mb-1">Matching</span>
+                            <div className="relative w-16 h-16 flex items-center justify-center mt-2">
+                                <div className="absolute inset-0 rounded-full border border-teal-500/20 border-l-teal-400 border-t-teal-400 animate-spin [animation-duration:4s]"></div>
+                                <Network size={24} className="text-teal-400" />
+                                {/* Connecting dots */}
+                                <div className="absolute top-1 right-2 w-1.5 h-1.5 bg-teal-400 rounded-full shadow-[0_0_8px_#2dd4bf]"></div>
+                                <div className="absolute bottom-2 left-2 w-1.5 h-1.5 bg-teal-400 rounded-full shadow-[0_0_8px_#2dd4bf]"></div>
+                                <div className="absolute bottom-1 right-4 w-1.5 h-1.5 bg-indigo-400 rounded-full"></div>
+                            </div>
+                            <span className="text-[10px] text-teal-300 font-medium mt-1 text-center">Nearest<br />Neighbor</span>
+                            <ChevronDown size={14} className="text-teal-600 my-1" />
+                            <div className="bg-teal-500/10 text-teal-300 px-4 py-2 rounded-lg text-[10px] border border-teal-500/40 font-bold w-full text-center shadow-[0_0_15px_rgba(20,184,166,0.15)]">
+                                Results
+                            </div>
+                        </div>
+
+                        {/* Right Side: Query Vector */}
+                        <div className="flex flex-col items-center gap-3 w-1/3">
+                            <span className="text-[10px] uppercase tracking-wider text-slate-500 mb-1">User Input</span>
+                            <div className="bg-purple-500/10 text-purple-300 px-3 py-1.5 rounded-lg text-[10px] border border-purple-500/30 flex items-center gap-1.5 w-full justify-center">
+                                <User size={12} /> Query
+                            </div>
+                            <ChevronDown size={14} className="text-slate-600 mt-5" />
+                            <div className="bg-purple-900/20 text-purple-300 font-mono text-[10px] px-0 py-2 rounded-lg border border-purple-500/30 mt-1 text-center w-full flex flex-col gap-1">
+                                <div>[ 0.15, -0.91, 0.12, ... ]</div>
+                                <div>[ -0.70, 0.87, -0.44, ... ]</div>
+                                <div className="text-purple-500 my-0.5">...</div>
+                            </div>
+                            <span className="text-[9px] text-purple-400 font-medium">Query Vector</span>
+                        </div>
+                    </div>
                 </div>
 
                 {/* SVG Wiring & Animations (Z-10) */}
@@ -72,7 +210,7 @@ export default function PipelineDataMap() {
                     <path id="path-vector-db" d="M 500,320 L 500,420" fill="none" stroke="rgba(99, 102, 241, 0.2)" strokeWidth="2" strokeDasharray="5,5" />
 
                     {/* Retrieval */}
-                    <path id="path-user-queryembed" d="M 250,570 L 250,620" fill="none" stroke="rgba(20, 184, 166, 0.2)" strokeWidth="2" strokeDasharray="5,5" />
+                    <path id="path-user-queryembed" d="M 250,550 L 250,600" fill="none" stroke="rgba(20, 184, 166, 0.2)" strokeWidth="2" strokeDasharray="5,5" />
                     <path id="path-queryembed-qvector" d="M 250,620 L 250,680" fill="none" stroke="rgba(20, 184, 166, 0.2)" strokeWidth="2" strokeDasharray="5,5" />
                     <path id="path-qvector-sim" d="M 320,700 C 390,660 500,600 500,700" fill="none" stroke="rgba(20, 184, 166, 0.2)" strokeWidth="2" strokeDasharray="5,5" />
                     <path id="path-db-sim" d="M 500,420 L 500,700" fill="none" stroke="rgba(99, 102, 241, 0.2)" strokeWidth="2" strokeDasharray="5,5" className="animate-[pulse_3s_infinite]" />

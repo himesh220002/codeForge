@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Upload, FileText, CheckCircle, AlertTriangle, ArrowRight, Play, Server, Database } from "lucide-react";
 import Navbar from "@/components/navbar";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 export default function AtsPipelineCheckerPage() {
     // Form state
@@ -22,7 +23,7 @@ export default function AtsPipelineCheckerPage() {
                 try {
                     const token = localStorage.getItem("accessToken");
                     if (token) {
-                        const res = await fetch("/codeforge/api/user/settings", {
+                        const res = await fetchWithAuth("/codeforge/api/user/settings", {
                             headers: { Authorization: `Bearer ${token}` }
                         });
                         if (res.ok) {

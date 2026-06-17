@@ -24,6 +24,7 @@ import {
   PenTool,
   Check
 } from 'lucide-react';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
@@ -184,7 +185,7 @@ export default function JobMatcherPage() {
         try {
           const token = localStorage.getItem("accessToken");
           if (token) {
-            const res = await fetch("/codeforge/api/user/settings", {
+            const res = await fetchWithAuth("/codeforge/api/user/settings", {
               headers: { Authorization: `Bearer ${token}` }
             });
             if (res.ok) {

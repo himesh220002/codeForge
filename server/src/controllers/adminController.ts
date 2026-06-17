@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import { UserModel } from "../models/user.js";
 import { AtsLogModel } from "../models/atsLog.js";
 import { getOpenAIClient } from "../services/aiService.js";
+import { decrypt } from "../utils/crypto.js";
 
 // GET users with pagination
 export async function getUsersController(req: Request, res: Response) {
@@ -160,13 +161,27 @@ export async function deleteUserController(req: Request, res: Response) {
 
 export async function getSystemHealthController(req: Request, res: Response) {
   try {
-    const nvidiaKey = process.env.NVIDIA_API_KEY;
+    let nvidiaKey = process.env.NVIDIA_API_KEY;
+    
+    const userId = (req as any).user?.userId;
+    if (userId) {
+      const user = await UserModel.findById(userId);
+      if (user && user.nvidiaApiHash) {
+        try {
+          const decrypted = decrypt(user.nvidiaApiHash);
+          if (decrypted) nvidiaKey = decrypted;
+        } catch (err) {
+          console.error("Failed to decrypt user API key for health check:", err);
+        }
+      }
+    }
+
     const hasNvidiaKey = !!nvidiaKey;
     let nvidiaApiStatus = "Unknown";
 
     if (hasNvidiaKey) {
       try {
-        const openai = getOpenAIClient(nvidiaKey);
+        const openai = getOpenAIClient(nvidiaKey as string);
         // Make a very lightweight models request to verify key
         await openai.models.list({ timeout: 5000 });
         nvidiaApiStatus = "Online";

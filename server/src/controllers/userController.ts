@@ -15,9 +15,9 @@ export async function getUserSettingsController(req: Request, res: Response) {
         }
 
         let nvidiaApiKey = "";
-        if (user.nvidiaApiKey) {
+        if (user.nvidiaApiHash) {
             try {
-                nvidiaApiKey = decrypt(user.nvidiaApiKey);
+                nvidiaApiKey = decrypt(user.nvidiaApiHash);
             } catch (err) {
                 console.error("Failed to decrypt user API key:", err);
                 // If it fails to decrypt, we just return empty so they can reset it
@@ -48,10 +48,10 @@ export async function updateUserSettingsController(req: Request, res: Response) 
         }
 
         if (nvidiaApiKey) {
-            user.nvidiaApiKey = encrypt(nvidiaApiKey.trim());
+            user.nvidiaApiHash = encrypt(nvidiaApiKey.trim());
         } else if (nvidiaApiKey === "") {
             // Allow clearing the API key
-            user.nvidiaApiKey = undefined;
+            user.nvidiaApiHash = undefined;
         }
 
         await user.save();

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { BsNvidia } from "react-icons/bs";
 import Link from 'next/link';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 
 export default function SettingsPage() {
   const [apiKey, setApiKey] = useState("");
@@ -21,7 +22,7 @@ export default function SettingsPage() {
       try {
         const token = localStorage.getItem("accessToken");
         if (token) {
-          const res = await fetch("/codeforge/api/user/settings", {
+          const res = await fetchWithAuth("/codeforge/api/user/settings", {
             headers: { Authorization: `Bearer ${token}` }
           });
           if (res.ok) {
@@ -48,7 +49,7 @@ export default function SettingsPage() {
     try {
       const token = localStorage.getItem("accessToken");
       if (token) {
-        await fetch("/codeforge/api/user/settings", {
+        await fetchWithAuth("/codeforge/api/user/settings", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -73,7 +74,7 @@ export default function SettingsPage() {
     try {
       const token = localStorage.getItem("accessToken");
       if (token) {
-        await fetch("/codeforge/api/user/settings", {
+        await fetchWithAuth("/codeforge/api/user/settings", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

@@ -254,7 +254,7 @@ export default function Navbar() {
 
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 w-full bg-gray-950/95 backdrop-blur-xl border-b border-indigo-500/20 shadow-2xl py-4 px-6 flex flex-col gap-5 animate-in slide-in-from-top-2 duration-200">
+        <div className="md:hidden absolute top-full left-0 w-full h-screen overflow-y-auto bg-gray-950/95 backdrop-blur-xl border-b border-indigo-500/20 shadow-2xl py-4 px-6 flex flex-col gap-5 animate-in slide-in-from-top-2 duration-200">
           <div className="flex flex-col gap-4">
             <Link href="/" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 text-slate-300 hover:text-white transition-colors">
               <Home size={18} className="text-blue-400" />

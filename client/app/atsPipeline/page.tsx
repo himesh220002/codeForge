@@ -131,7 +131,7 @@ export default function AtsPipelineCheckerPage() {
                 </header>
 
                 <section className="bg-slate-900 border border-indigo-500/10 rounded-xl overflow-hidden shadow-2xl">
-                    <div className="p-6 border-b border-indigo-500/10 bg-slate-900/50 flex items-center gap-3">
+                    <div className="p-6 md:p-8 border-b border-indigo-500/10 bg-slate-900/50 flex flex-col sm:flex-row items-start sm:items-center gap-3">
                         <div className="p-2 bg-indigo-500/20 text-indigo-400 rounded-lg">
                             <Play size={20} />
                         </div>
@@ -141,7 +141,7 @@ export default function AtsPipelineCheckerPage() {
                         </div>
                     </div>
 
-                    <div className="p-6 md:p-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div className="p-2 md:p-6 md:p-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
                         {/* Input Forms */}
                         <div className="space-y-6">
                             <div className="space-y-2">
@@ -214,7 +214,7 @@ export default function AtsPipelineCheckerPage() {
                                 </h3>
                             </div>
 
-                            <div className="flex-1 p-6 flex flex-col items-center justify-center min-h-[300px]">
+                            <div className="flex-1 p-2 md:p-6 flex flex-col items-center justify-center min-h-[300px]">
                                 {!isProcessing && !result && (
                                     <div className="text-center space-y-3">
                                         <div className="w-16 h-16 bg-slate-900 rounded-full flex items-center justify-center mx-auto mb-4 border border-indigo-500/10">
@@ -272,7 +272,7 @@ export default function AtsPipelineCheckerPage() {
                                 {result && !isProcessing && (
                                     <div className="w-full h-full flex flex-col justify-start animate-in zoom-in-95 duration-500">
                                         <div className="grid grid-cols-2 gap-4 mb-8">
-                                            <div className="bg-slate-900 border border-indigo-700/20 rounded-xl p-5 text-center">
+                                            <div className="bg-slate-900 border border-indigo-700/20 rounded-xl p-2 md:p-5 text-center">
                                                 <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">CV Structure Score</p>
                                                 <div className="text-4xl font-extrabold text-blue-400">
                                                     {result.structureScore}%
@@ -280,7 +280,7 @@ export default function AtsPipelineCheckerPage() {
                                                 <p className="text-[10px] text-slate-500 mt-2">Alignment, Formatting, Layout</p>
                                             </div>
 
-                                            <div className="bg-slate-900 border border-indigo-700/20 rounded-xl p-5 text-center relative overflow-hidden">
+                                            <div className="bg-slate-900 border border-indigo-700/20 rounded-xl p-2 md:p-5 text-center relative overflow-hidden">
                                                 <div className="absolute top-0 right-0 p-2">
                                                     {result.matchScore >= 80 ? (
                                                         <CheckCircle className="text-green-500 w-5 h-5" />
@@ -298,7 +298,7 @@ export default function AtsPipelineCheckerPage() {
 
                                         {result.feedback?.sections ? (
                                             <div className="space-y-6 mt-2">
-                                                <div className="bg-slate-900/50 border border-indigo-500/20 rounded-xl p-5">
+                                                <div className="bg-slate-900/50 border border-indigo-500/20 rounded-xl p-2 md:p-5">
                                                     <h4 className="font-bold text-slate-200 flex items-center gap-2 mb-2">
                                                         <Database size={16} className="text-indigo-400" /> Executive Summary
                                                     </h4>
@@ -312,8 +312,8 @@ export default function AtsPipelineCheckerPage() {
                                                         <FileText size={16} className="text-slate-400" /> Section Breakdown
                                                     </h4>
                                                     {Object.entries(result.feedback.sections).map(([key, section]: [string, any]) => (
-                                                        <div key={key} className="bg-slate-900 border border-indigo-700/20 rounded-xl p-5">
-                                                            <div className="flex justify-between items-center mb-4 pb-3 border-b border-indigo-500/10">
+                                                        <div key={key} className="bg-slate-900 border border-indigo-700/20 rounded-xl p-2 md:p-5">
+                                                            <div className="flex flex-col md:flex-row gap-2 justify-between items-center mb-4 pb-3 border-b border-indigo-500/10">
                                                                 <h5 className="font-bold text-slate-200 capitalize text-lg">{key}</h5>
                                                                 <div className="flex gap-4">
                                                                     <div className="text-center">

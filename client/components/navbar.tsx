@@ -73,7 +73,14 @@ export default function Navbar() {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("userName");
     localStorage.removeItem("adminUnlocked");
-    window.location.href = "/codeforge/login"; // redirect to login
+    
+    // Privacy: Clear all user-specific session data to prevent data leakage between users
+    localStorage.removeItem("nvidia_api_key");
+    localStorage.removeItem("uploaded_pdf_text");
+    localStorage.removeItem("saved_multiple_cvs");
+    localStorage.removeItem("profile_history");
+
+    window.location.href = "/login"; // redirect to login
   };
 
   const getInitials = (name: string) => {

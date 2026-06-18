@@ -35,14 +35,15 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}): Pro
           headers.set("Authorization", `Bearer ${data.accessToken}`);
           res = await fetch(url, { ...options, headers });
         } else {
-        // Failed to get a new access token, clear storage
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("userName");
-        localStorage.removeItem("adminUnlocked");
-        localStorage.removeItem("nvidia_api_key");
-        localStorage.removeItem("uploaded_pdf_text");
-        localStorage.removeItem("saved_multiple_cvs");
-        localStorage.removeItem("profile_history");
+          // Failed to get a new access token, clear storage
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("userName");
+          localStorage.removeItem("adminUnlocked");
+          localStorage.removeItem("nvidia_api_key");
+          localStorage.removeItem("uploaded_pdf_text");
+          localStorage.removeItem("saved_multiple_cvs");
+          localStorage.removeItem("profile_history");
+        }
       } else {
         // Refresh token is expired or invalid, clear storage
         localStorage.removeItem("accessToken");

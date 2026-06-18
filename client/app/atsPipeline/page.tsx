@@ -57,7 +57,20 @@ export default function AtsPipelineCheckerPage() {
 
         try {
             const formData = new FormData();
-            formData.append("resume", resumeFile);
+            
+            // Robust workaround for mobile Google Drive/Cloud files:
+            // Fetch often fails with NetworkError when streaming virtual files directly in FormData.
+            // We force the file to load fully into memory first via FileReader.
+            const fileBuffer = await new Promise<ArrayBuffer>((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result as ArrayBuffer);
+                reader.onerror = () => reject(new Error("Browser could not read the file. Please ensure the file is fully downloaded to your device before uploading."));
+                reader.readAsArrayBuffer(resumeFile);
+            });
+            
+            const safeBlob = new Blob([fileBuffer], { type: resumeFile.type || 'application/pdf' });
+            formData.append("resume", safeBlob, resumeFile.name || "resume.pdf");
+            
             formData.append("jobDescription", jobDescription);
 
             // Fetch NVIDIA API Key from local storage or use access token

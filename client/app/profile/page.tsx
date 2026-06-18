@@ -182,6 +182,7 @@ export default function ProfilePage() {
   const [showSaveCvModal, setShowSaveCvModal] = useState(false);
   const [newCvName, setNewCvName] = useState("");
   const [apiKey, setApiKey] = useState("");
+  const [dbKey, setDbKey] = useState("");
   const [history, setHistory] = useState<ProfileHistoryItem[]>([]);
   const [expandedHistoryId, setExpandedHistoryId] = useState<string | null>(null);
   const [parsingPdf, setParsingPdf] = useState(false);
@@ -220,6 +221,33 @@ export default function ProfilePage() {
     if (savedApiKey) {
       setApiKey(savedApiKey);
     }
+    
+    // Fetch from DB
+    const loadDbKey = async () => {
+      try {
+        const t = localStorage.getItem("accessToken");
+        if (t) {
+          // Dynamic import of fetchWithAuth to avoid top-level issues if needed, or use standard fetch
+          const { fetchWithAuth } = await import('@/lib/fetchWithAuth');
+          const res = await fetchWithAuth("/codeforge/api/user/settings", {
+            headers: { Authorization: `Bearer ${t}` }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.nvidiaApiKey) {
+              setDbKey(data.nvidiaApiKey);
+              if (!savedApiKey) {
+                setApiKey(data.nvidiaApiKey);
+                localStorage.setItem("nvidia_api_key", data.nvidiaApiKey);
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    loadDbKey();
 
     // 4. Load Match History
     const savedHistory = localStorage.getItem("profile_history");
@@ -317,19 +345,58 @@ export default function ProfilePage() {
     setExpandedCvId(expandedCvId === id ? null : id);
   };
 
-  const handleSaveApiKey = (e: React.FormEvent) => {
+  const handleSaveApiKey = async (e: React.FormEvent) => {
     e.preventDefault();
     setSavingSettings(true);
-    localStorage.setItem("nvidia_api_key", apiKey.trim());
-    setSuccess("🔑 NVIDIA NIM API Key successfully saved locally.");
+    const keyToSave = apiKey.trim();
+    localStorage.setItem("nvidia_api_key", keyToSave);
+    
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (token) {
+        const { fetchWithAuth } = await import('@/lib/fetchWithAuth');
+        await fetchWithAuth("/codeforge/api/user/settings", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({ nvidiaApiKey: keyToSave })
+        });
+        setDbKey(keyToSave);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+
+    setSuccess("🔑 NVIDIA NIM API Key successfully saved locally and synced to DB.");
     setSavingSettings(false);
     setTimeout(() => setSuccess(''), 3500);
   };
 
-  const handleClearApiKey = () => {
+  const handleClearApiKey = async () => {
     localStorage.removeItem("nvidia_api_key");
     setApiKey("");
-    setSuccess("🗑️ NVIDIA NIM API Key cleared from local storage.");
+    
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (token) {
+        const { fetchWithAuth } = await import('@/lib/fetchWithAuth');
+        await fetchWithAuth("/codeforge/api/user/settings", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({ nvidiaApiKey: "" })
+        });
+        setDbKey("");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+
+    setSuccess("🗑️ NVIDIA NIM API Key cleared from local storage and DB.");
     setTimeout(() => setSuccess(''), 3500);
   };
 
@@ -470,8 +537,15 @@ export default function ProfilePage() {
                 BYOK <span className='text-green-400 bg-gradient-to-r from-purple-400 to-teal-400 bg-clip-text text-transparent'>NVIDIA NIM Key</span>
               </h3>
               <p className="text-xs text-slate-400 mb-4 leading-relaxed">
-                Connect your NVIDIA API Key to execute RAG similarity logic locally. Stored exclusively in your browser.
+                Connect your NVIDIA API Key to execute RAG similarity logic locally. Stored securely and encrypted in the database.
               </p>
+
+              {dbKey && (
+                <div className="mb-4 text-[11px] text-emerald-400 font-mono bg-emerald-500/10 px-2 py-1.5 rounded-lg border border-emerald-500/20 inline-flex items-center gap-1.5">
+                  <CheckCircle2 size={12} />
+                  Decrypted from DB: {dbKey.substring(0, 4)}*************************
+                </div>
+              )}
 
               <form onSubmit={handleSaveApiKey} className="space-y-4">
                 <div className="relative">

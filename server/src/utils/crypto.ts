@@ -55,7 +55,7 @@ export async function extractNvidiaKey(authHeader: string | undefined): Promise<
     // If it's a JWT (usually 3 parts separated by dots)
     if (token.split('.').length === 3) {
         try {
-            const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret_key_change_me_in_prod') as any;
+            const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET || 'access-secret') as any;
             if (decoded && decoded.userId) {
                 const user = await UserModel.findById(decoded.userId);
                 if (user && user.nvidiaApiHash) {

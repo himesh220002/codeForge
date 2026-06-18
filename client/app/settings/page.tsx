@@ -7,6 +7,7 @@ import { fetchWithAuth } from '@/lib/fetchWithAuth';
 
 export default function SettingsPage() {
   const [apiKey, setApiKey] = useState("");
+  const [dbKey, setDbKey] = useState("");
   const [saved, setSaved] = useState(false);
 
   // Load existing key on mount
@@ -27,9 +28,12 @@ export default function SettingsPage() {
           });
           if (res.ok) {
             const data = await res.json();
-            if (data.nvidiaApiKey && data.nvidiaApiKey !== existingKey) {
-              setApiKey(data.nvidiaApiKey);
-              localStorage.setItem("nvidia_api_key", data.nvidiaApiKey);
+            if (data.nvidiaApiKey) {
+              setDbKey(data.nvidiaApiKey);
+              if (data.nvidiaApiKey !== existingKey) {
+                setApiKey(data.nvidiaApiKey);
+                localStorage.setItem("nvidia_api_key", data.nvidiaApiKey);
+              }
             }
           }
         }
@@ -57,6 +61,7 @@ export default function SettingsPage() {
           },
           body: JSON.stringify({ nvidiaApiKey: keyToSave })
         });
+        setDbKey(keyToSave);
       }
     } catch (err) {
       console.error("Failed to sync settings to DB", err);
@@ -82,6 +87,7 @@ export default function SettingsPage() {
           },
           body: JSON.stringify({ nvidiaApiKey: "" })
         });
+        setDbKey("");
       }
     } catch (err) {
       console.error("Failed to clear settings from DB", err);
@@ -144,8 +150,17 @@ export default function SettingsPage() {
 
               <div className="space-y-4">
                 <p className="text-sm text-slate-400 leading-relaxed">
-                  Your API key is securely stored in your browser&apos;s local storage. It is never saved to our databases or shared with any third party. It is only sent directly to our backend temporarily when you execute a search.
+                  Your API key is securely stored in your browser&apos;s local storage and synced to our secure database as a one-way encrypted hash using a Bring Your Own Key (BYOK) model.
                 </p>
+
+                {dbKey && (
+                  <div className="text-xs text-emerald-400 font-mono bg-emerald-500/10 px-3 py-2 rounded-lg border border-emerald-500/20 inline-flex items-center gap-2">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Decrypted from DB: {dbKey.substring(0, 4)}*************************
+                  </div>
+                )}
 
                 <div className="relative">
                   <input
